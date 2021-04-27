@@ -10,6 +10,7 @@ pytest-django = "*"
 django-heroku = "*"
 psycopg2-binary = "*"
 psycopg2 = "==2.7.5"
+mock = "*"
 
 [dev-packages]
 
