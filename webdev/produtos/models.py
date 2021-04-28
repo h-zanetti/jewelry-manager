@@ -12,7 +12,7 @@ class Produto(models.Model):
     nome = models.CharField(_('Nome'), max_length=150)
     colecao = models.CharField(_('Coleção'), max_length=150)
     familia = models.CharField(_('Família'), max_length=150, blank=True, null=True)
-    categorias = models.ManyToManyField(Categoria, verbose_name=_('Categorias'))
+    categorias = models.ManyToManyField(Categoria, verbose_name=_('Categorias'), blank=True)
     data_criacao = models.DateField(_('Data de Criação'), blank=True, null=True)
     quantidade = models.IntegerField(_("Unidades"), default=0)
     tamanho = models.IntegerField(_("Tamanho"), blank=True, null=True)
