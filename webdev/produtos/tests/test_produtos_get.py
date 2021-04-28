@@ -15,3 +15,4 @@ def test_novo_produto_form_presente(resposta):
 
 def test_novo_produto_btn_de_submit_presente(resposta):
     assertContains(resposta, '<button type="submit"')
+

@@ -11,6 +11,7 @@
 <body>
     <div class="container w-50 mt-5">
         <form action="{% url 'produtos:novo_produto' %}" method="POST">
+            {% csrf_token %}
             {% bootstrap_form form %}
             <div class="row mt-2">
                 {% buttons %}
