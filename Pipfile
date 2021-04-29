@@ -8,6 +8,7 @@ django = "*"
 pytest-django = "*"
 python-dotenv = "*"
 pillow = "*"
+mysqlclient = "*"
 
 [dev-packages]
 
