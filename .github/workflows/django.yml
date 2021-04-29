@@ -6,6 +6,7 @@ jobs:
       PIPENV_NO_INHERIT: 1
       PIPENV_IGNORE_VIRTUALENVS: 1
       SECRET_KEY: "5prjtjdp9)69ty=*c_68erb&sf+n8d)5go_=$$@2-sv@#jd(r8"
+      DB_ENGINE: "django.db.backends.sqlite3"
     runs-on: ubuntu-latest
 
     steps:
