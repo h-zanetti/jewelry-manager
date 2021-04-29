@@ -18,6 +18,5 @@ jobs:
         pip install -r requirements.txt 
     - name: Rodar Testes Automáticos
       run: |
-        source ../../../venv/bin/activate
+        pip install pytest
         pytest
-        deactivate
