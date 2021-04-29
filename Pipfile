@@ -5,12 +5,8 @@ name = "pypi"
 
 [packages]
 django = "*"
-gunicorn = "*"
 pytest-django = "*"
-django-heroku = "*"
-psycopg2-binary = "*"
-psycopg2 = "==2.7.5"
-mock = "*"
+python-dotenv = "*"
 
 [dev-packages]
 
