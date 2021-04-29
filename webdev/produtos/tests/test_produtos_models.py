@@ -1,4 +1,3 @@
-import mock
 from django.test import TestCase
 from django.core.files import File
 from webdev.produtos.models import Categoria, Produto
