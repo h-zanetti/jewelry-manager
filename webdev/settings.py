@@ -88,7 +88,7 @@ DATABASES = {
         'PASSWORD': os.environ.get('DB_PASSWORD'),
         'TEST': {
             'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': 'db_test',
+            'NAME': BASE_DIR / 'db_test',
         }
     }
 }
