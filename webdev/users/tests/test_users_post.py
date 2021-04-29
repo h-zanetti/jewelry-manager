@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from pytest_django.asserts import assertRedirects
 
 @pytest.fixture
-def resposta(client, django_db):
+def resposta(client, db):
     usr = User.objects.create_user(username='UserTest', password='minhaSenha123')
     resp = client.post(reverse('login'), data={'username': 'UserTest', 'password': 'minhaSenha123'})
     return resp
