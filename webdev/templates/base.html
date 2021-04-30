@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6" crossorigin="anonymous">
+    <script src="https://kit.fontawesome.com/2f543ddc08.js" crossorigin="anonymous"></script>
+    <title>
+        {% if title %}
+            Gerenciador de Jóias | {{ title }}
+        {% else %}
+            Gerenciador de Jóias
+        {% endif %}
+    </title>
+</head>
+<body class="d-flex flex-column h-100 bg-dark">
+    <style>
+        .form-control {
+            margin-bottom: 5px;
+        }
+    </style>
+    
+    <header class="navbar navbar-dark sticky-top bg-dark p-0 shadow">
+        <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3" href="#">Z Atelier</a>
+        <ul class="navbar-nav px-3">
+            <li class="nav-item text-nowrap">
+                <a class="nav-link" href="{% url 'logout' %}">Sign out</a>
+            </li>
+        </ul>
+    </header>
+
+    <div class="flex-shrink-0 h-100">
+        <div class="container-fluid">
+            <div class="row">
+                <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar">
+                    <div class="position-sticky pt-3 mb-auto">
+                        <ul class="nav flex-column">
+                            {% if filters %}
+                            <li class="nav-item">
+                                <a class="nav-link px-2" href="#">
+                                    <i class="fas fa-filter me-2"></i>
+                                    Filtros
+                                </a>
+                            </li>
+                            {% endif %}
+                            <li class="nav-item">
+                                <a class="nav-link px-2" data-bs-toggle="collapse" href="#collapseProdutos" role="button" aria-expanded="false" aria-controls="collapseProdutos">
+                                    <i class="fas fa-shopping-cart me-2"></i>
+                                    Produtos
+                                </a>
+                                <div class="collapse border border-top-0 shadow-sm p-2" id="collapseProdutos">
+                                    <ul class="list-unstyled">
+                                        <li class="list-item"><a class="text-decoration-none" href="{% url 'produtos:estoque' %}">
+                                            <i class="fas fa-list-ul fa-sm me-2"></i>
+                                            Meus Produtos
+                                        </a></li>
+                                        <li class="list-item mt-1"><a class="text-decoration-none" href="{% url 'produtos:novo_produto' %}">
+                                            <i class="fas fa-plus-circle fa-sm me-2"></i>
+                                            Novo Produto
+                                        </a></li>
+                                        <li class="list-item mt-1"><a class="text-decoration-none" href="#">
+                                            <i class="fas fa-hammer fa-sm me-2"></i>
+                                            Produzir
+                                        </a></li>
+                                    </ul>
+                                </div>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link px-2" href="#collapseMaterial" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="collapseMaterial">
+                                    <i class="far fa-gem me-2"></i>
+                                    Matéria Prima
+                                </a>
+                                <div class="collapse border border-top-0 shadow-sm p-2" id="collapseMaterial">
+                                    <ul class="list-unstyled">
+                                        <li class="list-item"><a class="text-decoration-none" href="#">
+                                            <i class="fas fa-clipboard-list me-2"></i>
+                                            Entradas
+                                        </a></li>
+                                        <li class="list-item mt-1"><a class="text-decoration-none" href="#">
+                                            <i class="fas fa-plus-circle fa-sm me-2"></i>
+                                            Nova Entrada
+                                        </a></li>
+                                        <li class="list-item mt-1"><a class="text-decoration-none" href="#">
+                                            <i class="fas fa-dolly me-1"></i>
+                                            Estoque
+                                        </a></li>
+                                    </ul>
+                                </div>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link px-2" href="#collapseFornecedores" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="collapseFornecedores">
+                                    <i class="fas fa-users me-2"></i>
+                                    Fornecedores
+                                </a>
+                                <div class="collapse border border-top-0 shadow-sm p-2" id="collapseFornecedores">
+                                    <ul class="list-unstyled">
+                                        <li class="list-item"><a class="text-decoration-none" href="#">
+                                            <i class="fas fa-list-ul fa-sm me-2"></i>
+                                            Fornecedores
+                                        </a></li>
+                                        <li class="list-item mt-1"><a class="text-decoration-none" href="#">
+                                            <i class="fas fa-plus-circle fa-sm me-2"></i>
+                                            Novo Fornecedor
+                                        </a></li>
+                                    </ul>
+                                </div>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link px-2" href="#collapseFinanceiro" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="collapseFinanceiro">
+                                    <i class="fas fa-chart-bar me-2"></i>
+                                    Financeiro
+                                </a>
+                                <div class="collapse border border-top-0 shadow-sm p-2 pt-1" id="collapseFinanceiro">
+                                    <ul class="list-unstyled">
+                                        <li class="list-item mt-1"><a class="text-decoration-none" href="#">
+                                            <i class="fas fa-hand-holding-usd fa-sm me-2"></i>
+                                            Fluxo de Caixa
+                                        </a></li>
+                                        <li class="list-item mt-1"><a class="text-decoration-none" href="#">
+                                            <i class="fas fa-receipt" style="margin-right: 12px;"></i>
+                                            Vendas
+                                        </a></li>
+                                    </ul>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </nav>
+    
+                <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 bg-white">
+                    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                        <h1 class="h2">{{ title }}</h1>
+                        <div class="btn-toolbar mb-2 mb-md-0">
+                            <div class="btn-group me-2">
+                                <button type="button" class="btn btn-sm btn-outline-secondary">Share</button>
+                                <button type="button" class="btn btn-sm btn-outline-secondary">Export</button>
+                            </div>
+                            <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle">
+                                <span data-feather="calendar"></span>
+                                This week
+                            </button>
+                        </div>
+                    </div>
+                    {% block content %}
+                    {% endblock %}
+                </main>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer mt-auto py-3 bg-dark text-light text-center">
+        <div class="container">
+          <p>Z Atelier &copy 2021 | Made with <i class="fas fa-heart"></i> and <i class="fas fa-coffee"></i> by
+            <a href="https://agahsolutions.com" class="link-light" target="_blank">AGAH Solutions</a>
+          </p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js" integrity="sha384-q2kxQ16AaE6UbzuKqyBE9/u/KzioAlnx2maXQHiDX9d4/zp8Ok3f+M7DPm+Ib6IU" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.min.js" integrity="sha384-pQQkAEnwaBkjpqZ8RU1fF1AKtTcHJwFl3pblpTlHXybJjHpMYo79HY3hIi4NKxyj" crossorigin="anonymous"></script>
+
+</body>
+</html>
