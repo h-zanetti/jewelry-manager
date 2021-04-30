@@ -2,7 +2,9 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from .models import Produto, Categoria
 from .forms import ProdutoForm, CategoriaForm
+from django.contrib.auth.decorators import login_required
 
+@login_required
 def novo_produto(request):
     if request.method == 'POST':
         form = ProdutoForm(request.POST)
@@ -19,6 +21,7 @@ def novo_produto(request):
 
     return render(request, 'base_form_lg.html', context)
 
+@login_required
 def estoque(request):
     context = {
         'title': 'Estoque de Produtos',
