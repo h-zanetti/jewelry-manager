@@ -13,7 +13,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['zatelier.agahsolutions.com', 'www.zatelier.agahsolutions.com']
+ALLOWED_HOSTS = ['jewelry.agahsolutions.com']
 
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
