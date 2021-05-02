@@ -15,12 +15,7 @@
     </title>
 </head>
 <body class="d-flex flex-column h-100 bg-dark">
-    <style>
-        .form-control {
-            margin-bottom: 5px;
-        }
-    </style>
-    
+
     <header class="navbar navbar-dark sticky-top bg-dark p-0 shadow">
         <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3" href="#">Z Atelier</a>
         <ul class="navbar-nav px-3">
@@ -45,21 +40,21 @@
                             </li>
                             {% endif %}
                             <li class="nav-item">
-                                <a class="nav-link px-2" data-bs-toggle="collapse" href="#collapseProdutos" role="button" aria-expanded="false" aria-controls="collapseProdutos">
+                                <a class="nav-link px-2 link-dark" data-bs-toggle="collapse" href="#collapseProdutos" role="button" aria-expanded="false" aria-controls="collapseProdutos">
                                     <i class="fas fa-shopping-cart me-2"></i>
                                     Produtos
                                 </a>
                                 <div class="collapse border border-top-0 shadow-sm p-2" id="collapseProdutos">
                                     <ul class="list-unstyled">
-                                        <li class="list-item"><a class="text-decoration-none" href="{% url 'produtos:estoque' %}">
+                                        <li class="list-item"><a class="text-decoration-none link-dark" href="{% url 'produtos:estoque' %}">
                                             <i class="fas fa-list-ul fa-sm me-2"></i>
                                             Meus Produtos
                                         </a></li>
-                                        <li class="list-item mt-1"><a class="text-decoration-none" href="{% url 'produtos:novo_produto' %}">
+                                        <li class="list-item mt-1"><a class="text-decoration-none link-dark" href="{% url 'produtos:novo_produto' %}">
                                             <i class="fas fa-plus-circle fa-sm me-2"></i>
                                             Novo Produto
                                         </a></li>
-                                        <li class="list-item mt-1"><a class="text-decoration-none" href="#">
+                                        <li class="list-item mt-1"><a class="text-decoration-none link-dark" href="#">
                                             <i class="fas fa-hammer fa-sm me-2"></i>
                                             Produzir
                                         </a></li>
@@ -67,21 +62,21 @@
                                 </div>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link px-2" href="#collapseMaterial" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="collapseMaterial">
+                                <a class="nav-link px-2 link-dark" href="#collapseMaterial" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="collapseMaterial">
                                     <i class="far fa-gem me-2"></i>
                                     Matéria Prima
                                 </a>
                                 <div class="collapse border border-top-0 shadow-sm p-2" id="collapseMaterial">
                                     <ul class="list-unstyled">
-                                        <li class="list-item"><a class="text-decoration-none" href="#">
-                                            <i class="fas fa-clipboard-list me-2"></i>
+                                        <li class="list-item"><a class="text-decoration-none link-dark" href="#">
+                                            <i class="fas fa-list-ul fa-sm me-2"></i>
                                             Entradas
                                         </a></li>
-                                        <li class="list-item mt-1"><a class="text-decoration-none" href="#">
+                                        <li class="list-item mt-1"><a class="text-decoration-none link-dark" href="#">
                                             <i class="fas fa-plus-circle fa-sm me-2"></i>
                                             Nova Entrada
                                         </a></li>
-                                        <li class="list-item mt-1"><a class="text-decoration-none" href="#">
+                                        <li class="list-item mt-1"><a class="text-decoration-none link-dark" href="#">
                                             <i class="fas fa-dolly me-1"></i>
                                             Estoque
                                         </a></li>
@@ -89,35 +84,35 @@
                                 </div>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link px-2" href="#collapseFornecedores" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="collapseFornecedores">
+                                <a class="nav-link px-2 link-dark" href="#collapseFornecedores" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="collapseFornecedores">
                                     <i class="fas fa-users me-2"></i>
                                     Fornecedores
                                 </a>
                                 <div class="collapse border border-top-0 shadow-sm p-2" id="collapseFornecedores">
                                     <ul class="list-unstyled">
-                                        <li class="list-item"><a class="text-decoration-none" href="#">
+                                        <li class="list-item"><a class="text-decoration-none link-dark" href="{% url 'fornecedores:meus_fornecedores' %}">
                                             <i class="fas fa-list-ul fa-sm me-2"></i>
                                             Fornecedores
                                         </a></li>
-                                        <li class="list-item mt-1"><a class="text-decoration-none" href="#">
+                                        <li class="list-item mt-1"><a class="text-decoration-none link-dark" href="{% url 'fornecedores:novo_fornecedor' %}">
                                             <i class="fas fa-plus-circle fa-sm me-2"></i>
                                             Novo Fornecedor
                                         </a></li>
                                     </ul>
                                 </div>
                             </li>
-                            <li class="nav-item">
-                                <a class="nav-link px-2" href="#collapseFinanceiro" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="collapseFinanceiro">
+                            <li class="nav-item mb-2">
+                                <a class="nav-link px-2 link-dark" href="#collapseFinanceiro" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="collapseFinanceiro">
                                     <i class="fas fa-chart-bar me-2"></i>
                                     Financeiro
                                 </a>
                                 <div class="collapse border border-top-0 shadow-sm p-2 pt-1" id="collapseFinanceiro">
                                     <ul class="list-unstyled">
-                                        <li class="list-item mt-1"><a class="text-decoration-none" href="#">
+                                        <li class="list-item mt-1"><a class="text-decoration-none link-dark" href="#">
                                             <i class="fas fa-hand-holding-usd fa-sm me-2"></i>
                                             Fluxo de Caixa
                                         </a></li>
-                                        <li class="list-item mt-1"><a class="text-decoration-none" href="#">
+                                        <li class="list-item mt-1"><a class="text-decoration-none link-dark" href="#">
                                             <i class="fas fa-receipt" style="margin-right: 12px;"></i>
                                             Vendas
                                         </a></li>
@@ -136,10 +131,9 @@
                                 <button type="button" class="btn btn-sm btn-outline-secondary">Share</button>
                                 <button type="button" class="btn btn-sm btn-outline-secondary">Export</button>
                             </div>
-                            <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle">
-                                <span data-feather="calendar"></span>
-                                This week
-                            </button>
+                            <a href="{% url 'fornecedores:novo_fornecedor' %}" class="btn btn-sm btn-outline-secondary">
+                                Novo Fornecedor
+                            </a>
                         </div>
                     </div>
                     {% block content %}
