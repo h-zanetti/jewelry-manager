@@ -38,6 +38,15 @@ class Local(models.Model):
             local = f"{self.cidade}, {self.estado}"
         return local
 
+class DadosBancarios(models.Model):
+    TIPO_DE_TRANSACAO_CHOICES = (
+        ('cc', 'Conta Corrente'),
+        ('px', 'Pix'),
+    )
+    tipo_de_transacao = models.CharField(_("Tipo de Transação"), max_length=2, choices=TIPO_DE_TRANSACAO_CHOICES)
+    banco = models.CharField(_('Banco'), max_length=100, null=True, blank=True)
+    agencia = models.CharField(_('Agência'), max_length=10, null=True, blank=True)
+    numero = models.CharField(_('Número da Conta'), max_length=50, help_text='Ou chave do Pix')
 
 class Fornecedor(models.Model):
     foto = models.ImageField(_('Foto do Fornecedor'), upload_to='fornecedores', default='default.jpg', blank=True, null=True)
@@ -47,6 +56,7 @@ class Fornecedor(models.Model):
     localizacoes = models.ManyToManyField(Local, verbose_name=_('Localizações'), blank=True)
     fornecimento = models.ManyToManyField(Fornecimento, verbose_name=_('Fornecimentos'), blank=True)
     documento = models.CharField(_('Documento'), max_length=20, help_text='Digite o CNPJ ou IE do fornecedor.', blank=True, null=True)
+    dados_bancarios = models.ManyToManyField(DadosBancarios, verbose_name=_('Dados Bancários'), blank=True)
 
     def __str__(self):
         return self.nome

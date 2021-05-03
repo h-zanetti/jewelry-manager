@@ -84,7 +84,61 @@
                                                                         <a href="{% url 'fornecedores:editar_fornecimento' fornecimento.id %}"><i class="fas fa-wrench link-dark"></i></a>
                                                                     </li>
                                                                     <li class="list-inline-item ms-2">
-                                                                        <a href="{% url 'fornecedores:deletar_fornecimento' fornecimento.id %}"><i class="fas fa-trash link-dark"></i></a>
+                                                                        <form action="{% url 'fornecedores:deletar_fornecimento' fornecimento.id %}" method="POST">
+                                                                            {% csrf_token %}
+                                                                            <button type="submit" class="btn p-0 pb-1"><i class="fas fa-trash link-dark"></i></button>
+                                                                        </form>
+                                                                    </li>                                            
+                                                                </ul>
+                                                            </td>
+                                                        </tr>
+                                                        {% endfor %}
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+    
+                                        <div class="row mb-2 mx-0 gy-0">
+                                            <div class="col-12 px-0">
+                                                <div class="row">
+                                                    <div class="col-auto">
+                                                        <h1 class="display-6">Dados Bancários</h1>
+                                                    </div>
+                                                    <div class="col-auto align-self-center pt-1">
+                                                        <a href="{% url 'fornecedores:novos_dados_bancarios' fornecedor.id %}" class="link-dark align-top">
+                                                            <i class="fas fa-plus fa-lg"></i>
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-12 px-0">
+                                                <table class="table">
+                                                    <thead>
+                                                        <tr>
+                                                            <th scope="col">Tipo de Transação</th>
+                                                            <th scope="col">Banco</th>
+                                                            <th scope="col">Agência</th>
+                                                            <th scope="col">Número da Conta</th>
+                                                            <th scope="col">Ações</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        {% for dados_bancarios in fornecedor.dados_bancarios.all %}
+                                                        <tr>
+                                                            <td>{{ dados_bancarios.get_tipo_de_transacao_display }}</td>
+                                                            <td>{{ dados_bancarios.banco|default:"Indisponível" }}</td>
+                                                            <td>{{ dados_bancarios.agencia|default:"Indisponível" }}</td>
+                                                            <td>{{ dados_bancarios.numero }}</td>
+                                                            <td>
+                                                                <ul class="list-inline">
+                                                                    <li class="list-inline-item me-2">
+                                                                        <a href="{% url 'fornecedores:editar_dados_bancarios' dados_bancarios.id %}"><i class="fas fa-wrench link-dark"></i></a>
+                                                                    </li>
+                                                                    <li class="list-inline-item ms-2">
+                                                                        <form action="{% url 'fornecedores:deletar_dados_bancarios' dados_bancarios.id %}" method="POST">
+                                                                            {% csrf_token %}
+                                                                            <button type="submit" class="btn p-0 pb-1"><i class="fas fa-trash link-dark"></i></button>
+                                                                        </form>
                                                                     </li>                                            
                                                                 </ul>
                                                             </td>
@@ -136,7 +190,10 @@
                                                                         <a href="{% url 'fornecedores:editar_local' local.id %}"><i class="fas fa-wrench link-dark"></i></a>
                                                                     </li>
                                                                     <li class="list-inline-item ms-2">
-                                                                        <a href="{% url 'fornecedores:deletar_local' local.id %}"><i class="fas fa-trash link-dark"></i></a>
+                                                                        <form action="{% url 'fornecedores:deletar_local' local.id %}" method="POST">
+                                                                            {% csrf_token %}
+                                                                            <button type="submit" class="btn p-0 pb-1"><i class="fas fa-trash link-dark"></i></button>
+                                                                        </form>
                                                                     </li>                                            
                                                                 </ul>
                                                             </td>
@@ -178,7 +235,10 @@
                                                                             <a href="{% url 'fornecedores:editar_telefone' telefone.id %}"><i class="fas fa-wrench link-dark"></i></a>
                                                                         </li>
                                                                         <li class="list-inline-item ms-2">
-                                                                            <a href="{% url 'fornecedores:deletar_telefone' telefone.id %}"><i class="fas fa-trash link-dark"></i></a>
+                                                                            <form action="{% url 'fornecedores:deletar_telefone' telefone.id %}" method="POST">
+                                                                                {% csrf_token %}
+                                                                                <button type="submit" class="btn p-0 pb-1"><i class="fas fa-trash link-dark"></i></button>
+                                                                            </form>
                                                                         </li>                                            
                                                                     </ul>    
                                                                 </td>
@@ -210,7 +270,10 @@
                                                                             <a href="{% url 'fornecedores:editar_email' email.id %}"><i class="fas fa-wrench link-dark"></i></a>
                                                                         </li>
                                                                         <li class="list-inline-item ms-2">
-                                                                            <a href="{% url 'fornecedores:deletar_email' email.id %}"><i class="fas fa-trash link-dark"></i></a>
+                                                                            <form action="{% url 'fornecedores:deletar_email' email.id %}" method="POST">
+                                                                                {% csrf_token %}
+                                                                                <button type="submit" class="btn p-0 pb-1"><i class="fas fa-trash link-dark"></i></button>
+                                                                            </form>
                                                                         </li>                                            
                                                                     </ul>    
                                                                 </td>
@@ -224,8 +287,17 @@
                                     <div class="modal-footer">
                                         <div class="row d-flex justify-content-between w-100">
                                             <div class="col-auto px-0">
-                                                <a href="{% url 'fornecedores:editar_fornecedor' fornecedor.id %}"  class="btn btn-primary">Editar</a>
-                                                <a href="{% url 'fornecedores:deletar_fornecedor' fornecedor.id %}"  class="btn btn-danger">Deletar</a>
+                                                <div class="row gx-0">
+                                                    <div class="col-6">
+                                                        <a href="{% url 'fornecedores:editar_fornecedor' fornecedor.id %}"  class="btn btn-primary">Editar</a>
+                                                    </div>
+                                                    <div class="col-6">
+                                                        <form action="{% url 'fornecedores:deletar_fornecedor' fornecedor.id %}" method="POST">
+                                                            {% csrf_token %}
+                                                            <button type="submit" class="btn btn-danger">Deletar</button>
+                                                        </form>
+                                                    </div>
+                                                </div>
                                             </div>
                                             <div class="col-auto px-0">
                                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
@@ -240,7 +312,10 @@
                         <a href="{% url 'fornecedores:editar_fornecedor' fornecedor.id %}"><i class="fas fa-wrench link-dark"></i></a>
                     </li>
                     <li class="list-inline-item">
-                        <a href="{% url 'fornecedores:deletar_fornecedor' fornecedor.id %}"><i class="fas fa-trash link-dark"></i></a>
+                        <form action="{% url 'fornecedores:deletar_fornecedor' fornecedor.id %}" method="POST">
+                            {% csrf_token %}
+                            <button type="submit" class="btn p-0 pb-1"><i class="fas fa-trash link-dark"></i></button>
+                        </form>
                     </li>
                 </ul>
             </td>

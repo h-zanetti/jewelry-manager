@@ -2,7 +2,7 @@ import pytest
 from pytest_django.asserts import assertRedirects, assertContains
 from django.urls import reverse
 from django.contrib.auth.models import User
-from webdev.fornecedores.models import Fornecedor, Fornecimento, Email, Telefone, Local
+from webdev.fornecedores.models import Fornecedor, Fornecimento, Email, Telefone, Local, DadosBancarios
 
 # Editar Fornecedor
 @pytest.fixture
@@ -164,6 +164,48 @@ def test_editar_local_nao_autenticado_status_code(client, criar_local):
             'bairro': '',
             'endereco': '1118 Rockhurst Dr.',
             'cep': '68510'
+        }
+    )
+    assert resp.status_code == 302
+
+
+# Editar Dados Bancários
+@pytest.fixture
+def criar_dados_bancarios(db):
+    return DadosBancarios.objects.create(
+        tipo_de_transacao='px',
+        numero='(11) 94464-7420',
+    )
+
+@pytest.fixture
+def resposta_editar_dados_bancarios(client, criar_dados_bancarios):
+    usr = User.objects.create_user(username='TestUser', password='MinhaSenha123')
+    client.login(username='TestUser', password='MinhaSenha123')
+    resp = client.post(
+        reverse('fornecedores:editar_dados_bancarios', kwargs={'dados_bancarios_id': criar_dados_bancarios.id}),
+        data={
+            'tipo_de_transacao': 'cc',
+            'banco': 'Nu Bank',
+            'agencia': '0001',
+            'numero': '444444444444',
+        }
+    )
+    return resp
+
+def test_editar_dados_bancarios_status_code(resposta_editar_dados_bancarios):
+    assert resposta_editar_dados_bancarios.status_code == 302
+
+def test_dados_bancarios_editado(resposta_editar_dados_bancarios):
+    assert DadosBancarios.objects.first().banco == 'Nu Bank'
+
+def test_editar_dados_bancarios_nao_autenticado_status_code(client, criar_dados_bancarios):
+    resp = client.post(
+        reverse('fornecedores:editar_dados_bancarios', kwargs={'dados_bancarios_id': criar_dados_bancarios.id}),
+        data={
+            'tipo_de_transacao': 'cc',
+            'banco': 'Nu Bank',
+            'agencia': '0001',
+            'numero': '444444444444',
         }
     )
     assert resp.status_code == 302

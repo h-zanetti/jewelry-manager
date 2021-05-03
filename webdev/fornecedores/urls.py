@@ -25,4 +25,8 @@ urlpatterns = [
     path('novo_local/<int:fornecedor_id>/', views.novo_local, name='novo_local'),
     path('editar_local/<int:local_id>/', views.editar_local, name='editar_local'),
     path('deletar_local/<int:local_id>/', views.deletar_local, name='deletar_local'),
+    # Dados Bancários
+    path('novos_dados_bancarios/<int:fornecedor_id>/', views.novos_dados_bancarios, name='novos_dados_bancarios'),
+    path('editar_dados_bancarios/<int:dados_bancarios_id>/', views.editar_dados_bancarios, name='editar_dados_bancarios'),
+    path('deletar_dados_bancarios/<int:dados_bancarios_id>/', views.deletar_dados_bancarios, name='deletar_dados_bancarios'),
 ]

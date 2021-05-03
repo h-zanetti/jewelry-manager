@@ -1,5 +1,5 @@
 from django import forms
-from .models import Fornecedor, Email, Telefone, Local, Fornecimento
+from .models import Fornecedor, Email, Telefone, Local, Fornecimento, DadosBancarios
 
 class FornecedorForm(forms.ModelForm):
     class Meta:
@@ -29,4 +29,10 @@ class TelefoneForm(forms.ModelForm):
 class LocalForm(forms.ModelForm):
     class Meta:
         model = Local
+        fields = '__all__'
+
+
+class DadosBancariosForm(forms.ModelForm):
+    class Meta:
+        model = DadosBancarios
         fields = '__all__'

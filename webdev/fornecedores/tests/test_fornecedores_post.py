@@ -2,7 +2,7 @@ import pytest
 from pytest_django.asserts import assertRedirects
 from django.urls import reverse
 from django.contrib.auth.models import User
-from webdev.fornecedores.models import Fornecedor, Fornecimento, Email, Telefone, Local
+from webdev.fornecedores.models import Fornecedor, Fornecimento, Email, Telefone, Local, DadosBancarios
 
 # Novo Fornecedor
 @pytest.fixture
@@ -119,5 +119,26 @@ def test_fornecimento_nao_autenticado_status_code(client, criar_fornecedor):
         'bairro': 'Campo Belo',
         'endereco': 'Av Barão de Vali, 240',
         'cep': '04613-030',
+    })
+    assert resp.status_code == 302
+
+# Novos Dados Bancários
+@pytest.fixture
+def resposta_novos_dados_bancarios(client, criar_fornecedor):
+    usr = User.objects.create_user(username='TestUser', password='MinhaSenha123')
+    client.login(username='TestUser', password='MinhaSenha123')
+    resp = client.post(reverse('fornecedores:novos_dados_bancarios', kwargs={'fornecedor_id':criar_fornecedor.id}), data={
+        'tipo_de_transacao': 'px',
+        'numero': '0000030',
+    })
+    return resp
+
+def test_fornecimento_existe_no_bd(resposta_novos_dados_bancarios):
+    assert DadosBancarios.objects.exists()
+
+def test_fornecimento_nao_autenticado_status_code(client, criar_fornecedor):
+    resp = client.post(reverse('fornecedores:novos_dados_bancarios', kwargs={'fornecedor_id':criar_fornecedor.id}), data={
+        'tipo_de_transacao': 'px',
+        'numero': '0000030',
     })
     assert resp.status_code == 302
