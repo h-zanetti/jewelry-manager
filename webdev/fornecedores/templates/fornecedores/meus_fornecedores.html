@@ -1,0 +1,236 @@
+{% extends 'base.html' %}
+{% load bootstrap5 %}
+
+{% block content %}
+<div class="table-responsive">
+<table class="table">
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>Nome</th>
+      <th>Email</th>
+      <th>Telefone</th>
+      <th>Localização</th>
+      <th>Fornecimentos</th>
+      <th>Ações</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for fornecedor in fornecedores %}
+        <tr>
+            <th>{{ fornecedor.id }}</th>
+            <td>{{ fornecedor.nome }}</td>
+            <td>{{ fornecedor.emails.first|default:"Nenhum" }}</td>
+            <td>{{ fornecedor.telefones.first|default:"Nenhum" }}</td>
+            <td>{{ fornecedor.localizacoes.first|default:"Nenhuma" }}</td>
+            <td>{{ fornecedor.fornecimento.all|slice:":2"|join:", "|default:"Nenhum" }}</td>
+            <td>
+                <ul class="list-inline m-0">
+                    <li class="list-inline-item me-3">
+                        <a href="#fornecedor{{ fornecedor.id }}" data-bs-toggle="modal"><i class="fas fa-user link-dark"></i></a>
+                        <div class="modal fade" id="fornecedor{{ fornecedor.id }}" tabindex="-1" aria-labelledby="fornecedor{{ fornecedor.id }}Label" aria-hidden="true">
+                            <div class="modal-dialog modal-lg">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h1 class="modal-title display-6" id="fornecedor{{ fornecedor.id }}Label">{{ fornecedor.nome }}{% if fornecedor.documento %} - {{ fornecedor.documento }}{% endif %}</h1>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="row mb-2 mx-0 gy-0">
+                                            <div class="col-12 px-0">
+                                                <div class="row">
+                                                    <div class="col-auto">
+                                                        <h1 class="display-6">Produtos e Serviços</h1>
+                                                    </div>
+                                                    <div class="col-auto align-self-center pt-1">
+                                                        <a href="{% url 'fornecedores:novo_fornecimento' fornecedor.id %}" class="link-dark align-top">
+                                                            <i class="fas fa-plus fa-lg"></i>
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-12 px-0">
+                                                <table class="table">
+                                                    <thead>
+                                                        <tr>
+                                                            <th scope="col">Fornecimento</th>
+                                                            <th scope="col">Qualidade</th>
+                                                            <th scope="col">Ações</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        {% for fornecimento in fornecedor.fornecimento.all %}
+                                                        <tr>
+                                                            <td>{{ fornecimento.nome }}</td>
+                                                            <td>{{ fornecimento.qualidade }}</td>
+                                                            <td>
+                                                                <ul class="list-inline">
+                                                                    <li class="list-inline-item me-2">
+                                                                        <a href="{% url 'fornecedores:editar_fornecimento' fornecimento.id %}"><i class="fas fa-wrench link-dark"></i></a>
+                                                                    </li>
+                                                                    <li class="list-inline-item ms-2">
+                                                                        <a href="{% url 'fornecedores:deletar_fornecimento' fornecimento.id %}"><i class="fas fa-trash link-dark"></i></a>
+                                                                    </li>                                            
+                                                                </ul>
+                                                            </td>
+                                                        </tr>
+                                                        {% endfor %}
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+    
+                                        <div class="row mb-2 mx-0 gy-0">
+                                            <div class="col-12 px-0">
+                                                <div class="row">
+                                                    <div class="col-auto">
+                                                        <h1 class="display-6">Localizações</h1>
+                                                    </div>
+                                                    <div class="col-auto align-self-center pt-1">
+                                                        <a href="{% url 'fornecedores:novo_local' fornecedor.id %}" class="link-dark align-top">
+                                                            <i class="fas fa-plus fa-lg"></i>
+                                                        </a>    
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-12 px-0">
+                                                <table class="table mt-3">
+                                                    <thead>
+                                                        <tr>
+                                                            <th scope="col">País</th>
+                                                            <th scope="col">Estado</th>
+                                                            <th scope="col">Cidade</th>
+                                                            <th scope="col">Bairro</th>
+                                                            <th scope="col">Endereço</th>
+                                                            <th scope="col">CEP</th>
+                                                            <th scope="col">Ações</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        {% for local in fornecedor.localizacoes.all %}
+                                                        <tr>
+                                                            <td>{{ local.pais }}</td>
+                                                            <td>{{ local.estado }}</td>
+                                                            <td>{{ local.cidade }}</td>
+                                                            <td>{{ local.bairro }}</td>
+                                                            <td>{{ local.endereco }}</td>
+                                                            <td>{{ local.cep }}</td>
+                                                            <td>
+                                                                <ul class="list-inline">
+                                                                    <li class="list-inline-item me-2">
+                                                                        <a href="{% url 'fornecedores:editar_local' local.id %}"><i class="fas fa-wrench link-dark"></i></a>
+                                                                    </li>
+                                                                    <li class="list-inline-item ms-2">
+                                                                        <a href="{% url 'fornecedores:deletar_local' local.id %}"><i class="fas fa-trash link-dark"></i></a>
+                                                                    </li>                                            
+                                                                </ul>
+                                                            </td>
+                                                        </tr>
+                                                        {% endfor %}
+                                                </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+    
+                                        <div class="row mb-2 mx-0 gy-0 gx-5">
+                                            <div class="col-12 px-0">
+                                                <div class="row">
+                                                    <div class="col-auto">
+                                                        <h1 class="display-6">Contatos do Fornecedor</h1>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-6 ps-0 pe-2">
+                                                <table class="table mt-3">
+                                                    <thead>
+                                                        <tr>
+                                                            <th scope="col">
+                                                                Lista de Telefones
+                                                                <a href="{% url 'fornecedores:novo_telefone' fornecedor.id %}" class="link-dark align-top ms-3">
+                                                                    <i class="fas fa-plus fa-md"></i>
+                                                                </a>        
+                                                            </th>
+                                                            <th scope="col">Ações</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        {% for telefone in fornecedor.telefones.all %}
+                                                            <tr>
+                                                                <td>{{ telefone.telefone }}</td>
+                                                                <td>
+                                                                    <ul class="list-inline">
+                                                                        <li class="list-inline-item me-2">
+                                                                            <a href="{% url 'fornecedores:editar_telefone' telefone.id %}"><i class="fas fa-wrench link-dark"></i></a>
+                                                                        </li>
+                                                                        <li class="list-inline-item ms-2">
+                                                                            <a href="{% url 'fornecedores:deletar_telefone' telefone.id %}"><i class="fas fa-trash link-dark"></i></a>
+                                                                        </li>                                            
+                                                                    </ul>    
+                                                                </td>
+                                                            </tr>
+                                                        {% endfor %}
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                            <div class="col-6 pe-0 ps-2">
+                                                <table class="table mt-3">
+                                                    <thead>
+                                                        <tr>
+                                                            <th scope="col">
+                                                                Lista de Emails
+                                                                <a href="{% url 'fornecedores:novo_email' fornecedor.id %}" class="link-dark align-top ms-3">
+                                                                    <i class="fas fa-plus fa-md"></i>
+                                                                </a>        
+                                                            </th>
+                                                            <th scope="col">Ações</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        {% for email in fornecedor.emails.all %}
+                                                            <tr>
+                                                                <td>{{ email.email }}</td>
+                                                                <td>
+                                                                    <ul class="list-inline">
+                                                                        <li class="list-inline-item me-2">
+                                                                            <a href="{% url 'fornecedores:editar_email' email.id %}"><i class="fas fa-wrench link-dark"></i></a>
+                                                                        </li>
+                                                                        <li class="list-inline-item ms-2">
+                                                                            <a href="{% url 'fornecedores:deletar_email' email.id %}"><i class="fas fa-trash link-dark"></i></a>
+                                                                        </li>                                            
+                                                                    </ul>    
+                                                                </td>
+                                                            </tr>
+                                                        {% endfor %}
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <div class="row d-flex justify-content-between w-100">
+                                            <div class="col-auto px-0">
+                                                <a href="{% url 'fornecedores:editar_fornecedor' fornecedor.id %}"  class="btn btn-primary">Editar</a>
+                                                <a href="{% url 'fornecedores:deletar_fornecedor' fornecedor.id %}"  class="btn btn-danger">Deletar</a>
+                                            </div>
+                                            <div class="col-auto px-0">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>            
+                        </div>
+                    </li>
+                    <li class="list-inline-item me-3">
+                        <a href="{% url 'fornecedores:editar_fornecedor' fornecedor.id %}"><i class="fas fa-wrench link-dark"></i></a>
+                    </li>
+                    <li class="list-inline-item">
+                        <a href="{% url 'fornecedores:deletar_fornecedor' fornecedor.id %}"><i class="fas fa-trash link-dark"></i></a>
+                    </li>
+                </ul>
+            </td>
+        </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

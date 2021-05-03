@@ -4,7 +4,7 @@
 {% block content %}
 <div class="container-sm mb-4">
     <div class="row d-flex justify-content-center">
-        <div class="col-md-6 border shadow p-4">
+        <div class="col-md-9 border shadow p-4">
             <form method="POST">
                 <div class="row">
                     {% csrf_token %}
@@ -12,7 +12,7 @@
                 </div>
                 <div class="row mt-2">
                     {% buttons %}
-                    <button type="submit" class="btn btn-primary w-100">Enviar</button>
+                    <button type="submit" class="btn btn-primary">Enviar</button>
                     {% endbuttons %}
                 </div>
             </form>
