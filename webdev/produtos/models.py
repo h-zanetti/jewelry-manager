@@ -8,7 +8,7 @@ class Categoria(models.Model):
         return self.nome
 
 class Produto(models.Model):
-    foto = models.ImageField(_('Foto do Produto'), upload_to='produtos', default='produtos/default.jpg', blank=True, null=True)
+    foto = models.ImageField(_('Foto do Produto'), upload_to='produtos', default='default.jpg', blank=True, null=True)
     nome = models.CharField(_('Nome'), max_length=150)
     colecao = models.CharField(_('Coleção'), max_length=150)
     familia = models.CharField(_('Família'), max_length=150, blank=True, null=True)
