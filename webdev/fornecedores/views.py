@@ -2,8 +2,8 @@ from django.shortcuts import render, redirect
 from django.http import Http404, HttpResponseRedirect
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
-from .models import Fornecedor, Fornecimento, Email, Telefone, Local
-from .forms import FornecedorForm, EditarFornecedorForm, FornecimentoForm, EmailForm, TelefoneForm, LocalForm
+from .models import Fornecedor, Fornecimento, Email, Telefone, Local, DadosBancarios
+from .forms import FornecedorForm, EditarFornecedorForm, FornecimentoForm, EmailForm, TelefoneForm, LocalForm, DadosBancariosForm
 
 @login_required
 def meus_fornecedores(request):
@@ -260,4 +260,55 @@ def editar_local(request, local_id):
 def deletar_local(request, local_id):
     if request.method == 'POST':
         Local.objects.get(id=local_id).delete()
+    return HttpResponseRedirect(reverse('fornecedores:meus_fornecedores'))
+
+@login_required
+def novos_dados_bancarios(request, fornecedor_id):
+    try:
+        fornecedor = Fornecedor.objects.get(id=fornecedor_id)
+    except:
+        raise Http404('Fornecedor não encontrado')
+
+    if request.method == 'POST':
+        form = DadosBancariosForm(request.POST)
+        if form.is_valid():
+            f = form.save()
+            fornecedor.dados_bancarios.add(f)
+            return redirect('fornecedores:meus_fornecedores')
+    else:
+        form = DadosBancariosForm()
+
+    context = {
+        'title': f'Adicionar novos dados bancários para {fornecedor.nome}',
+        'form': form
+    }
+
+    return render(request, 'base_form_md.html', context)
+
+@login_required
+def editar_dados_bancarios(request, dados_bancarios_id):
+    try:
+        dados_bancarios = DadosBancarios.objects.get(id=dados_bancarios_id)
+    except:
+        raise Http404('Dados bancários não encontrados')
+
+    if request.method == 'POST':
+        form = DadosBancariosForm(request.POST, instance=dados_bancarios)
+        if form.is_valid():
+            form.save()
+            return redirect('fornecedores:meus_fornecedores')
+    else:
+        form = DadosBancariosForm(instance=dados_bancarios)
+
+    context = {
+        'title': 'Editar dados bancários',
+        'form': form
+    }
+
+    return render(request, 'base_form_sm.html', context)
+
+@login_required
+def deletar_dados_bancarios(request, dados_bancarios_id):
+    if request.method == 'POST':
+        DadosBancarios.objects.get(id=dados_bancarios_id).delete()
     return HttpResponseRedirect(reverse('fornecedores:meus_fornecedores'))
