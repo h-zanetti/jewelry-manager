@@ -44,6 +44,13 @@ def test_estoque_de_produtos_presente(resposta_com_estoque, estoque_de_produtos)
     for produto in estoque_de_produtos:
         assertContains(resposta_com_estoque, produto.nome)
 
+def test_btn_visualizar_produto_presente(resposta_com_estoque, estoque_de_produtos):
+    for produto in estoque_de_produtos:
+        assertContains(
+            resposta_com_estoque,
+            f'''<a href="#ModelProduto{produto.id}"'''
+        )
+
 def test_btn_editar_produto_presente(resposta_com_estoque, estoque_de_produtos):
     for produto in estoque_de_produtos:
         assertContains(
