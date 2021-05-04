@@ -80,7 +80,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-LOGIN_REDIRECT_URL = '/produtos/estoque'
+LOGIN_REDIRECT_URL = '/produtos/estoque_produtos'
 LOGOUT_REDIRECT_URL = '/users/login'
 LOGIN_URL = '/users/login'
 
