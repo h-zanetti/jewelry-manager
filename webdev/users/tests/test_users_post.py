@@ -13,4 +13,4 @@ def test_user_autenticado(resposta):
     assert resposta.wsgi_request.user.is_authenticated == True
 
 def test_redirecionamento(resposta):
-    assertRedirects(resposta, reverse('produtos:estoque'))
+    assertRedirects(resposta, reverse('produtos:estoque_produtos'))
