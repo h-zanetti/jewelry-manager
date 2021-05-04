@@ -27,4 +27,3 @@ def test_produto_existe_no_bd(resposta_novo_produto):
 
 def test_foto_padrao_do_produto(resposta_novo_produto):
     assert Produto.objects.first().foto.name == 'default.jpg'
-
