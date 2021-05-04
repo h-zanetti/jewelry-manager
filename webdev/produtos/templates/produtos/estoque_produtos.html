@@ -46,6 +46,69 @@
             <td>
               <ul class="list-inline m-0">
                 <li class="list-inline-item me-3">
+                  <a href="#ModelProduto{{ produto.id }}" data-bs-toggle="modal"><i class="far fa-gem link-dark"></i></a>
+                  <div class="modal fade" id="ModelProduto{{ produto.id }}" tabindex="-1" aria-labelledby="ModelProduto{{ produto.id }}Label" aria-hidden="true">
+                    <div class="modal-dialog modal-lg">
+                      <div class="modal-content">
+                          <div class="modal-header">
+                            <h1 class="modal-title display-6" id="ModelProduto{{ produto.id }}Label">{{ produto.nome }} <strong>#{{ produto.id }}</strong></h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                          </div>
+                          <div class="modal-body">
+                            <div class="row">
+                              <div class="col-md-12">
+                                <div class="card" style="flex-direction: row">
+                                  <div class="card-img-top" style="width: 33%">
+                                    <img src="{{ produto.foto.url }}" class="card-img-top" alt="...">
+                                  </div>
+                                  <div class="card-body">
+                                    <h5 class="card-title">Informações Gerais</h5>
+                                    <p class="card-text">
+                                        Coleção: {{ produto.colecao}}<br>
+                                        Família: {{ produto.familia|default:"Indisponível" }}<br>
+                                        Categorias: {{ category|join:", "|default:"Nenhuma" }}<br>
+                                        Criação: {{ produto.data_criacao|default:"Indisponível" }}<br>
+                                        Unidades em Estoque: {{ produto.unidades }}<br>
+                                        Tamanho: {{ produto.tamanho|default:"Indisponível" }}<br>
+                                    </p>
+                                  </div>
+                                </div>
+                              </div>
+                              <div class="col-md-12 border-bottom">
+                                <h1 class="display-6">Materiais</h1>
+                              </div>
+                              <div class="col-md-12 border-bottom">
+                                <h1 class="display-6">Serviços</h1>
+                              </div>
+                              <div class="col-md-12 border-bottom">
+                                <h1 class="display-6">Precificação</h1>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="modal-footer">
+                            <div class="row d-flex justify-content-between w-100">
+                              <div class="col-auto px-0">
+                                  <div class="row gx-0">
+                                      <div class="col-6">
+                                          <a href="{% url 'produtos:editar_produto' produto.id %}"  class="btn btn-primary">Editar</a>
+                                      </div>
+                                      <div class="col-6">
+                                          <form action="{% url 'produtos:deletar_produto' produto.id %}" method="POST">
+                                              {% csrf_token %}
+                                              <button type="submit" class="btn btn-danger">Deletar</button>
+                                          </form>
+                                      </div>
+                                  </div>
+                              </div>
+                              <div class="col-auto px-0">
+                                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                              </div>
+                          </div>
+                        </div>
+                    </div>
+                  </div>
+                </li>
+                <li class="list-inline-item me-3">
                   <a href="{% url 'produtos:editar_produto' produto.id %}"><i class="fas fa-wrench link-dark"></i></a>
                 </li>
                 <li class="list-inline-item">

@@ -8,7 +8,7 @@ from django.contrib.auth.decorators import login_required
 @login_required
 def novo_produto(request):
     if request.method == 'POST':
-        form = ProdutoForm(request.POST)
+        form = ProdutoForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
             return redirect('produtos:estoque_produtos')
@@ -30,7 +30,7 @@ def editar_produto(request, produto_id):
         raise Http404('Produto não encontrado')
 
     if request.method == 'POST':
-        form = ProdutoForm(request.POST, instance=produto)
+        form = ProdutoForm(request.POST, request.FILES, instance=produto)
         if form.is_valid():
             form.save()
             return redirect('produtos:estoque_produtos')
@@ -42,7 +42,7 @@ def editar_produto(request, produto_id):
         'form': form
     }
 
-    return render(request, 'base_form_lg.html', context)
+    return render(request, 'produtos/produto_form.html', context)
 
 @login_required
 def deletar_produto(request, produto_id):
