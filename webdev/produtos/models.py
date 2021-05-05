@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+from webdev.fornecedores.models import Servico
 
 class Categoria(models.Model):
     nome = models.CharField(_('Categoria'), max_length=150, unique=True)
@@ -16,6 +17,7 @@ class Produto(models.Model):
     data_criacao = models.DateField(_('Data de Criação'), blank=True, null=True)
     unidades = models.IntegerField(_("Unidades em Estoque"), default=0)
     tamanho = models.IntegerField(_("Tamanho"), blank=True, null=True)
+    servicos = models.ManyToManyField(Servico, verbose_name=_("Serviços"), blank=True)
 
     def __str__(self):
         return self.nome

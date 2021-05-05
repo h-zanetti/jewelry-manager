@@ -1,6 +1,6 @@
 import pytest
 from django.urls import reverse
-from pytest_django.asserts import assertContains, assertRedirects
+from pytest_django.asserts import assertContains
 from webdev.produtos.models import Produto
 from django.contrib.auth.models import User
 
