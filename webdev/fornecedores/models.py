@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+from django.utils import timezone
 
 class Fornecimento(models.Model):
     nome = models.CharField(_("Fornecimento"), max_length=150, help_text="Serviços ou produtos fornecidos.")
@@ -60,3 +61,16 @@ class Fornecedor(models.Model):
 
     def __str__(self):
         return self.nome
+
+    def get_servicos(self):
+        return Servico.objects.filter(fornecedor=self.id)
+
+class Servico(models.Model):
+    nome = models.CharField(_('Serviço'), max_length=150)
+    data = models.DateField(_("Data"), default=timezone.now)
+    fornecedor = models.ForeignKey(Fornecedor, on_delete=models.SET_NULL, null=True, verbose_name=_("Fornecedor"))
+    qualidade = models.IntegerField(_("Qualidade"), default=0)
+    total_pago = models.DecimalField(_("Total Pago"), max_digits=8, decimal_places=2)
+
+    def __str__(self):
+        return f"{self.fornecedor} - {self.nome} ({self.qualidade})"

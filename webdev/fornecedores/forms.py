@@ -1,5 +1,5 @@
 from django import forms
-from .models import Fornecedor, Email, Telefone, Local, Fornecimento, DadosBancarios
+from .models import Fornecedor, Email, Telefone, Local, Fornecimento, DadosBancarios, Servico
 
 class FornecedorForm(forms.ModelForm):
     class Meta:
@@ -31,8 +31,16 @@ class LocalForm(forms.ModelForm):
         model = Local
         fields = '__all__'
 
-
 class DadosBancariosForm(forms.ModelForm):
     class Meta:
         model = DadosBancarios
+        fields = '__all__'
+
+class ServicoForm(forms.ModelForm):
+    data = forms.DateField(
+        input_formats=['%d/%m/%Y', '%d-%m-%Y'],
+        widget=forms.DateInput(attrs={'placeholder': 'dd/mm/aaaa'})
+    )
+    class Meta:
+        model = Servico
         fields = '__all__'
