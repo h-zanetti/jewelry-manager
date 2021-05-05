@@ -55,7 +55,7 @@
                                             <div class="col-12 px-0">
                                                 <div class="row">
                                                     <div class="col-auto">
-                                                        <h1 class="display-6">Produtos e Serviços</h1>
+                                                        <h1 class="display-6">Produtos e serviços oferecidos</h1>
                                                     </div>
                                                     <div class="col-auto align-self-center pt-1">
                                                         <a href="{% url 'fornecedores:novo_fornecimento' fornecedor.id %}" class="link-dark align-top">
@@ -280,6 +280,50 @@
                                                             </tr>
                                                         {% endfor %}
                                                     </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+
+                                        <div class="row mb-2 mx-0 gy-0">
+                                            <div class="col-12 px-0">
+                                                <h1 class="display-6">Serviços Prestados</h1>
+                                            </div>
+                                            <div class="col-12 px-0">
+                                                <table class="table mt-3">
+                                                    <thead>
+                                                        <tr>
+                                                            <th scope="col">#</th>
+                                                            <th scope="col">Serviço</th>
+                                                            <th scope="col">Data</th>
+                                                            <th scope="col">Qualidade</th>
+                                                            <th scope="col">Total Pago</th>
+                                                            <th scope="col">Ações</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        {% for servico in fornecedor.get_servicos %}
+                                                        <tr>
+                                                            <th scope="col">{{ servico.id }}</th>
+                                                            <td>{{ servico.nome }}</td>
+                                                            <td>{{ servico.data }}</td>
+                                                            <td>{{ servico.qualidade }}</td>
+                                                            <td>{{ servico.total_pago }}</td>
+                                                            <td>
+                                                                <ul class="list-inline">
+                                                                    <li class="list-inline-item me-2">
+                                                                        <a href="{% url 'fornecedores:editar_servico' servico.id %}"><i class="fas fa-wrench link-dark"></i></a>
+                                                                    </li>
+                                                                    <li class="list-inline-item ms-2">
+                                                                        <form action="{% url 'fornecedores:deletar_servico' servico.id %}" method="POST">
+                                                                            {% csrf_token %}
+                                                                            <button type="submit" class="btn p-0 pb-1"><i class="fas fa-trash link-dark"></i></button>
+                                                                        </form>
+                                                                    </li>                                            
+                                                                </ul>
+                                                            </td>
+                                                        </tr>
+                                                        {% endfor %}
+                                                </tbody>
                                                 </table>
                                             </div>
                                         </div>

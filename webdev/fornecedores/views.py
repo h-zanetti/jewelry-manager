@@ -2,8 +2,8 @@ from django.shortcuts import render, redirect
 from django.http import Http404, HttpResponseRedirect
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
-from .models import Fornecedor, Fornecimento, Email, Telefone, Local, DadosBancarios
-from .forms import FornecedorForm, EditarFornecedorForm, FornecimentoForm, EmailForm, TelefoneForm, LocalForm, DadosBancariosForm
+from .models import Fornecedor, Fornecimento, Email, Telefone, Local, DadosBancarios, Servico
+from .forms import FornecedorForm, EditarFornecedorForm, FornecimentoForm, EmailForm, TelefoneForm, LocalForm, DadosBancariosForm, ServicoForm
 
 @login_required
 def meus_fornecedores(request):
@@ -312,3 +312,60 @@ def deletar_dados_bancarios(request, dados_bancarios_id):
     if request.method == 'POST':
         DadosBancarios.objects.get(id=dados_bancarios_id).delete()
     return HttpResponseRedirect(reverse('fornecedores:meus_fornecedores'))
+
+@login_required
+def novo_servico(request):
+    if request.method == 'POST':
+        form = ServicoForm(request.POST)
+        if form.is_valid():
+            form.save()
+            next_url = request.POST.get('next')
+            if next_url:
+                return redirect(f'{next_url}')
+            else:
+                return redirect('fornecedores:meus_fornecedores')
+    else:
+        form = ServicoForm()
+
+    context = {
+        'title': f'Cadastrar novo serviço',
+        'form': form
+    }
+
+    return render(request, 'fornecedores/servico_form.html', context)
+
+@login_required
+def editar_servico(request, servico_id):
+    try:
+        servico = Servico.objects.get(id=servico_id)
+    except:
+        raise Http404('Serviço não encontrado')
+
+    if request.method == 'POST':
+        form = ServicoForm(request.POST, instance=servico)
+        if form.is_valid():
+            form.save()
+            next_url = request.POST.get('next')
+            if next_url:
+                return redirect(f'{next_url}')
+            else:
+                return redirect('fornecedores:meus_fornecedores')
+    else:
+        form = ServicoForm(instance=servico)
+
+    context = {
+        'title': 'Editar serviço',
+        'form': form
+    }
+
+    return render(request, 'base_form_sm.html', context)
+
+@login_required
+def deletar_servico(request, servico_id):
+    if request.method == 'POST':
+        Servico.objects.get(id=servico_id).delete()
+        next_url = request.POST.get('next')
+        if next_url:
+            return redirect(f'{next_url}')
+        else:
+            return redirect('fornecedores:meus_fornecedores')
