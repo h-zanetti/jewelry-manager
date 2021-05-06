@@ -29,6 +29,7 @@ INSTALLED_APPS = [
     'webdev.produtos',
     'webdev.users',
     'webdev.fornecedores',
+    'webdev.materiais',
 ]
 
 MIDDLEWARE = [
