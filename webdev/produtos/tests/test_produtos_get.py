@@ -44,6 +44,10 @@ def test_estoque_de_produtos_presente(resposta_com_estoque, estoque_de_produtos)
     for produto in estoque_de_produtos:
         assertContains(resposta_com_estoque, produto.nome)
 
+def test_preco_de_producao_presente(resposta_com_estoque, estoque_de_produtos):
+    for produto in estoque_de_produtos:
+        assertContains(resposta_com_estoque, f'R$ {produto.get_custo_de_producao()}'.replace('.', ','))
+
 def test_btn_visualizar_produto_presente(resposta_com_estoque, estoque_de_produtos):
     for produto in estoque_de_produtos:
         assertContains(
