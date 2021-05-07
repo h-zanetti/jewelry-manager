@@ -2,8 +2,8 @@ from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.http import HttpResponseRedirect, Http404
 from django.contrib.auth.decorators import login_required
-from .models import Produto, Categoria
-from .forms import ProdutoForm, CategoriaForm
+from .models import Produto, Categoria, MaterialDoProduto
+from .forms import ProdutoForm, CategoriaForm, MaterialDoProdutoForm
 from webdev.fornecedores.models import Servico
 from webdev.fornecedores.forms import ServicoForm
 
@@ -82,3 +82,54 @@ def adicionar_servico(request, produto_id):
     }
 
     return render(request, 'fornecedores/servico_form.html', context)
+
+@login_required
+def adicionar_material(request, produto_id):
+    try:
+        produto = Produto.objects.get(id=produto_id)
+    except:
+        raise Http404('Produto não encontrado')
+
+    if request.method == 'POST':
+        form = MaterialDoProdutoForm(request.POST)
+        if form.is_valid():
+            material_dp = form.save()
+            produto.materiais.add(material_dp)
+            return redirect('produtos:estoque_produtos')
+    else:
+        form = MaterialDoProdutoForm()
+
+    context = {
+        'title': f'Adicionar material ao produto {produto.nome} #{produto.id}',
+        'form': form
+    }
+
+    return render(request, 'base_form_md.html', context)
+
+@login_required
+def editar_material_dp(request, material_dp_id):
+    try:
+        material_dp = MaterialDoProduto.objects.get(id=material_dp_id)
+    except:
+        raise Http404('Material e produto não relacionados')
+
+    if request.method == 'POST':
+        form = MaterialDoProdutoForm(request.POST, instance=material_dp)
+        if form.is_valid():
+            material_dp = form.save()
+            return redirect('produtos:estoque_produtos')
+    else:
+        form = MaterialDoProdutoForm(instance=material_dp)
+
+    context = {
+        'title': f'Editar material do produto',
+        'form': form
+    }
+
+    return render(request, 'base_form_md.html', context)
+
+@login_required
+def remover_material_dp(request, material_dp_id):
+    if request.method == 'POST':
+        MaterialDoProduto.objects.get(id=material_dp_id).delete()
+    return HttpResponseRedirect(reverse('produtos:estoque_produtos'))
