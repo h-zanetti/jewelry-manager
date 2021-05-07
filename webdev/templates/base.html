@@ -68,17 +68,17 @@
                                 </a>
                                 <div class="collapse border border-top-0 shadow-sm p-2" id="collapseMaterial">
                                     <ul class="list-unstyled">
-                                        <li class="list-item"><a class="text-decoration-none link-dark" href="#">
+                                        <li class="list-item"><a href="{% url 'materiais:entradas' %}" class="text-decoration-none link-dark">
                                             <i class="fas fa-list-ul fa-sm me-2"></i>
                                             Entradas
                                         </a></li>
-                                        <li class="list-item mt-1"><a class="text-decoration-none link-dark" href="#">
-                                            <i class="fas fa-plus-circle fa-sm me-2"></i>
-                                            Nova Entrada
-                                        </a></li>
-                                        <li class="list-item mt-1"><a class="text-decoration-none link-dark" href="#">
+                                        <li class="list-item mt-1"><a href="{% url 'materiais:estoque_materiais' %}" class="text-decoration-none link-dark">
                                             <i class="fas fa-dolly me-1"></i>
                                             Estoque
+                                        </a></li>
+                                        <li class="list-item mt-1"><a href="{% url 'materiais:nova_entrada' %}" class="text-decoration-none link-dark">
+                                            <i class="fas fa-plus-circle fa-sm me-2"></i>
+                                            Nova Entrada
                                         </a></li>
                                     </ul>
                                 </div>

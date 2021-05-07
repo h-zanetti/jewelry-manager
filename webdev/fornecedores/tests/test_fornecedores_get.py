@@ -1,5 +1,5 @@
 import pytest
-from pytest_django.asserts import assertRedirects, assertContains
+from pytest_django.asserts import assertContains
 from django.urls import reverse
 from django.contrib.auth.models import User
 from webdev.fornecedores.models import Fornecedor, Fornecimento, Email, Telefone, Local, DadosBancarios

@@ -23,6 +23,7 @@ urlpatterns = [
     path('', include('webdev.produtos.urls')),
     path('users/', include('webdev.users.urls')),
     path('fornecedores/', include('webdev.fornecedores.urls')),
+    path('materiais/', include('webdev.materiais.urls')),
 ]
 
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
