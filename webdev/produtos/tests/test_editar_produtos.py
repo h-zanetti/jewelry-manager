@@ -2,24 +2,26 @@ import pytest
 from django.urls import reverse
 from webdev.produtos.models import Produto, Categoria
 from django.contrib.auth.models import User
-from .script import get_dados_do_produto
 
 @pytest.fixture
-def criar_produto(db):
+def produto(db):
     return Produto.objects.create(
         nome='Produto Legal',
         colecao="d'Mentira",
     )
 
 @pytest.fixture
-def resposta_editar_produto(client, criar_produto):
+def resposta_editar_produto(client, produto):
     usr = User.objects.create_user(username='TestUser', password='MinhaSenha123')
     client.login(username='TestUser', password='MinhaSenha123')
-    data = get_dados_do_produto(criar_produto)
-    data['nome'] = 'Novo Nome'
     resp = client.post(
-        reverse('produtos:editar_produto', kwargs={'produto_id': criar_produto.id}),
-        data=data
+        reverse('produtos:editar_produto', kwargs={'produto_id': produto.id}),
+        data={
+            'foto': produto.foto.url,
+            'nome': 'Novo Nome',
+            'colecao': produto.colecao,
+            'unidades': produto.unidades,
+        }
     )
     return resp
 

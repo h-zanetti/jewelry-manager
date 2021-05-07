@@ -18,6 +18,7 @@ def resposta_nova_entrada(client, fornecedor):
         reverse('materiais:nova_entrada'),
         data={
             'entrada-fornecedor': fornecedor.id,
+            'entrada-data': '26/04/2021',
             'entrada-unidades': 3,
             'entrada-total_pago': 1000,
             'material-nome': 'Diamante',
@@ -60,6 +61,7 @@ def resposta_editar_entrada(client, entrada, material):
         reverse('materiais:editar_entrada', kwargs={'entrada_id': entrada.id, 'material_id': material.id}),
         data={
             'entrada-fornecedor': entrada.fornecedor.id,
+            'entrada-data': '26/04/2021',
             'entrada-unidades': 5,
             'entrada-total_pago': 1000,
             'material-nome': 'Diamante',
