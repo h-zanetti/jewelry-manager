@@ -47,4 +47,9 @@ class Material(models.Model):
             return f"{self.peso} {self.unidade_de_medida}"
         else:
             return "Indisponível"
-        
+    
+    def get_preco_unitario(self):
+        return round(self.entrada.total_pago / self.entrada.unidades, 2)
+    
+    def get_preco_por_peso(self):
+        return round(self.entrada.total_pago / self.peso, 2)

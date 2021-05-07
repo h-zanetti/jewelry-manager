@@ -37,7 +37,7 @@
             {% for material in materiais %}
             <tr>
                 <th scope="col">{{ material.id }}</th>
-                <td>{{ material.entrada.data }}</td>
+                <td>{{ material.entrada.data|date:"d-m-Y" }}</td>
                 <td>{{ material.nome }}</td>
                 <td>{{ material.categoria }}</td>
                 <td>{{ material.subcategoria }}</td>
@@ -71,13 +71,13 @@
                                                             <table class="table">
                                                                 <thead>
                                                                     <tr>
-                                                                        <th class="fs-5">Informações Gerais - {{ material.nome }}</th>
+                                                                        <th class="fs-5">Informações Gerais</th>
                                                                         <th></th>
                                                                     </tr>
                                                                 </thead>
                                                                 <tbody>
                                                                     <tr>
-                                                                        <td><strong>Entrada:</strong> {{ material.entrada.data|date:"d-m-Y"}}</td>
+                                                                        <td><strong>Entrada:</strong> {{ material.entrada.data }}</td>
                                                                         <td><strong>Qualidade:</strong> {{ material.qualidade }}</td>
                                                                     </tr>
                                                                     <tr>
@@ -87,6 +87,17 @@
                                                                     <tr>
                                                                         <td><strong>Dimenssões:</strong> {{ material.get_dimenssoes }}</td>
                                                                         <td><strong>Peso:</strong> {{ material.get_peso }}</td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td><strong>Preço Unitário:</strong> R$ {{ material.get_preco_unitario }}</td>
+                                                                        <td>
+                                                                            {% if material.unidade_de_medida == 'g' %}
+                                                                                <strong>Preço da Grama :</strong>
+                                                                            {% else %}
+                                                                                <strong>Preço do Quilate :</strong>
+                                                                            {% endif %}
+                                                                            R$ {{ material.get_preco_por_peso }}
+                                                                        </td>
                                                                     </tr>
                                                                 </tbody>
                                                             </table>
