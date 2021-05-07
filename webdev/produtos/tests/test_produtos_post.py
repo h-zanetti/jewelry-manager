@@ -13,7 +13,7 @@ def resposta_novo_produto(client, db):
         'nome': 'Produto Legal',
         'colecao': "d'Mentira",
         'familia': 'Zanetti',
-        'data_criacao': '2021-04-30',
+        'data_criacao': '30/04/2021',
         'unidades': 0,
         'tamanho': 22
     })
