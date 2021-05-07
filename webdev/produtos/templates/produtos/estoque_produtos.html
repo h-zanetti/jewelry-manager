@@ -92,7 +92,56 @@
                             <!-- Materiais -->
                             <div class="row mb-2 mx-0 gy-0">
                               <div class="col-md-12">
-                                <h1 class="display-6">Materiais</h1>
+                                <div class="row">
+                                  <div class="col-auto">
+                                    <h1 class="display-6">Materiais</h1>
+                                  </div>
+                                  <div class="col-auto align-self-center pt-1">
+                                      <a href="{% url 'produtos:adicionar_material' produto.id %}" class="link-dark align-top">
+                                          <i class="fas fa-plus fa-lg"></i>
+                                      </a>    
+                                  </div>
+                                </div>
+                              </div>
+                              <div class="col-md-12">
+                                <table class="table">
+                                  <thead>
+                                    <tr>
+                                        <th scope="col">#</th>
+                                        <th scope="col">Material</th>
+                                        <th scope="col">Qualidade</th>
+                                        <th scope="col">Unidades</th>
+                                        <th scope="col">Peso Unitário</th>
+                                        <th scope="col">Custo</th>
+                                        <th scope="col">Ações</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                      {% for material_dp in produto.materiais.all %}
+                                      <tr>
+                                          <th scope="col">{{ material_dp.material.id }}</th>
+                                          <td>{{ material_dp.material.nome }}</td>
+                                          <td>{{ material_dp.material.qualidade }}</td>
+                                          <td>{{ material_dp.unidades }}</td>
+                                          <td>{{ material_dp.get_peso }}</td>
+                                          <td>R$ {{ material_dp.get_custo }}</td>
+                                          <td>
+                                              <ul class="list-inline">
+                                                  <li class="list-inline-item me-2">
+                                                      <a href="{% url 'produtos:editar_material_dp' material_dp.id %}"><i class="fas fa-wrench link-dark"></i></a>
+                                                  </li>
+                                                  <li class="list-inline-item ms-2">
+                                                    <form action="{% url 'produtos:remover_material_dp' material_dp.id %}" method="POST">
+                                                      {% csrf_token %}
+                                                        <button type="submit" class="btn p-0 pb-1"><i class="fas fa-trash link-dark"></i></button>
+                                                    </form>
+                                                  </li>                                            
+                                              </ul>
+                                          </td>
+                                      </tr>
+                                      {% endfor %}
+                                  </tbody>
+                                </table>
                               </div>
                             </div>
                             <!-- Serviços -->
