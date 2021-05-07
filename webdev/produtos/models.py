@@ -20,7 +20,7 @@ class MaterialDoProduto(models.Model):
     unidade_de_medida = models.CharField(_("Unidade de Medida"), max_length=2, choices=UNIDADE_DE_MEDIDA_CHOICES, blank=True, null=True)
 
     def __str__(self):
-        return f"{self.material} {self.unidades} unid."
+        return f"{self.material.nome} {self.unidades} unid."
     
     def get_peso(self):
         if self.peso and self.unidade_de_medida:
@@ -29,7 +29,12 @@ class MaterialDoProduto(models.Model):
             return self.material.get_peso()
 
     def get_custo(self):
-        return 'Indisponível - Issue #66'
+        preco = 0
+        if self.peso != self.material.peso:
+            preco = self.peso * self.material.get_preco_por_peso()
+        else:
+            preco= self.unidades * self.material.get_preco_unitario()
+        return preco
 
 class Produto(models.Model):
     foto = models.ImageField(_('Foto do Produto'), upload_to='produtos', default='default.jpg', blank=True, null=True)
@@ -45,3 +50,12 @@ class Produto(models.Model):
 
     def __str__(self):
         return self.nome
+
+    def get_custo_de_producao(self):
+        custo = 0
+        for servico in self.servicos.all():
+            custo += servico.total_pago
+        for material_dp in self.materiais.all():
+            custo += material_dp.get_custo()
+        return round(custo, 2)
+                

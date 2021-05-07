@@ -52,4 +52,7 @@ class Material(models.Model):
         return round(self.entrada.total_pago / self.entrada.unidades, 2)
     
     def get_preco_por_peso(self):
-        return round(self.entrada.total_pago / self.peso, 2)
+        if not self.peso:
+            return round(self.entrada.total_pago, 2)
+        else:
+            return round(self.entrada.total_pago / self.peso, 2)

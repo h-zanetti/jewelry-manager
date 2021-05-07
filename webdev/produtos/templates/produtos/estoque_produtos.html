@@ -198,9 +198,31 @@
                               </div>
                             </div>
                             <!-- Precificação -->
-                            <div class="row">
+                            <div class="row mb-2 mx-0 gy-0">
                               <div class="col-md-12">
                                 <h1 class="display-6">Precificação</h1>
+                              </div>
+                              <div class="col-md-12">
+                                <table class="table">
+                                  <tbody>
+                                    <tr>
+                                        <th scope="col">Custo de Produção</th>
+                                        <td>R$ {{ produto.get_custo_de_producao }}</td>
+                                    </tr>
+                                    <tr>
+                                      <th scope="col">Preço para Atacado</th>
+                                      <td>R$ {% widthratio produto.get_custo_de_producao 1 2 %}</td>
+                                    </tr>
+                                    <tr>
+                                      <th scope="col">Preço para Revenda</th>
+                                      <td>R$ {% widthratio produto.get_custo_de_producao 1 3 %}</td>
+                                    </tr>
+                                    <tr>
+                                      <th scope="col">Preço para Cliente Final</th>
+                                      <td>R$ {% widthratio produto.get_custo_de_producao 1 4 %}</td>
+                                    </tr>
+                                  </tbody>
+                                </table>
                               </div>
                             </div>
                           </div>

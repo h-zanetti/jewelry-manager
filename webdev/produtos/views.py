@@ -94,6 +94,10 @@ def adicionar_material(request, produto_id):
         form = MaterialDoProdutoForm(request.POST)
         if form.is_valid():
             material_dp = form.save()
+            if not material_dp.peso:
+                material_dp.peso = material_dp.material.peso
+                material_dp.unidade_de_medida = material_dp.material.unidade_de_medida
+                material_dp.save()
             produto.materiais.add(material_dp)
             return redirect('produtos:estoque_produtos')
     else:
