@@ -63,15 +63,28 @@
                                     <img src="{{ produto.foto.url }}" class="card-img-top" alt="...">
                                   </div>
                                   <div class="card-body">
-                                    <h5 class="card-title">Informações Gerais</h5>
-                                    <p class="card-text">
-                                        Coleção: {{ produto.colecao}}<br>
-                                        Família: {{ produto.familia|default:"Indisponível" }}<br>
-                                        Categorias: {{ produto.categorias.all|join:", "|default:"Nenhuma" }}<br>
-                                        Criação: {{ produto.data_criacao|default:"Indisponível" }}<br>
-                                        Unidades em Estoque: {{ produto.unidades }}<br>
-                                        Tamanho: {{ produto.tamanho|default:"Indisponível" }}<br>
-                                    </p>
+                                    <table class="table">
+                                      <thead>
+                                          <tr>
+                                              <th class="fs-5">Informações Gerais</th>
+                                              <th></th>
+                                          </tr>
+                                      </thead>
+                                      <tbody>
+                                          <tr>
+                                              <td><strong>Coleção:</strong> {{ produto.colecao }}</td>
+                                              <td><strong>Família:</strong> {{ produto.familia|default:"Nenhuma" }}</td>
+                                          </tr>
+                                          <tr>
+                                              <td><strong>Categorias:</strong> {{ produto.categorias.all|join:", "|default:"Nenhuma" }}</td>
+                                              <td><strong>Criação:</strong> {{ produto.data_criacao|date:"d-m-Y"|default:"Indisponível" }}</td>
+                                          </tr>
+                                          <tr>
+                                              <td><strong>Unidades em Estoque:</strong> {{ produto.unidades }}</td>
+                                              <td><strong>Tamanho:</strong> {{ produto.tamanho }}</td>
+                                          </tr>
+                                      </tbody>
+                                    </table>
                                   </div>
                                 </div>
                               </div>
