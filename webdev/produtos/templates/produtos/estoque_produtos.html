@@ -67,7 +67,7 @@
                                     <p class="card-text">
                                         Coleção: {{ produto.colecao}}<br>
                                         Família: {{ produto.familia|default:"Indisponível" }}<br>
-                                        Categorias: {{ category|join:", "|default:"Nenhuma" }}<br>
+                                        Categorias: {{ produto.categorias.all|join:", "|default:"Nenhuma" }}<br>
                                         Criação: {{ produto.data_criacao|default:"Indisponível" }}<br>
                                         Unidades em Estoque: {{ produto.unidades }}<br>
                                         Tamanho: {{ produto.tamanho|default:"Indisponível" }}<br>
