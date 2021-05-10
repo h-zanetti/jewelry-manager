@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+{% load bootstrap5 %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    {% if title %}
+    <h1 class="h2">{{ title }}</h1>
+    {% endif %}
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <div class="btn-group me-2">
+            <button type="button" class="btn btn-sm btn-outline-secondary">Importar</button>
+            <button type="button" class="btn btn-sm btn-outline-secondary">Exportar</button>
+        </div>
+        <a href="{% url 'financeiro:nova_despesa' %}" class="btn btn-sm btn-outline-secondary">
+            Nova Despesa
+        </a>
+    </div>
+</div>
+
+<div class="table-responsive">
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Data</th>
+                <th scope="col">Tipo</th>
+                <th scope="col">Categoria</th>
+                <th scope="col">Valor</th>
+                <th scope="col">Saldo</th>
+                <th scope="col">Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for despesa in despesas %}
+            <tr>
+                <th scope="col">{{ despesa.id }}</th>
+                <td>{{ despesa.data }}</td>
+                <td>{{ despesa.tipo_de_despesa }}</td>
+                <td>{{ despesa.categoria }}</td>
+                <td>{{ despesa.total_pago }}</td>
+                <td>Indisponível</td>
+                <td>
+                    <ul class="list-inline m-0">
+                        <li class="list-inline-item me-3">
+                            <a href="{% url 'financeiro:editar_despesa' despesa.id %}">
+                                <i class="fas fa-wrench link-dark"></i>
+                            </a>
+                        </li>
+                        <li class="list-inline-item me-3">
+                            <form action="{% url 'financeiro:deletar_despesa' despesa.id %}" method="POST">
+                                {% csrf_token %}
+                                <!-- Delete Modal Trigger -->
+                                <a href="#ModalDeletarDespesa{{ despesa.id }}" data-bs-toggle="modal"><i class="fas fa-trash link-dark"></i></a>
+                                <!-- Delete Modal -->
+                                <div class="modal fade" id="ModalDeletarDespesa{{ despesa.id }}" tabindex="-1" aria-labelledby="ModalDeletarDespesa{{ despesa.id }}Label" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h1 class="modal-title display-6" id="ModalDeletarDespesa{{ despesa.id }}Label">
+                                                    Deletar <strong>{{ despesa.categoria }} #{{ despesa.id }}</strong>
+                                                </h1>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <p>Você tem certeza que deseja deletar esta despesa?</p>
+                                                <p><strong>Ela será deletada para sempre!</strong></p>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                                                <button type="submit" class="btn btn-danger">Deletar</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </li>
+                    </ul>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

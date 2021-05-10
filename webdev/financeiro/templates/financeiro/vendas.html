@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+{% load bootstrap5 %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    {% if title %}
+    <h1 class="h2">{{ title }}</h1>
+    {% endif %}
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <div class="btn-group me-2">
+            <button type="button" class="btn btn-sm btn-outline-secondary">Importar</button>
+            <button type="button" class="btn btn-sm btn-outline-secondary">Exportar</button>
+        </div>
+        <a href="{% url 'financeiro:nova_venda' %}" class="btn btn-sm btn-outline-secondary">
+            Cadastrar Uma Venda
+        </a>
+    </div>
+</div>
+
+<div class="table-responsive">
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Data</th>
+                <th scope="col">Cliente</th>
+                <th scope="col">Produtos</th>
+                <th scope="col">Parcelas</th>
+                <th scope="col">Valor Total</th>
+                <th scope="col">Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for venda in vendas %}
+            <tr>
+                <th scope="col">{{ venda.id }}</th>
+                <td>{{ venda.data|date:"d-m-Y" }}</td>
+                <td>{{ venda.cliente.get_nome_completo }}</td>
+                <td>{{ venda.produtos.all|join:", " }}</td>
+                <td>{{ venda.get_parcela }}</td>
+                <td>{{ venda.total_pago }}</td>
+                <td>
+                    <ul class="list-inline m-0">
+                        <li class="list-inline-item me-3">
+                            <a href="{% url 'financeiro:editar_venda' venda.id %}">
+                                <i class="fas fa-wrench link-dark"></i>
+                            </a>
+                        </li>
+                        <li class="list-inline-item me-3">
+                            <form action="{% url 'financeiro:deletar_venda' venda.id %}" method="POST">
+                                {% csrf_token %}
+                                <!-- Delete Modal Trigger -->
+                                <a href="#ModalDeletarVenda{{ venda.id }}" data-bs-toggle="modal"><i class="fas fa-trash link-dark"></i></a>
+                                <!-- Delete Modal -->
+                                <div class="modal fade" id="ModalDeletarVenda{{ venda.id }}" tabindex="-1" aria-labelledby="ModalDeletarVenda{{ venda.id }}Label" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h1 class="modal-title display-6" id="ModalDeletarVenda{{ venda.id }}Label">
+                                                    <strong>Deletar Venda #{{ venda.id }}</strong>
+                                                </h1>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <p>Você tem certeza que deseja deletar esta venda?</p>
+                                                <p><strong>Ela será deletada para sempre!</strong></p>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                                                <button type="submit" class="btn btn-danger">Deletar</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </li>
+                    </ul>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

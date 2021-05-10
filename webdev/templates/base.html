@@ -39,9 +39,10 @@
                                 </a>
                             </li>
                             {% endif %}
+                            <!-- Produtos -->
                             <li class="nav-item">
                                 <a class="nav-link px-2 link-dark" data-bs-toggle="collapse" href="#collapseProdutos" role="button" aria-expanded="false" aria-controls="collapseProdutos">
-                                    <i class="fas fa-shopping-cart me-2"></i>
+                                    <i class="fas fa-tag me-2"></i>
                                     Produtos
                                 </a>
                                 <div class="collapse border border-top-0 shadow-sm p-2" id="collapseProdutos">
@@ -61,6 +62,7 @@
                                     </ul>
                                 </div>
                             </li>
+                            <!-- Matéria Prima -->
                             <li class="nav-item">
                                 <a class="nav-link px-2 link-dark" href="#collapseMaterial" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="collapseMaterial">
                                     <i class="far fa-gem me-2"></i>
@@ -83,9 +85,10 @@
                                     </ul>
                                 </div>
                             </li>
+                            <!-- Fornecedores -->
                             <li class="nav-item">
                                 <a class="nav-link px-2 link-dark" href="#collapseFornecedores" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="collapseFornecedores">
-                                    <i class="fas fa-users me-2"></i>
+                                    <i class="fas fa-shopping-cart me-2"></i>
                                     Fornecedores
                                 </a>
                                 <div class="collapse border border-top-0 shadow-sm p-2" id="collapseFornecedores">
@@ -101,7 +104,8 @@
                                     </ul>
                                 </div>
                             </li>
-                            <li class="nav-item mb-2">
+                            <!-- Financeiro -->
+                            <li class="nav-item">
                                 <a class="nav-link px-2 link-dark" href="#collapseFinanceiro" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="collapseFinanceiro">
                                     <i class="fas fa-chart-bar me-2"></i>
                                     Financeiro
@@ -112,9 +116,32 @@
                                             <i class="fas fa-hand-holding-usd fa-sm me-2"></i>
                                             Fluxo de Caixa
                                         </a></li>
-                                        <li class="list-item mt-1"><a class="text-decoration-none link-dark" href="#">
+                                        <li class="list-item mt-1"><a class="text-decoration-none link-dark" href="{% url 'financeiro:vendas' %}">
                                             <i class="fas fa-receipt" style="margin-right: 12px;"></i>
                                             Vendas
+                                        </a></li>
+                                        <li class="list-item mt-1"><a class="text-decoration-none link-dark" href="{% url 'financeiro:despesas' %}">
+                                            <i class="fas fa-dollar-sign" style="margin: 0 12px 0 2px;"></i>
+                                            Despesas
+                                        </a></li>
+                                    </ul>
+                                </div>
+                            </li>
+                            <!-- Clientes -->
+                            <li class="nav-item mb-2">
+                                <a class="nav-link px-2 link-dark" href="#collapseClientes" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="collapseClientes">
+                                    <i class="fas fa-users me-2"></i>
+                                    Clientes
+                                </a>
+                                <div class="collapse border border-top-0 shadow-sm p-2 pt-1" id="collapseClientes">
+                                    <ul class="list-unstyled">
+                                        <li class="list-item mt-1"><a class="text-decoration-none link-dark" href="{% url 'financeiro:clientes' %}">
+                                            <i class="fas fa-user-friends me-2"></i>
+                                            Meus Clientes
+                                        </a></li>
+                                        <li class="list-item mt-1"><a class="text-decoration-none link-dark" href="{% url 'financeiro:novo_cliente' %}">
+                                            <i class="fas fa-user-plus me-2"></i>
+                                            Novo Cliente
                                         </a></li>
                                     </ul>
                                 </div>
