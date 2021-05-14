@@ -112,7 +112,8 @@
                                 </a>
                                 <div class="collapse border border-top-0 shadow-sm p-2 pt-1" id="collapseFinanceiro">
                                     <ul class="list-unstyled">
-                                        <li class="list-item mt-1"><a class="text-decoration-none link-dark" href="#">
+                                        {% now "n" as mes_atual %}{% now "Y" as ano_atual %}
+                                        <li class="list-item mt-1"><a class="text-decoration-none link-dark" href="{% url 'financeiro:fluxo_de_caixa' ano_atual mes_atual %}">
                                             <i class="fas fa-hand-holding-usd fa-sm me-2"></i>
                                             Fluxo de Caixa
                                         </a></li>

@@ -1,0 +1,148 @@
+{% extends 'base.html' %}
+{% load bootstrap5 %}
+{% load financeiro %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Fluxo de Caixa - {{ data|date:"F, Y" }} </h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <div class="btn-group me-2">
+            <button type="button" class="btn btn-sm btn-outline-secondary">Importar</button>
+            <button type="button" class="btn btn-sm btn-outline-secondary">Exportar</button>
+        </div>
+        <div class="btn-group me-2">
+            <a href="{% url 'financeiro:nova_venda' %}" class="btn btn-sm btn-outline-secondary">Nova Venda</a>
+            <a href="{% url 'financeiro:nova_despesa' %}" class="btn btn-sm btn-outline-secondary">Nova Despesa</a>
+        </div>
+    </div>
+</div>
+
+<div class="table-responsive">
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Data</th>
+                <th scope="col">Tipo</th>
+                <th scope="col">Categoria</th>
+                <th scope="col">Valor (parcela)</th>
+                <th scope="col">Saldo</th>
+                <th scope="col">Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for t in transacoes %}
+            <tr>
+                <th scope="col">{{ t.id }}</th>
+                <td>{{ t.data|date:"d-m-Y" }}</td>
+                <td>
+                    {% if t.categoria == 'Venda' %}
+                        Receita
+                    {% else %}
+                        Despesa
+                    {% endif %}
+                </td>
+                <td>{{ t.categoria }}</td>
+                <td>
+                    {% if t.categoria == 'Venda' %}
+                        {% get_parcela t data %}
+                    {% else %}
+                        R$ {{ t.total_pago }}
+                    {% endif %}
+                </td>
+                <td></td>
+                <td>
+                    <ul class="list-inline m-0">
+                        <li class="list-inline-item me-3">
+                            {% if t.categoria == 'Venda' %}
+                                <!-- Venda Trigger -->
+                                <a href="#ModalVisualizarVenda{{ t.id }}" data-bs-toggle="modal">
+                                    <i class="far fa-eye link-dark"></i>
+                                </a>
+                                <!-- Venda Modal -->
+                                <div class="modal fade" id="ModalVisualizarVenda{{ t.id }}" tabindex="-1" aria-labelledby="ModalVisualizarVenda{{ t.id }}Label" aria-hidden="true">
+                                    <div class="modal-dialog modal-lg">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h1 class="modal-title display-6" id="ModalVisualizarVenda{{ t.id }}Label">
+                                                    <strong>Venda #{{ t.id }}</strong>
+                                                </h1>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <table class="table">
+                                                    <thead>
+                                                        <th scope="col">#</th>
+                                                        <th scope="col">Data</th>
+                                                        <th scope="col">Cliente</th>
+                                                        <th scope="col">Produtos</th>
+                                                        <th scope="col">Parcelas</th>
+                                                        <th scope="col">Valor Total</th>
+                                                    </thead>
+                                                    <tbody>
+                                                        <th scope="col">{{ t.id }}</th>
+                                                        <td>{{ t.data|date:"d-m-Y" }}</td>
+                                                        <td>{{ t.cliente.get_nome_completo }}</td>
+                                                        <td>{{ t.produtos.all|join:", " }}</td>
+                                                        <td>{{ t.parcelas }}x de R$ {{ t.get_preco_parcela}}</td>
+                                                        <td>{{ t.total_pago }}</td>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% else %}
+                                <!-- Despesa Trigger -->
+                                <a href="#ModalVisualizarDespesa{{ t.id }}" data-bs-toggle="modal">
+                                    <i class="far fa-eye link-dark"></i>
+                                </a>
+                                <!-- Despesa Modal -->
+                                <div class="modal fade" id="ModalVisualizarDespesa{{ t.id }}" tabindex="-1" aria-labelledby="ModalVisualizarDespesa{{ t.id }}Label" aria-hidden="true">
+                                    <div class="modal-dialog modal-lg">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h1 class="modal-title display-6" id="ModalVisualizarDespesa{{ t.id }}Label">
+                                                    <strong>Despesa #{{ t.id }}</strong>
+                                                </h1>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <table class="table">
+                                                    <thead>
+                                                        <tr>
+                                                            <th scope="col">#</th>
+                                                            <th scope="col">Data</th>
+                                                            <th scope="col">Categoria</th>
+                                                            <th scope="col">Valor</th>
+                                                            <th scope="col">Repetir</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <th scope="col">{{ t.id }}</th>
+                                                        <td>{{ t.data }}</td>
+                                                        <td>{{ t.categoria }}</td>
+                                                        <td>{{ t.total_pago }}</td>
+                                                        <td>{{ t.get_repetir_display }}</td>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        </li>
+                    </ul>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

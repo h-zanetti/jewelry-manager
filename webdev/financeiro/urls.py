@@ -4,7 +4,7 @@ from . import views
 app_name = 'financeiro'
 
 urlpatterns = [
-    path('', views.fluxo_de_caixa, name='fluxo_de_caixa'),
+    path('fluxo_de_caixa/<int:ano>/<int:mes>/', views.fluxo_de_caixa, name='fluxo_de_caixa'),
     # Despesas
     path('despesas/', views.despesas, name='despesas'),
     path('nova_despesa/', views.nova_despesa, name='nova_despesa'),

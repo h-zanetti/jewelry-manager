@@ -23,10 +23,9 @@
             <tr>
                 <th scope="col">#</th>
                 <th scope="col">Data</th>
-                <th scope="col">Tipo</th>
                 <th scope="col">Categoria</th>
                 <th scope="col">Valor</th>
-                <th scope="col">Saldo</th>
+                <th scope="col">Repetir</th>
                 <th scope="col">Ações</th>
             </tr>
         </thead>
@@ -35,10 +34,9 @@
             <tr>
                 <th scope="col">{{ despesa.id }}</th>
                 <td>{{ despesa.data }}</td>
-                <td>{{ despesa.tipo_de_despesa }}</td>
                 <td>{{ despesa.categoria }}</td>
                 <td>{{ despesa.total_pago }}</td>
-                <td>Indisponível</td>
+                <td>{{ despesa.get_repetir_display }}</td>
                 <td>
                     <ul class="list-inline m-0">
                         <li class="list-inline-item me-3">
