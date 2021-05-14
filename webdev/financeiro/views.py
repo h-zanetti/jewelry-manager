@@ -1,3 +1,8 @@
+import calendar
+import datetime as dt
+from math import ceil
+from itertools import chain
+from django.db.models import F
 from django.urls import reverse
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
@@ -127,7 +132,10 @@ def nova_venda(request):
     if request.method == 'POST':
         form = VendaForm(request.POST)
         if form.is_valid():
-            form.save()
+            venda = form.save()
+            ultima_parcela = venda.data + dt.timedelta((venda.parcelas - 1) * 30)
+            venda.ultima_parcela = dt.date(ultima_parcela.year, ultima_parcela.month, venda.data.day)
+            venda.save()
             return redirect('financeiro:vendas')
     else:
         form = VendaForm()
@@ -168,11 +176,22 @@ def deletar_venda(request, venda_id):
     return HttpResponseRedirect(reverse('financeiro:vendas'))
 
 # Fluxo de Caixa
-@login_required
-def fluxo_de_caixa(request):
+def fluxo_de_caixa(request, ano, mes):
+    vendas_do_mes = Venda.objects.filter(data__year=ano, data__month=mes)
+    vendas_parceladas = Venda.objects.filter(
+        data__lt=dt.date(ano, mes, 1),
+        ultima_parcela__gte=dt.date(ano, mes, 1)
+    )
+    despesas_do_mes = Despesa.objects.filter(data__year=ano, data__month=mes)
+    despesas_fixas = Despesa.objects.filter(repetir__in=['d', 'm'], data__lt=dt.date(ano, mes, 1))
+    despesas_anuais = Despesa.objects.filter(repetir='a', data__lt=dt.date(ano, 1, 1), data__month=mes)
+
     context = {
-        'vendas': Vendas.objects.all(),
-        'despesas': Despesa.objects.all()
+        'transacoes': sorted(
+            chain(vendas_do_mes, vendas_parceladas, despesas_do_mes, despesas_fixas, despesas_anuais),
+            key=lambda instance: instance.data
+        ),
+        'data': dt.date(ano, mes, 1),
     }
 
     return render(request, 'financeiro/fluxo_de_caixa.html', context)

@@ -1,35 +1,8 @@
+from math import ceil
 from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from webdev.produtos.models import Produto
-
-class Despesa(models.Model):
-    data = models.DateField(_("Data"), default=timezone.now)
-    categoria = models.CharField(_("Categoria"), max_length=150)
-    total_pago = models.DecimalField(_("Valor"), max_digits=8, decimal_places=2)
-    REPETIR_CHOICES = (
-        ('n', 'Nunca'),
-        ('s', 'Semanalmente'),
-        ('q', 'Quinzenalmente'),
-        ('m', 'Mensalmente'),
-        ('b', 'Bimestralmente'),
-        ('t', 'Trimestralmente'),
-        ('a', 'Anualmente'),
-    )
-    repetir = models.CharField(_("Repetir"), max_length=1, choices=REPETIR_CHOICES)
-
-    class Meta:
-        get_latest_by = "data"
-
-    def __str__(self):
-        return f'{data} {nome}'
-
-    @property
-    def tipo_de_despesa(self):
-        if self.repetir == 'n':
-            return 'Fixa'
-        else:
-            return 'Variável'
 
 class Cliente(models.Model):
     nome = models.CharField(_("Nome"), max_length=150)
@@ -63,10 +36,42 @@ class Venda(models.Model):
         (12, '12x'),
     )
     parcelas = models.IntegerField(_("Parcelas"), choices=PARCELAS_CHOICES)
+    ultima_parcela = models.DateField(_("Última Parcela"), null=True, blank=True)
     total_pago = models.DecimalField(_("Total Pago"), max_digits=8, decimal_places=2)
+    class Meta:
+        get_latest_by = "data"
 
     def __str__(self):
-        return f'{self.cliente} - R$ {self.get_total()}'
+        return f'{self.cliente} - R${self.total_pago}'
 
-    def get_parcela(self):
-        return f"{self.get_parcelas_display()} de R${round(self.total_pago / self.parcelas, 2)}"
+    @property
+    def categoria(self):
+        return 'Venda'
+
+    def get_preco_parcela(self):
+        return round(self.total_pago / self.parcelas, 2)
+
+    def get_parcela(self, data):
+        parcela = self.parcelas - ceil((self.ultima_parcela - data).days / 30) + 1
+        if parcela > 0 and parcela <= self.parcelas:
+            return f"R$ {self.get_preco_parcela()} ({parcela}/{self.parcelas})"
+        else:
+            return None
+
+class Despesa(models.Model):
+    data = models.DateField(_("Data"), default=timezone.now)
+    categoria = models.CharField(_("Categoria"), max_length=150)
+    total_pago = models.DecimalField(_("Valor"), max_digits=8, decimal_places=2)
+    REPETIR_CHOICES = (
+        ('n', 'Nunca'),
+        ('d', 'Diariamente'),
+        ('m', 'Mensalmente'),
+        ('a', 'Anualmente'),
+    )
+    repetir = models.CharField(_("Repetir"), max_length=1, choices=REPETIR_CHOICES)
+    class Meta:
+        get_latest_by = "data"
+
+    def __str__(self):
+        return f'{self.data} {self.categoria}'
+

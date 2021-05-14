@@ -37,7 +37,7 @@
                 <td>{{ venda.data|date:"d-m-Y" }}</td>
                 <td>{{ venda.cliente.get_nome_completo }}</td>
                 <td>{{ venda.produtos.all|join:", " }}</td>
-                <td>{{ venda.get_parcela }}</td>
+                <td>{{ venda.parcelas }}x de R$ {{ venda.get_preco_parcela}}</td>
                 <td>{{ venda.total_pago }}</td>
                 <td>
                     <ul class="list-inline m-0">
