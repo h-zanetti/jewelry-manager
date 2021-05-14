@@ -1,3 +1,4 @@
+from django.utils import timezone
 from django import forms
 from .models import Despesa, Cliente, Venda
 
@@ -22,4 +23,4 @@ class VendaForm(forms.ModelForm):
     )
     class Meta:
         model = Venda
-        fields = '__all__'
+        exclude = ('ultima_parcela',)

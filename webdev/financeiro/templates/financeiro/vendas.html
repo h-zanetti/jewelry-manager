@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load bootstrap5 %}
+{% load humanize %}
 
 {% block content %}
 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
@@ -35,10 +36,10 @@
             <tr>
                 <th scope="col">{{ venda.id }}</th>
                 <td>{{ venda.data|date:"d-m-Y" }}</td>
-                <td>{{ venda.cliente.get_nome_completo }}</td>
+                <td>{{ venda.cliente.get_nome_completo|default:"Desconhecido" }}</td>
                 <td>{{ venda.produtos.all|join:", " }}</td>
-                <td>{{ venda.parcelas }}x de R$ {{ venda.get_preco_parcela}}</td>
-                <td>{{ venda.total_pago }}</td>
+                <td>{{ venda.parcelas }}x de R$ {{ venda.get_preco_parcela|intcomma }}</td>
+                <td>R$ {{ venda.total_pago|intcomma }}</td>
                 <td>
                     <ul class="list-inline m-0">
                         <li class="list-inline-item me-3">

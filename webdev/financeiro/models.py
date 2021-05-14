@@ -18,8 +18,8 @@ class Cliente(models.Model):
         return self.get_nome_completo()
 
 class Venda(models.Model):
-    data = models.DateField(_("Data"), default=timezone.now)
-    cliente = models.ForeignKey(Cliente, on_delete=models.SET_NULL, null=True, verbose_name=_("Cliente"))
+    data = models.DateField(_("Data"))
+    cliente = models.ForeignKey(Cliente, on_delete=models.SET_NULL, null=True, blank=True, verbose_name=_("Cliente"))
     produtos = models.ManyToManyField(Produto, verbose_name=_("Produtos"))
     PARCELAS_CHOICES = (
         (1, '1x'),
@@ -35,7 +35,7 @@ class Venda(models.Model):
         (11, '11x'),
         (12, '12x'),
     )
-    parcelas = models.IntegerField(_("Parcelas"), choices=PARCELAS_CHOICES)
+    parcelas = models.IntegerField(_("Parcelas"), choices=PARCELAS_CHOICES, default=1)
     ultima_parcela = models.DateField(_("Última Parcela"), null=True, blank=True)
     total_pago = models.DecimalField(_("Total Pago"), max_digits=8, decimal_places=2)
     class Meta:
@@ -52,7 +52,7 @@ class Venda(models.Model):
         return round(self.total_pago / self.parcelas, 2)
 
     def get_parcela(self, data):
-        parcela = self.parcelas - ceil((self.ultima_parcela - data).days / 30) + 1
+        parcela = self.parcelas - ((self.ultima_parcela.year - data.year) * 12 + (self.ultima_parcela.month - data.month))
         if parcela > 0 and parcela <= self.parcelas:
             return f"R$ {self.get_preco_parcela()} ({parcela}/{self.parcelas})"
         else:
