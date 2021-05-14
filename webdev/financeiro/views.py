@@ -1,4 +1,4 @@
-import calendar
+from dateutil.relativedelta import relativedelta
 import datetime as dt
 from math import ceil
 from itertools import chain
@@ -7,6 +7,7 @@ from django.urls import reverse
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect, Http404
+from django.utils import timezone
 from .models import Despesa, Cliente, Venda
 from .forms import DespesaForm, ClienteForm, VendaForm
 
@@ -130,15 +131,15 @@ def vendas(request):
 @login_required
 def nova_venda(request):
     if request.method == 'POST':
-        form = VendaForm(request.POST)
+        form = VendaForm(request.POST, initial={'data': timezone.now})
         if form.is_valid():
             venda = form.save()
-            ultima_parcela = venda.data + dt.timedelta((venda.parcelas - 1) * 30)
-            venda.ultima_parcela = dt.date(ultima_parcela.year, ultima_parcela.month, venda.data.day)
+            ultima_parcela = venda.data + relativedelta(months=venda.parcelas-1)
+            venda.ultima_parcela = ultima_parcela
             venda.save()
             return redirect('financeiro:vendas')
     else:
-        form = VendaForm()
+        form = VendaForm(initial={'data': timezone.now})
 
     context = {
         'title': 'Nova Venda',
