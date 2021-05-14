@@ -176,6 +176,7 @@ def deletar_venda(request, venda_id):
     return HttpResponseRedirect(reverse('financeiro:vendas'))
 
 # Fluxo de Caixa
+@login_required
 def fluxo_de_caixa(request, ano, mes):
     vendas_do_mes = Venda.objects.filter(data__year=ano, data__month=mes)
     vendas_parceladas = Venda.objects.filter(
