@@ -23,8 +23,7 @@
     <tr>
       <th>#</th>
       <th>Nome</th>
-      <th>Email</th>
-      <th>Telefone</th>
+      <th>Contato</th>
       <th>Localização</th>
       <th>Fornecimentos</th>
       <th>Ações</th>
@@ -35,8 +34,11 @@
         <tr>
             <th>{{ fornecedor.id }}</th>
             <td>{{ fornecedor.nome }}</td>
-            <td>{{ fornecedor.emails.first|default:"Nenhum" }}</td>
-            <td>{{ fornecedor.telefones.first|default:"Nenhum" }}</td>
+            {% if fornecedor.telefones.first %}
+                <td>{{ fornecedor.telefones.first }}</td>
+            {% else %}
+                <td>{{ fornecedor.emails.first|default:"Nenhum" }}</td>
+            {% endif %}
             <td>{{ fornecedor.localizacoes.first|default:"Nenhuma" }}</td>
             <td>{{ fornecedor.fornecimento.all|slice:":2"|join:", "|default:"Nenhum" }}</td>
             <td>
@@ -47,7 +49,7 @@
                             <div class="modal-dialog modal-lg">
                                 <div class="modal-content">
                                     <div class="modal-header">
-                                        <h1 class="modal-title display-6" id="fornecedor{{ fornecedor.id }}Label">{{ fornecedor.nome }}{% if fornecedor.documento %} - {{ fornecedor.documento }}{% endif %}</h1>
+                                        <h1 class="modal-title display-6" id="fornecedor{{ fornecedor.id }}Label">{{ fornecedor.nome }}</h1>
                                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                     </div>
                                     <div class="modal-body">
