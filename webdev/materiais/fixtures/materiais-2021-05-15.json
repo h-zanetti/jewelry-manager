@@ -1,0 +1,254 @@
+[
+    {
+        "model": "materiais.entrada",
+        "pk": 1,
+        "fields": {
+            "data": "2020-10-06",
+            "fornecedor": 1,
+            "unidades": 1,
+            "total_pago": "8.00"
+        }
+    },
+    {
+        "model": "materiais.material",
+        "pk": 1,
+        "fields": {
+            "entrada": 1,
+            "foto": "default.jpg",
+            "nome": "Prata mil",
+            "categoria": "Metal",
+            "subcategoria": null,
+            "qualidade": 4,
+            "altura": null,
+            "largura": null,
+            "comprimento": null,
+            "peso": "1.00",
+            "unidade_de_medida": "g",
+            "unidades": 1
+        }
+    },
+    {
+        "model": "materiais.entrada",
+        "pk": 2,
+        "fields": {
+            "data": "2020-10-06",
+            "fornecedor": 1,
+            "unidades": 1,
+            "total_pago": "8.00"
+        }
+    },
+    {
+        "model": "materiais.material",
+        "pk": 2,
+        "fields": {
+            "entrada": 2,
+            "foto": "default.jpg",
+            "nome": "Prata 925",
+            "categoria": "Metal",
+            "subcategoria": null,
+            "qualidade": 925,
+            "altura": null,
+            "largura": null,
+            "comprimento": null,
+            "peso": "1.00",
+            "unidade_de_medida": null,
+            "unidades": 1
+        }
+    },
+    {
+        "model": "materiais.entrada",
+        "pk": 3,
+        "fields": {
+            "data": "2021-03-25",
+            "fornecedor": 10,
+            "unidades": 1,
+            "total_pago": "8.14"
+        }
+    },
+    {
+        "model": "materiais.material",
+        "pk": 3,
+        "fields": {
+            "entrada": 3,
+            "foto": "default.jpg",
+            "nome": "Limpa Folhados",
+            "categoria": "Cuidado com a joia",
+            "subcategoria": "",
+            "qualidade": 8,
+            "altura": null,
+            "largura": null,
+            "comprimento": null,
+            "peso": 0,
+            "unidade_de_medida": null,
+            "unidades": 1
+        }
+    },
+    {
+        "model": "materiais.entrada",
+        "pk": 7,
+        "fields": {
+            "data": "2019-10-02",
+            "fornecedor": 12,
+            "unidades": 7,
+            "total_pago": "210.00"
+        }
+    },
+    {
+        "model": "materiais.material",
+        "pk": 7,
+        "fields": {
+            "entrada": 7,
+            "foto": "default.jpg",
+            "nome": "Peróla Barroca - Grante",
+            "categoria": "Peróla",
+            "subcategoria": "Bruta",
+            "qualidade": 5,
+            "altura": null,
+            "largura": null,
+            "comprimento": null,
+            "peso": 0,
+            "unidade_de_medida": null,
+            "unidades": 7
+        }
+    },
+    {
+        "model": "materiais.entrada",
+        "pk": 8,
+        "fields": {
+            "data": "2019-10-02",
+            "fornecedor": 7,
+            "unidades": 15,
+            "total_pago": "109.00"
+        }
+    },
+    {
+        "model": "materiais.material",
+        "pk": 8,
+        "fields": {
+            "entrada": 8,
+            "foto": "default.jpg",
+            "nome": "Perola Arroz",
+            "categoria": "Perola",
+            "subcategoria": "Arroz",
+            "qualidade": 5,
+            "altura": null,
+            "largura": null,
+            "comprimento": null,
+            "peso": 0,
+            "unidade_de_medida": null,
+            "unidades": 15
+        }
+    },
+    {
+        "model": "materiais.entrada",
+        "pk": 9,
+        "fields": {
+            "data": "2019-10-02",
+            "fornecedor": 7,
+            "unidades": 1,
+            "total_pago": "44.00"
+        }
+    },
+    {
+        "model": "materiais.material",
+        "pk": 9,
+        "fields": {
+            "entrada": 9,
+            "foto": "default.jpg",
+            "nome": "Corrente veneziana 80",
+            "categoria": "Aviamento",
+            "subcategoria": "",
+            "qualidade": 9,
+            "altura": null,
+            "largura": null,
+            "comprimento": null,
+            "peso": 0,
+            "unidade_de_medida": null,
+            "unidades": 1
+        }
+    },
+    {
+        "model": "materiais.entrada",
+        "pk": 10,
+        "fields": {
+            "data": "2017-08-01",
+            "fornecedor": 13,
+            "unidades": 37,
+            "total_pago": "30.00"
+        }
+    },
+    {
+        "model": "materiais.material",
+        "pk": 10,
+        "fields": {
+            "entrada": 10,
+            "foto": "default.jpg",
+            "nome": "Jade 8mm",
+            "categoria": "Fio",
+            "subcategoria": "Redondo",
+            "qualidade": 5,
+            "altura": null,
+            "largura": null,
+            "comprimento": null,
+            "peso": 0,
+            "unidade_de_medida": null,
+            "unidades": 37
+        }
+    },
+    {
+        "model": "materiais.entrada",
+        "pk": 11,
+        "fields": {
+            "data": "2017-08-01",
+            "fornecedor": 13,
+            "unidades": 40,
+            "total_pago": "30.00"
+        }
+    },
+    {
+        "model": "materiais.material",
+        "pk": 11,
+        "fields": {
+            "entrada": 11,
+            "foto": "default.jpg",
+            "nome": "Turquesa rutilada - Sintetica",
+            "categoria": "Fio",
+            "subcategoria": "Redondo",
+            "qualidade": 5,
+            "altura": null,
+            "largura": null,
+            "comprimento": null,
+            "peso": 0,
+            "unidade_de_medida": null,
+            "unidades": 40
+        }
+    },
+    {
+        "model": "materiais.entrada",
+        "pk": 13,
+        "fields": {
+            "data": "2021-04-09",
+            "fornecedor": 7,
+            "unidades": 23,
+            "total_pago": "164.30"
+        }
+    },
+    {
+        "model": "materiais.material",
+        "pk": 13,
+        "fields": {
+            "entrada": 13,
+            "foto": "default.jpg",
+            "nome": "Tarraxa Prata 6,5mm",
+            "categoria": "Aviamento",
+            "subcategoria": "",
+            "qualidade": 10,
+            "altura": null,
+            "largura": null,
+            "comprimento": null,
+            "peso": 0,
+            "unidade_de_medida": null,
+            "unidades": 23
+        }
+    }
+]

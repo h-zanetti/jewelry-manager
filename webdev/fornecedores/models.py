@@ -49,6 +49,11 @@ class DadosBancarios(models.Model):
     agencia = models.CharField(_('Agência'), max_length=10, null=True, blank=True)
     numero = models.CharField(_('Número da Conta'), max_length=50, help_text='Ou chave do Pix')
 
+class Documento(models.Model):
+    nome = models.CharField(_('Documento'), max_length=20, help_text='Exemplos: CNPJ, IE')
+    numero = models.CharField(_('Número'), max_length=20)
+
+
 class Fornecedor(models.Model):
     foto = models.ImageField(_('Foto do Fornecedor'), upload_to='fornecedores', default='default.jpg', blank=True, null=True)
     nome = models.CharField(_('Nome'), max_length=150)
@@ -56,7 +61,7 @@ class Fornecedor(models.Model):
     telefones = models.ManyToManyField(Telefone, verbose_name=_('Telefones'), blank=True)
     localizacoes = models.ManyToManyField(Local, verbose_name=_('Localizações'), blank=True)
     fornecimento = models.ManyToManyField(Fornecimento, verbose_name=_('Fornecimentos'), blank=True)
-    documento = models.CharField(_('Documento'), max_length=20, help_text='Digite o CNPJ ou IE do fornecedor.', blank=True, null=True)
+    documentos = models.ManyToManyField(Documento, verbose_name=_('Documentos'), blank=True)
     dados_bancarios = models.ManyToManyField(DadosBancarios, verbose_name=_('Dados Bancários'), blank=True)
 
     def __str__(self):

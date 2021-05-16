@@ -1,0 +1,491 @@
+[
+    {
+        "model": "fornecedores.Fornecimento",
+        "pk": 1,
+        "fields": {
+            "nome": "Fornitura",
+            "qualidade": 10
+        }
+    },
+    {
+        "model": "fornecedores.Fornecimento",
+        "pk": 2,
+        "fields": {
+            "nome": "Embalagens",
+            "qualidade": 8
+        }
+    },
+    {
+        "model": "fornecedores.Fornecimento",
+        "pk": 3,
+        "fields": {
+            "nome": "Joias em atacado",
+            "qualidade": 0
+        }
+    },
+    {
+        "model": "fornecedores.Fornecimento",
+        "pk": 4,
+        "fields": {
+            "nome": "Cravador",
+            "qualidade": 10
+        }
+    },
+    {
+        "model": "fornecedores.Fornecimento",
+        "pk": 5,
+        "fields": {
+            "nome": "Jade stone",
+            "qualidade": 8
+        }
+    },
+    {
+        "model": "fornecedores.Fornecimento",
+        "pk": 6,
+        "fields": {
+            "nome": "Pedras brutas",
+            "qualidade": 5
+        }
+    },
+    {
+        "model": "fornecedores.Fornecimento",
+        "pk": 7,
+        "fields": {
+            "nome": "Pedras brutas",
+            "qualidade": 5
+        }
+    },
+    {
+        "model": "fornecedores.Fornecimento",
+        "pk": 8,
+        "fields": {
+            "nome": "Pedra Fio",
+            "qualidade": 5
+        }
+    },
+    {
+        "model": "fornecedores.email",
+        "pk": 1,
+        "fields": {
+            "email": "cadastro@luisdelucia.com.br"
+        }
+    },
+    {
+        "model": "fornecedores.telefone",
+        "pk": 2,
+        "fields": {
+            "telefone": 31160034
+        }
+    },
+    {
+        "model": "fornecedores.telefone",
+        "pk": 3,
+        "fields": {
+            "telefone": 971783192
+        }
+    },
+    {
+        "model": "fornecedores.telefone",
+        "pk": 4,
+        "fields": {
+            "telefone": 961891638
+        }
+    },
+    {
+        "model": "fornecedores.local",
+        "pk": 1,
+        "fields": {
+            "pais": "Brasil",
+            "estado": "SP",
+            "cidade": "São Paulo",
+            "bairro": "Centro",
+            "endereco": "Rua Barão de Paranapiacaba, 57",
+            "cep": 1004000
+        }
+    },
+    {
+        "model": "fornecedores.dadosbancarios",
+        "pk": 1,
+        "fields": {
+            "tipo_de_transacao": "cc",
+            "banco": "Itau",
+            "agencia": "0440",
+            "numero": "712719"
+        }
+    },
+    {
+        "model": "fornecedores.dadosbancarios",
+        "pk": 2,
+        "fields": {
+            "tipo_de_transacao": "cc",
+            "banco": "Banco do Brasil",
+            "agencia": "1815",
+            "numero": "231061"
+        }
+    },
+    {
+        "model": "fornecedores.dadosbancarios",
+        "pk": 3,
+        "fields": {
+            "tipo_de_transacao": "cc",
+            "banco": "Santander",
+            "agencia": "0013",
+            "numero": "010626209"
+        }
+    },
+    {
+        "model": "fornecedores.dadosbancarios",
+        "pk": 4,
+        "fields": {
+            "tipo_de_transacao": "cc",
+            "banco": "Itau",
+            "agencia": "0593",
+            "numero": "48930-5"
+        }
+    },
+    {
+        "model": "fornecedores.dadosbancarios",
+        "pk": 5,
+        "fields": {
+            "tipo_de_transacao": "cc",
+            "banco": "Itau",
+            "agencia": "0593",
+            "numero": "48930-5"
+        }
+    },
+    {
+        "model": "fornecedores.dadosbancarios",
+        "pk": 6,
+        "fields": {
+            "tipo_de_transacao": "cc",
+            "banco": "Bradesco",
+            "agencia": "0349",
+            "numero": "01501470"
+        }
+    },
+    {
+        "model": "fornecedores.dadosbancarios",
+        "pk": 7,
+        "fields": {
+            "tipo_de_transacao": "cc",
+            "banco": "Santander",
+            "agencia": "4615",
+            "numero": "010101438"
+        }
+    },
+    {
+        "model": "fornecedores.dadosbancarios",
+        "pk": 8,
+        "fields": {
+            "tipo_de_transacao": "cc",
+            "banco": "Santander",
+            "agencia": "4615",
+            "numero": "010101438"
+        }
+    },
+    {
+        "model": "fornecedores.dadosbancarios",
+        "pk": 9,
+        "fields": {
+            "tipo_de_transacao": "cc",
+            "banco": "Caixa Econômica Federal",
+            "agencia": "0235",
+            "numero": "32096"
+        }
+    },
+    {
+        "model": "fornecedores.dadosbancarios",
+        "pk": 10,
+        "fields": {
+            "tipo_de_transacao": "px",
+            "banco": "Santander",
+            "agencia": "0013",
+            "numero": "ca2fa674-81b8-456e-a91b-192169408563"
+        }
+    },
+    {
+        "model": "fornecedores.dadosbancarios",
+        "pk": 11,
+        "fields": {
+            "tipo_de_transacao": "cc",
+            "banco": "Bradesco",
+            "agencia": "0500",
+            "numero": "0424110"
+        }
+    },
+    {
+        "model":"fornecedores.documento",
+        "pk": 1,
+        "fields": {
+            "nome": "CNPJ",
+            "numero": 5125918000181
+        }
+    },
+    {
+        "model":"fornecedores.documento",
+        "pk": 2,
+        "fields": {
+            "nome": "IE",
+            "numero": 116393035115
+        }
+    },
+    {
+        "model": "fornecedores.fornecedor",
+        "pk": 1,
+        "fields": {
+            "nome": "Ferri Ferrite",
+            "documentos": [1,2],
+            "emails": [],
+            "telefones": [],
+            "localizacoes": [],
+            "fornecimento": [],
+            "dados_bancarios": [1,2]
+        }
+    },
+    {
+        "model": "fornecedores.fornecedor",
+        "pk": 2,
+        "fields": {
+            "nome": "Prásite",
+            "documentos": [],
+            "emails": [],
+            "telefones": [],
+            "localizacoes": [],
+            "fornecimento": [],
+            "dados_bancarios": [3, 10]
+        }
+    },
+    {
+        "model":"fornecedores.documento",
+        "pk": 3,
+        "fields": {
+            "nome": "CNPJ",
+            "numero": 56293657000149
+        }
+    },
+    {
+        "model": "fornecedores.fornecedor",
+        "pk": 3,
+        "fields": {
+            "nome": "Jen Stone",
+            "documentos": [3],
+            "emails": [],
+            "telefones": [],
+            "localizacoes": [],
+            "fornecimento": [],
+            "dados_bancarios": [4, 5]
+        }
+    },
+    {
+        "model":"fornecedores.documento",
+        "pk": 4,
+        "fields": {
+            "nome": "CNPJ",
+            "numero": 11948114079
+        }
+    },
+    {
+        "model": "fornecedores.fornecedor",
+        "pk": 4,
+        "fields": {
+            "nome": "Brasmil",
+            "documentos": [4],
+            "emails": [],
+            "telefones": [],
+            "localizacoes": [],
+            "fornecimento": [],
+            "dados_bancarios": [6,7,8]
+        }
+    },
+    {
+        "model": "fornecedores.fornecedor",
+        "pk": 5,
+        "fields": {
+            "nome": "Gustavo",
+            "documentos": [],
+            "emails": [],
+            "telefones": [],
+            "localizacoes": [],
+            "fornecimento": [],
+            "dados_bancarios": []
+        }
+    },
+    {
+        "model": "fornecedores.fornecedor",
+        "pk": 6,
+        "fields": {
+            "nome": "Gustavo",
+            "documentos": [],
+            "emails": [],
+            "telefones": [],
+            "localizacoes": [],
+            "fornecimento": [],
+            "dados_bancarios": []
+        }
+    },
+    {
+        "model":"fornecedores.documento",
+        "pk": 5,
+        "fields": {
+            "nome": "CNPJ",
+            "numero": 61288072000170
+        }
+    },
+    {
+        "model": "fornecedores.fornecedor",
+        "pk": 7,
+        "fields": {
+            "nome": "Scalen",
+            "documentos": [5],
+            "emails": [],
+            "telefones": [],
+            "localizacoes": [],
+            "fornecimento": [],
+            "dados_bancarios": [9]
+        }
+    },
+    {
+        "model":"fornecedores.documento",
+        "pk": 6,
+        "fields": {
+            "nome": "CNPJ",
+            "numero": 4216779000138
+        }
+    },
+    {
+        "model": "fornecedores.fornecedor",
+        "pk": 9,
+        "fields": {
+            "nome": "Luis de Lucia",
+            "documentos": [6],
+            "emails": [
+                1
+            ],
+            "telefones": [
+                2
+            ],
+            "localizacoes": [
+                1
+            ],
+            "fornecimento": [
+                1,
+                2
+            ],
+            "dados_bancarios": [11]
+        }
+    },
+    {
+        "model": "fornecedores.fornecedor",
+        "pk": 10,
+        "fields": {
+            "nome": "Roldão",
+            "documentos": [],
+            "emails": [],
+            "telefones": [
+                3
+            ],
+            "localizacoes": [
+                1
+            ],
+            "fornecimento": [
+                1,
+                2,
+                3
+            ],
+            "dados_bancarios": []
+        }
+    },
+    {
+        "model": "fornecedores.fornecedor",
+        "pk": 11,
+        "fields": {
+            "nome": "Israel",
+            "documentos": [],
+            "emails": [],
+            "telefones": [
+                4
+            ],
+            "localizacoes": [
+                1
+            ],
+            "fornecimento": [
+                4
+            ],
+            "dados_bancarios": []
+        }
+    },
+    {
+        "model": "fornecedores.fornecedor",
+        "pk": 12,
+        "fields": {
+            "nome": "Jade stone",
+            "documentos": [],
+            "emails": [],
+            "telefones": [],
+            "localizacoes": [],
+            "fornecimento": [
+                6
+            ],
+            "dados_bancarios": []
+        }
+    },
+    {
+        "model": "fornecedores.fornecedor",
+        "pk": 13,
+        "fields": {
+            "nome": "Mundo encantado",
+            "documentos": [],
+            "emails": [],
+            "telefones": [],
+            "localizacoes": [],
+            "fornecimento": [
+                8
+            ],
+            "dados_bancarios": []
+        }
+    },
+    {
+        "model": "fornecedores.servico",
+        "pk": 3,
+        "fields": {
+            "data": "2021-02-08",
+            "fornecedor": 3,
+            "nome": "Safira Branca 2mm",
+            "qualidade": 5,
+            "total_pago": "12.50"
+        }
+    },
+    {
+        "model": "fornecedores.servico",
+        "pk": 4,
+        "fields": {
+            "data": "2017-08-01",
+            "fornecedor": 11,
+            "nome": "Cravação",
+            "qualidade": 10,
+            "total_pago": "5.00"
+        }
+    },
+    {
+        "model": "fornecedores.servico",
+        "pk": 5,
+        "fields": {
+            "data": "2017-08-01",
+            "fornecedor": 11,
+            "nome": "Cravação",
+            "qualidade": 10,
+            "total_pago": "5.00"
+        }
+    },
+    {
+        "model": "fornecedores.servico",
+        "pk": 6,
+        "fields": {
+            "data": "2017-08-01",
+            "fornecedor": 4,
+            "nome": "Rhodium Negro",
+            "qualidade": 10,
+            "total_pago": "50.00"
+        }
+    }
+]

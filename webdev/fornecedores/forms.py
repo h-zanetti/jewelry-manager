@@ -9,7 +9,7 @@ class FornecedorForm(forms.ModelForm):
 class EditarFornecedorForm(forms.ModelForm):
     class Meta:
         model = Fornecedor
-        fields = ('foto', 'nome', 'documento')
+        fields = ('foto', 'nome')
 
 class FornecimentoForm(forms.ModelForm):
     class Meta:
