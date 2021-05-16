@@ -1,6 +1,6 @@
 import sys, os
 
-INTERP = "/home/wwagah/repositories/virtualenvs/jewelry-manager-env/bin/python"
+INTERP = "/root/.local/share/virtualenvs/jewelry-manager-l3Kjw74_/bin/python"
 
 if sys.executable != INTERP: os.execl(INTERP, INTERP, *sys.argv)
 
