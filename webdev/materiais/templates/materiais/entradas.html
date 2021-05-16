@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load bootstrap5 %}
+{% load humanize %}
 
 {% block content %}
 
@@ -37,7 +38,7 @@
                 <td>{{ entrada.data }}</td>
                 <td>{{ entrada.fornecedor.nome }}</td>
                 <td>{{ entrada.unidades }}</td>
-                <td>{{ entrada.total_pago }}</td>
+                <td>R$ {{ entrada.total_pago|intcomma }}</td>
                 <td>
                     <ul class="list-inline m-0">
                         <li class="list-inline-item me-3">

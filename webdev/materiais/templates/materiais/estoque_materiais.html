@@ -25,8 +25,7 @@
                 <th>#</th>
                 <th>Entrada</th>
                 <th>Nome</th>
-                <th>Categoria</th>
-                <th>Subcategoria</th>
+                <th>Categoria (Subcategoria)</th>
                 <th>Qualidade</th>
                 <th>Peso</th>
                 <th>Estoque</th>
@@ -37,10 +36,14 @@
             {% for material in materiais %}
             <tr>
                 <th scope="col">{{ material.id }}</th>
-                <td>{{ material.entrada.data|date:"d-m-Y" }}</td>
+                <td>{{ material.entrada.data|date:"d-m-Y"|default:"Indisponível" }}</td>
                 <td>{{ material.nome }}</td>
-                <td>{{ material.categoria }}</td>
-                <td>{{ material.subcategoria }}</td>
+                <td>
+                    {{ material.categoria }}
+                    {% if material.subcategoria %}
+                        ({{ material.subcategoria|default:"Nenhuma" }})
+                    {% endif %}
+                </td>
                 <td>{{ material.qualidade }}</td>
                 <td>{{ material.get_peso }}</td>
                 <td>{{ material.unidades }}</td>
@@ -107,14 +110,13 @@
                                             </div>
                                         </div>
                                         <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                                                <a href="{% url 'materiais:editar_material' material.id %}" class="btn btn-primary">Editar</a>
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        </li>
-                        <li class="list-inline-item me-3">
-                            <a href="{% url 'materiais:editar_material' material.id %}"><i class="fas fa-wrench link-dark"></i></a>
                         </li>
                         <li class="list-inline-item">
                             <form action="{% url 'materiais:deletar_material' material.id %}" method="POST">
@@ -127,7 +129,7 @@
                                         <div class="modal-content">
                                             <div class="modal-header">
                                                 <h1 class="modal-title display-6" id="modelDeletarMaterial{{ material.id }}Label">
-                                                    Deletar <strong>{{ material.nome }} #{{ material.id }}</strong>
+                                                    <strong>Deletar {{ material.nome }} #{{ material.id }}</strong>
                                                 </h1>
                                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                             </div>
@@ -142,7 +144,6 @@
                                             </div>
                                             <div class="modal-footer">
                                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
-                                                <button type="submit" class="btn btn-danger">Deletar</button>
                                             </div>
                                         </div>
                                     </div>
