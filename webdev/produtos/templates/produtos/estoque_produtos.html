@@ -40,9 +40,9 @@
             <td>{{ produto.colecao }}</td>
             <td>{{ produto.familia|default:"Nenhuma" }}</td>
             <td>{{ produto.categorias.all|join:", "|default:"Nenhuma" }}</td>
-            <td>{{ produto.data_criacao|date:"d/m/Y"|default:"Indisponível" }}</td>
+            <td>{{ produto.data_criacao|date:"d-m-Y"|default:"Indisponível" }}</td>
             <td>{{ produto.unidades }}</td>
-            <td>{{ produto.tamanho }}</td>
+            <td>{{ produto.tamanho|default:"Indisponível" }}</td>
             <td>
               <ul class="list-inline m-0">
                 <li class="list-inline-item me-3">

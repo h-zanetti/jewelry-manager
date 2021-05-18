@@ -2,9 +2,8 @@ from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.http import HttpResponseRedirect, Http404
 from django.contrib.auth.decorators import login_required
-from .models import Produto, Categoria, MaterialDoProduto
-from .forms import ProdutoForm, CategoriaForm, MaterialDoProdutoForm
-from webdev.fornecedores.models import Servico
+from .models import Produto, MaterialDoProduto
+from .forms import ProdutoForm, MaterialDoProdutoForm
 from webdev.fornecedores.forms import ServicoForm
 
 @login_required
@@ -22,7 +21,7 @@ def novo_produto(request):
         'form': form
     }
 
-    return render(request, 'base_form_lg.html', context)
+    return render(request, 'produtos/novo_produto.html', context)
 
 @login_required
 def editar_produto(request, produto_id):

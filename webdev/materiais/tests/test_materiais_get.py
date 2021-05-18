@@ -1,38 +1,24 @@
 import pytest
 from django.urls import reverse
 from django.contrib.auth.models import User
-from webdev.materiais.models import Entrada, Material
-from webdev.fornecedores.models import Fornecedor
+from webdev.materiais.models import Material
 from pytest_django.asserts import assertContains
 
 @pytest.fixture
-def fornecedor(db):
-    return Fornecedor.objects.create(nome='Zé Comédia')
-
-@pytest.fixture
-def entrada(fornecedor):
-    return Entrada.objects.create(
-        fornecedor=fornecedor,
-        unidades=3,
-        total_pago=1000
-    )
-
-@pytest.fixture
-def material(entrada):
+def material(db):
     return Material.objects.create(
-        entrada=entrada,
+        unidades_compradas=3,
+        total_pago=1000,
         nome='Esmeralda',
         categoria='Pedra',
         qualidade=5,
-        unidades=3,
-        peso=12,
-        unidade_de_medida='g'
+        estoque=3,
     )
 
 # Estoque de matéria prima
 @pytest.fixture
 def resposta_estoque(client, material):
-    usr = User.objects.create_user(username='TestUser', password='MinhaSenha123')
+    User.objects.create_user(username='TestUser', password='MinhaSenha123')
     client.login(username='TestUser', password='MinhaSenha123')
     resp = client.get(reverse('materiais:estoque_materiais'))
     return resp
@@ -61,6 +47,20 @@ def test_btn_editar_material_presente(resposta_estoque, material):
 def test_btn_deletar_material_presente(resposta_estoque, material):
     assertContains(resposta_estoque, f'<form action="{reverse("materiais:deletar_material", kwargs={"material_id": material.id})}"')
 
-def test_get_entradas_nao_autenticado_status_code(client, db):
-    resp = client.get(reverse('materiais:estoque_materiais'))
-    assert resp.status_code == 302
+
+# Nova Entrada de Matéria Prima
+@pytest.fixture
+def resposta_nova_entrada(client, db):
+    User.objects.create_user(username='TestUser', password='MinhaSenha123')
+    client.login(username='TestUser', password='MinhaSenha123')
+    resp = client.get(reverse('materiais:nova_entrada'))
+    return resp
+
+def test_nova_entrada_status_code(resposta_nova_entrada):
+    assert resposta_nova_entrada.status_code == 200
+
+def test_formulario_nova_entrada_presente(resposta_nova_entrada):
+    assertContains(resposta_nova_entrada, f'<form action="{reverse("materiais:nova_entrada")}"')
+
+def test_btn_submit_presente(resposta_nova_entrada):
+    assertContains(resposta_nova_entrada, '<button type="submit"')
