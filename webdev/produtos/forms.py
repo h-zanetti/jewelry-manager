@@ -14,7 +14,7 @@ class ProdutoForm(forms.ModelForm):
     )
     class Meta:
         model = Produto
-        fields = '__all__'
+        exclude = ('servicos', 'materiais')
 
 class MaterialDoProdutoForm(forms.ModelForm):
     class Meta:
