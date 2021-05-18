@@ -30,7 +30,7 @@ class MaterialDoProduto(models.Model):
 
     def get_custo(self):
         preco = 0
-        if self.peso != self.material.peso:
+        if self.peso:
             preco = self.peso * self.material.get_preco_por_peso()
         else:
             preco= self.unidades * self.material.get_preco_unitario()
@@ -49,7 +49,7 @@ class Produto(models.Model):
     materiais = models.ManyToManyField(MaterialDoProduto, verbose_name=_("Materiais"), blank=True)
 
     def __str__(self):
-        return self.nome
+        return f"{self.nome}"
 
     def get_custo_de_producao(self):
         custo = 0
