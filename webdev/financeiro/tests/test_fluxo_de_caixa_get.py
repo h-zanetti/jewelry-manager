@@ -70,6 +70,16 @@ def test_vendas_presente(resposta_fluxo_de_caixa, lista_de_vendas):
     for venda in lista_de_vendas:
         assertContains(resposta_fluxo_de_caixa, venda.cliente.get_nome_completo())
 
+def test_saldo_presente(resposta_fluxo_de_caixa, lista_de_vendas, lista_de_despesas):
+    receitas = []
+    for venda in lista_de_vendas:
+        receitas.append(venda.get_preco_parcela())
+    despesas = []
+    for despesa in lista_de_despesas:
+        despesas.append(despesa.total_pago)
+    saldo = str(sum(receitas) - sum(despesas)).split('.')
+    assertContains(resposta_fluxo_de_caixa, ','.join([saldo[0], saldo[1]]))
+
 def test_btn_nova_despesa_presente(resposta_fluxo_de_caixa):
     assertContains(
         resposta_fluxo_de_caixa,

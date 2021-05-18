@@ -1,10 +1,18 @@
 {% extends 'base.html' %}
 {% load bootstrap5 %}
 {% load financeiro %}
+{% load humanize %}
 
 {% block content %}
 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-    <h1 class="h2">Fluxo de Caixa - {{ data|date:"F, Y" }} </h1>
+    <h1 class="h2">
+        Fluxo de Caixa - {{ data|date:"F, Y" }}
+        {% if saldo >= 0%}
+        <span class="text-success ms-2">+{{ saldo|intcomma }}</span>
+        {% else %}
+        <span class="text-danger ms-2">{{ saldo|intcomma }}</span>
+        {% endif %}
+    </h1>
     <div class="btn-toolbar mb-2 mb-md-0">
         <button type="button" class="btn btn-sm btn-outline-secondary">Selecionar Data</button>
         <div class="btn-group ms-2">
@@ -23,7 +31,6 @@
                 <th scope="col">Tipo</th>
                 <th scope="col">Categoria</th>
                 <th scope="col">Valor (parcela)</th>
-                <th scope="col">Saldo</th>
                 <th scope="col">Ações</th>
             </tr>
         </thead>
@@ -47,7 +54,6 @@
                         R$ {{ t.total_pago }}
                     {% endif %}
                 </td>
-                <td></td>
                 <td>
                     <ul class="list-inline m-0">
                         <li class="list-inline-item me-3">

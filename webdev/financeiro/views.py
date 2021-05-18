@@ -1,8 +1,8 @@
 from dateutil.relativedelta import relativedelta
 import datetime as dt
-from math import ceil
 from itertools import chain
-from django.db.models import F
+from django.db.models import Sum
+from django.db.models.fields import DecimalField, FloatField
 from django.urls import reverse
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
@@ -180,20 +180,28 @@ def deletar_venda(request, venda_id):
 @login_required
 def fluxo_de_caixa(request, ano, mes):
     vendas_do_mes = Venda.objects.filter(data__year=ano, data__month=mes)
-    vendas_parceladas = Venda.objects.filter(
+    vendas_anteriores = Venda.objects.filter(
         data__lt=dt.date(ano, mes, 1),
         ultima_parcela__gte=dt.date(ano, mes, 1)
     )
     despesas_do_mes = Despesa.objects.filter(data__year=ano, data__month=mes)
     despesas_fixas = Despesa.objects.filter(repetir__in=['d', 'm'], data__lt=dt.date(ano, mes, 1))
     despesas_anuais = Despesa.objects.filter(repetir='a', data__lt=dt.date(ano, 1, 1), data__month=mes)
+    
+    receita = 0
+    for venda in chain(vendas_do_mes, vendas_anteriores):
+        receita += venda.get_preco_parcela()
+    despesas =  0
+    for despesa in chain(despesas_do_mes, despesas_fixas, despesas_anuais):
+        despesas += despesa.total_pago
 
     context = {
+        'data': dt.date(ano, mes, 1),
+        'saldo': receita - despesas,
         'transacoes': sorted(
-            chain(vendas_do_mes, vendas_parceladas, despesas_do_mes, despesas_fixas, despesas_anuais),
+            chain(vendas_do_mes, vendas_anteriores, despesas_do_mes, despesas_fixas, despesas_anuais),
             key=lambda instance: instance.data
         ),
-        'data': dt.date(ano, mes, 1),
     }
 
     return render(request, 'financeiro/fluxo_de_caixa.html', context)
