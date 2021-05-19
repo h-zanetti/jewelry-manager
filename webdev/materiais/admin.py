@@ -1,3 +1,8 @@
-from django.contrib import admin
+# from django.contrib import admin
+from import_export import resources
+from .models import Material
 
-# Register your models here.
+class MaterialResource(resources.ModelResource):
+    class Meta:
+        model = Material
+        exclude = ('foto',)

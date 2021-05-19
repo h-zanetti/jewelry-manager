@@ -26,7 +26,10 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.humanize',
+    # Third party
     'bootstrap5',
+    'import_export',
+    # Locals
     'webdev.produtos',
     'webdev.users',
     'webdev.fornecedores',
@@ -123,3 +126,7 @@ MEDIA_URL = '/jewelry/media/'
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Django Import Export setup
+
+IMPORT_EXPORT_USE_TRANSACTIONS = True
