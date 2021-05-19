@@ -360,7 +360,27 @@
                     <li class="list-inline-item">
                         <form action="{% url 'fornecedores:deletar_fornecedor' fornecedor.id %}" method="POST">
                             {% csrf_token %}
-                            <button type="submit" class="btn p-0 pb-1"><i class="fas fa-trash link-dark"></i></button>
+                            <!-- Trigger Modal Remover Produto -->
+                            <a href="#modalDeletarFornecedor{{ fornecedor.id }}" data-bs-toggle="modal"><i class="fas fa-trash link-dark"></i></a>
+                            <!-- Modal Remover Produto -->
+                            <div class="modal fade" id="modalDeletarFornecedor{{ fornecedor.id }}" tabindex="-1" aria-labelledby="modalDeletarFornecedor{{ fornecedor.id }}Label" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                <div class="modal-header">
+                                    <h1 class="modal-title display-6" id="modalDeletarFornecedor{{ fornecedor.id }}Label">{{ fornecedor.nome }} <strong>#{{ fornecedor.id }}</strong></h1>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <p>Você tem certeza que deseja deletar este fornecedor?</p>
+                                    <p><strong>Ele será deletado para sempre!</strong></p>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="submit" class="btn btn-danger">Deletar</button>
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                                </div>
+                                </div>
+                            </div>
+                            </div>
                         </form>
                     </li>
                 </ul>
