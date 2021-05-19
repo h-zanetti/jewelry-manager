@@ -1,8 +1,7 @@
 from dateutil.relativedelta import relativedelta
 import datetime as dt
+import calendar
 from itertools import chain
-from django.db.models import Sum
-from django.db.models.fields import DecimalField, FloatField
 from django.urls import reverse
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
@@ -179,6 +178,7 @@ def deletar_venda(request, venda_id):
 # Fluxo de Caixa
 @login_required
 def fluxo_de_caixa(request, ano, mes):
+    # Fluxo de caixa mensal - Dados da tabela
     vendas_do_mes = Venda.objects.filter(data__year=ano, data__month=mes)
     vendas_anteriores = Venda.objects.filter(
         data__lt=dt.date(ano, mes, 1),
@@ -188,20 +188,47 @@ def fluxo_de_caixa(request, ano, mes):
     despesas_fixas = Despesa.objects.filter(repetir__in=['d', 'm'], data__lt=dt.date(ano, mes, 1))
     despesas_anuais = Despesa.objects.filter(repetir='a', data__lt=dt.date(ano, 1, 1), data__month=mes)
     
+    # Saldo do mes
     receita = 0
     for venda in chain(vendas_do_mes, vendas_anteriores):
         receita += venda.get_preco_parcela()
     despesas =  0
     for despesa in chain(despesas_do_mes, despesas_fixas, despesas_anuais):
         despesas += despesa.total_pago
-
+    
+    # Dados anuais para o gráfico
+    # Vendas
+    transacoes = sorted(
+        chain(vendas_do_mes, vendas_anteriores, despesas_do_mes, despesas_fixas, despesas_anuais),
+        key=lambda instance: instance.data
+    )
+    dados = {1:0, 2:0, 3:0, 4:0, 5:0, 6:0, 7:0, 8:0, 9:0, 10:0, 11:0, 12:0}
+    vendas_ano = Venda.objects.filter(data__year=ano)
+    for venda in vendas_ano:
+        parcelas = venda.get_todas_parcelas()
+        for parcela_data in parcelas:
+            if parcela_data.year == ano:
+                dados[parcela_data.month] += float(parcelas[parcela_data])
+    # Despesas variáveis
+    despesas_variaveis_ano = Despesa.objects.filter(data__year=ano, repetir='n')
+    for despesa in despesas_variaveis_ano:
+        dados[despesa.data.month] -= float(despesa.total_pago)
+    # Despesas fixas
+    despesas_fixas_ano = Despesa.objects.exclude(repetir='n')
+    for despesa in despesas_fixas_ano:
+        if despesa.repetir == 'a':
+            dados[despesa.data.month] -= float(despesa.total_pago)
+        elif despesa.repetir == 'm':
+            for m in range(despesa.data.month, 13):
+                dados[m] -= float(despesa.total_pago)
+    
     context = {
         'data': dt.date(ano, mes, 1),
         'saldo': receita - despesas,
-        'transacoes': sorted(
-            chain(vendas_do_mes, vendas_anteriores, despesas_do_mes, despesas_fixas, despesas_anuais),
-            key=lambda instance: instance.data
-        ),
+        'transacoes': transacoes,
+        'nomes': ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'],
+        'dados': list(dados.values()),
+        'anos': [ano-2, ano-1, ano, ano+1, ano+2],
     }
 
     return render(request, 'financeiro/fluxo_de_caixa.html', context)

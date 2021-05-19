@@ -4,23 +4,75 @@
 {% load humanize %}
 
 {% block content %}
-<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 mb-3 border-bottom">
     <h1 class="h2">
-        Fluxo de Caixa - {{ data|date:"F, Y" }}
+        Fluxo de Caixa
         {% if saldo >= 0%}
-        <span class="text-success ms-2">+{{ saldo|intcomma }}</span>
+        <span class="text-success">+{{ saldo|intcomma }}</span>
         {% else %}
-        <span class="text-danger ms-2">{{ saldo|intcomma }}</span>
+        <span class="text-danger">{{ saldo|intcomma }}</span>
         {% endif %}
     </h1>
     <div class="btn-toolbar mb-2 mb-md-0">
-        <button type="button" class="btn btn-sm btn-outline-secondary">Selecionar Data</button>
-        <div class="btn-group ms-2">
+        <div class="dropdown me-1">
+            <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="dropdownMenuButton2" data-bs-toggle="dropdown" aria-expanded="false">
+                {{ data|date:"F" }}
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton2">
+                {% for mes in nomes %}
+                    <li><a class="dropdown-item {% if data.month == forloop.counter %}active{% endif %}" href="{% url 'financeiro:fluxo_de_caixa' data.year forloop.counter %}">{{ mes }}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="dropdown me-1">
+            <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                {{ data.year }}
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                {% for ano in anos %}
+                    <li><a class="dropdown-item {% if data.year == ano %}active{% endif %}" href="{% url 'financeiro:fluxo_de_caixa' ano data.month %}">{{ ano }}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="btn-group" role="group">
             <a href="{% url 'financeiro:nova_venda' %}" class="btn btn-sm btn-outline-secondary">Nova Venda</a>
             <a href="{% url 'financeiro:nova_despesa' %}" class="btn btn-sm btn-outline-secondary">Nova Despesa</a>
         </div>
     </div>
 </div>
+
+<canvas class="my-4 w-100" id="myChart" width="900" height="380"></canvas>
+<script>
+var ctx = document.getElementById('myChart').getContext('2d');
+var myChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: {{ nomes|safe }},
+        datasets: [{
+            data: {{ dados|safe }},
+            backgroundColor: [
+                '#006FE6'
+            ],
+            borderColor: [
+                '#006FE6'
+            ],
+            borderWidth: 1
+        }]
+    },
+    options: {
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        },
+        plugins: {
+            legend: {
+                display: false
+            }
+        }
+    }
+});
+</script>
 
 <div class="table-responsive">
     <table class="table">
