@@ -1,9 +1,12 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponseRedirect, Http404
+from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.urls import reverse
+from import_export import resources
 from webdev.materiais.models import Material
 from webdev.materiais.forms import MaterialForm
+from .admin import MaterialResource
+from tablib import Dataset
 
 @login_required
 def estoque_materiais(request):
@@ -66,3 +69,24 @@ def deletar_material(request, material_id):
     if request.method == 'POST':
         material.delete()
     return HttpResponseRedirect(reverse('materiais:estoque_materiais'))
+
+@login_required
+def exportar_materiais(request):
+    dados = MaterialResource().export()
+    resposta = HttpResponse(dados.xls, content_type='application/vnd.ms-excel')
+    resposta['Content-Disposition'] = 'attachment; filename=materiais.xls'
+    return resposta
+
+@login_required
+def importar_materiais(request):
+    if request.method == 'POST':
+        resource = MaterialResource()
+        dataset = Dataset()
+        novos_materiais = request.FILES['myfile']
+        dataset.load(novos_materiais.read(), 'xls')
+        resultado = resource.import_data(dataset, dry_run=True)
+        if not resultado.has_errors():
+            resource.import_data(dataset, dry_run=False)
+            return redirect('materiais:estoque_materiais')
+        
+    return render(request, 'base_form_file.html', {'title': "Importação de matérias primas"})

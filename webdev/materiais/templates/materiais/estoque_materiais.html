@@ -9,8 +9,8 @@
     {% endif %}
     <div class="btn-toolbar mb-2 mb-md-0">
         <div class="btn-group me-2">
-            <button type="button" class="btn btn-sm btn-outline-secondary">Share</button>
-            <button type="button" class="btn btn-sm btn-outline-secondary">Export</button>
+            <a href="{% url 'materiais:importar_materiais' %}" class="btn btn-sm btn-outline-secondary">Importar</a>
+            <a href="{% url 'materiais:exportar_materiais' %}" class="btn btn-sm btn-outline-secondary">Exportar</a>
         </div>
         <a href="{% url 'materiais:nova_entrada' %}" class="btn btn-sm btn-outline-secondary">
             Nova Entrada
@@ -36,7 +36,7 @@
             {% for material in materiais %}
             <tr>
                 <th scope="col">{{ material.id }}</th>
-                <td>{{ material.entrada.data|date:"d-m-Y"|default:"Indisponível" }}</td>
+                <td>{{ material.entrada|date:"d-m-Y"|default:"Indisponível" }}</td>
                 <td>{{ material.nome }}</td>
                 <td>
                     {{ material.categoria }}
@@ -46,7 +46,7 @@
                 </td>
                 <td>{{ material.qualidade }}</td>
                 <td>{{ material.get_peso }}</td>
-                <td>{{ material.unidades }}</td>
+                <td>{{ material.estoque }}</td>
                 <td>
                     <ul class="list-inline m-0">
                         <li class="list-inline-item me-3">
@@ -80,7 +80,7 @@
                                                                 </thead>
                                                                 <tbody>
                                                                     <tr>
-                                                                        <td><strong>Entrada:</strong> {{ material.entrada.data }}</td>
+                                                                        <td><strong>Entrada:</strong> {{ material.entrada|date:"d-m-Y"|default:"Indisponível" }}</td>
                                                                         <td><strong>Qualidade:</strong> {{ material.qualidade }}</td>
                                                                     </tr>
                                                                     <tr>
