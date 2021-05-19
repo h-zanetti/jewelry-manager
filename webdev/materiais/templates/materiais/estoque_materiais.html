@@ -129,20 +129,17 @@
                                         <div class="modal-content">
                                             <div class="modal-header">
                                                 <h1 class="modal-title display-6" id="modelDeletarMaterial{{ material.id }}Label">
-                                                    <strong>Deletar {{ material.nome }} #{{ material.id }}</strong>
+                                                    <strong>{{ material.nome }} #{{ material.id }}</strong>
                                                 </h1>
                                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                             </div>
                                             <div class="modal-body">
                                                 <p>Você tem certeza que deseja deletar este material?</p>
                                                 <p><strong>Ele será deletado para sempre!</strong></p>
-                                                <p><strong>Atenção:</strong> ao clicar em "Deletar" você está apenas removendo o material do estoque. Para excluir também a entrada deste material, selecione a caixa abaixo. </p>
-                                                <input class="form-check-input" type="checkbox" value="" id="deletar_entrada" name="deletar_entrada">
-                                                <label class="form-check-label" for="deletar_entrada">
-                                                    Deletar entrada de matéria prima
                                                 </label>
                                             </div>
                                             <div class="modal-footer">
+                                                <button type="submit" class="btn btn-danger">Deletar</button>
                                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
                                             </div>
                                         </div>
