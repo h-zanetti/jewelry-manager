@@ -1,6 +1,6 @@
-from math import ceil
 from django.db import models
 from django.utils import timezone
+from dateutil.relativedelta import relativedelta
 from django.utils.translation import gettext_lazy as _
 from webdev.produtos.models import Produto
 
@@ -58,13 +58,18 @@ class Venda(models.Model):
         else:
             return None
 
+    def get_todas_parcelas(self):
+        parcelas = {}
+        for i in range(0, self.parcelas):
+            parcelas[self.data + relativedelta(months=i)] = self.get_preco_parcela()
+        return parcelas
+
 class Despesa(models.Model):
     data = models.DateField(_("Data"), default=timezone.now)
     categoria = models.CharField(_("Categoria"), max_length=150)
     total_pago = models.DecimalField(_("Valor"), max_digits=8, decimal_places=2)
     REPETIR_CHOICES = (
         ('n', 'Nunca'),
-        ('d', 'Diariamente'),
         ('m', 'Mensalmente'),
         ('a', 'Anualmente'),
     )
