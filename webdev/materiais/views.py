@@ -84,9 +84,7 @@ def importar_materiais(request):
         dataset = Dataset()
         novos_materiais = request.FILES['myfile']
         dataset.load(novos_materiais.read(), 'xls')
-        resultado = resource.import_data(dataset, dry_run=True)
-        if not resultado.has_errors():
-            resource.import_data(dataset, dry_run=False)
-            return redirect('materiais:estoque_materiais')
+        resource.import_data(dataset)
+        return redirect('materiais:estoque_materiais')
         
     return render(request, 'base_form_file.html', {'title': "Importação de matérias primas"})
