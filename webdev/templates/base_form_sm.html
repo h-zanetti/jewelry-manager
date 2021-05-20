@@ -15,6 +15,7 @@
                 <div class="row">
                     {% csrf_token %}
                     {% bootstrap_form form %}
+                    <input type="hidden" name="next" value="{{ request.GET.next }}">
                 </div>
                 <div class="row mt-2">
                     {% buttons %}

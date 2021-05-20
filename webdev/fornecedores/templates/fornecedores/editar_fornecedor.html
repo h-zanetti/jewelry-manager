@@ -1,0 +1,137 @@
+{% extends 'base.html' %}
+{% load bootstrap5 %}
+
+{% block content %}
+{% if title %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">{{ title }}</h1>
+</div>
+{% endif %}
+
+<div class="container-sm mb-4">
+    <div class="row d-flex justify-content-center">
+        <div class="col-md-9 border shadow px-4 py-3">
+            <form method="POST">
+                {% csrf_token %}
+                <div class="row g-2 mb-3">
+                    <div class="col-12">
+                        <h1 class="display-6">Dados do Fornecedor</h1>
+                    </div>
+                    <div class="col-12">
+                        {% bootstrap_field fornecedor_form.nome %}
+                    </div>
+                    <div class="col-12">
+                        <div class="row g-1">
+                            <div class="col-11">
+                                {% bootstrap_field fornecedor_form.fornecimento %}
+                            </div>
+                            <div class="col-1 align-self-center">
+                                <a href="{% url 'fornecedores:novo_fornecimento' fornecedor.id %}?next={{ request.path|urlencode }}" class="btn btn-outline-secondary round mt-4">
+                                    <i class="fas fa-plus"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row g-2 mb-3 pb-2 border-bottom">
+                    <div class="col-12">
+                        <h1 class="display-6">Endereços de Email</h1>
+                    </div>
+                    {{ email_formset.management_form }}
+                    {% for form in email_formset %}
+                        <div class="col-6">
+                            {% bootstrap_field form.email show_label=False %}
+                        </div>
+                    {% endfor %}
+                </div>
+                <div class="row g-2 mb-3 pb-2 border-bottom">
+                    <div class="col-12">
+                        <h1 class="display-6">Números de Telefone</h1>
+                    </div>
+                    {{ telefone_formset.management_form }}
+                    {% for form in telefone_formset %}
+                        <div class="col-6">
+                            {% bootstrap_field form.telefone show_label=False %}
+                        </div>
+                    {% endfor %}
+                </div>
+                <div class="row gy-2 mb-3 pb-2 border-bottom">
+                    <div class="col-12">
+                        <h1 class="display-6">Dados Bancários</h1>
+                    </div>
+                    {{ dados_bancarios_formset.management_form }}
+                    {% for form in dados_bancarios_formset %}
+                    <div class="col-12">
+                        <div class="row gx-1 gy-2">
+                            <div class="col-4">
+                                {% bootstrap_field form.tipo_de_transacao show_label=False %}
+                            </div>
+                            <div class="col-4">
+                                {% bootstrap_field form.banco show_label=False %}
+                            </div>
+                            <div class="col-4">
+                                {% bootstrap_field form.agencia show_label=False %}
+                            </div>
+                            <div class="col-12">
+                                {% bootstrap_field form.numero show_label=False %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                <div class="row gy-2 mb-3 pb-2 border-bottom">
+                    <div class="col-12">
+                        <h1 class="display-6">Documentos</h1>
+                    </div>
+                    <div class="col-12">
+                        {{ documentos_formset.management_form }}
+                        {% for form in documentos_formset %}
+                        <div class="row gx-1 gy-2">
+                            <div class="col-6">
+                                {% bootstrap_field form.nome show_label=False %}
+                            </div>
+                            <div class="col-6">
+                                {% bootstrap_field form.numero show_label=False %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="row gy-2 mb-3 pb-2">
+                    <div class="col-12">
+                        <h1 class="display-6">Localizações</h1>
+                    </div>
+                    <div class="col-12">
+                        {{ local_formset.management_form }}
+                        {% for form in local_formset %}
+                            <div class="row gx-1 gy-2 mb-3 pb-2 border-bottom">
+                                <div class="col-4">
+                                    {% bootstrap_field form.cidade show_label=False %}
+                                </div>
+                                <div class="col-4">
+                                    {% bootstrap_field form.estado show_label=False %}
+                                </div>
+                                <div class="col-4">
+                                    {% bootstrap_field form.pais show_label=False %}
+                                </div>
+                                <div class="col-6">
+                                    {% bootstrap_field form.cep show_label=False %}
+                                </div>
+                                <div class="col-6">
+                                    {% bootstrap_field form.bairro show_label=False %}
+                                </div>
+                                <div class="col-12">
+                                    {% bootstrap_field form.endereco show_label=False %}
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="row mt-3 px-2">
+                    <button type="submit" class="btn btn-primary">Enviar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
