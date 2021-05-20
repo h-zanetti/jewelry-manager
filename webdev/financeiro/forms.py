@@ -5,7 +5,11 @@ from .models import Despesa, Cliente, Venda
 class DespesaForm(forms.ModelForm):
     data = forms.DateField(
         input_formats=['%d/%m/%Y', '%d-%m-%Y'],
-        widget=forms.DateInput(attrs={'placeholder': 'dd/mm/aaaa'}),
+        widget=forms.DateInput(attrs={'placeholder': 'dd/mm/aaaa', 'class': 'm-0'}),
+    )
+    repetir = forms.ChoiceField(
+        choices=Despesa.REPETIR_CHOICES,
+        initial='n'
     )
     class Meta:
         model = Despesa

@@ -34,7 +34,7 @@ def nova_despesa(request):
         'form': form
     }
 
-    return render(request, 'base_form_md.html', context)
+    return render(request, 'financeiro/nova_despesa.html', context)
 
 @login_required
 def editar_despesa(request, despesa_id):
@@ -56,7 +56,7 @@ def editar_despesa(request, despesa_id):
         'form': form
     }
 
-    return render(request, 'base_form_md.html', context)
+    return render(request, 'financeiro/nova_despesa.html', context)
 
 @login_required
 def deletar_despesa(request, despesa_id):
@@ -88,7 +88,7 @@ def novo_cliente(request):
         'form': form
     }
 
-    return render(request, 'base_form_md.html', context)
+    return render(request, 'financeiro/novo_cliente.html', context)
 
 @login_required
 def editar_cliente(request, cliente_id):
@@ -110,7 +110,7 @@ def editar_cliente(request, cliente_id):
         'form': form
     }
 
-    return render(request, 'base_form_md.html', context)
+    return render(request, 'financeiro/novo_cliente.html', context)
 
 @login_required
 def deletar_cliente(request, cliente_id):
@@ -145,7 +145,7 @@ def nova_venda(request):
         'form': form
     }
 
-    return render(request, 'base_form_md.html', context)
+    return render(request, 'financeiro/nova_venda.html', context)
 
 @login_required
 def editar_venda(request, venda_id):
@@ -167,7 +167,7 @@ def editar_venda(request, venda_id):
         'form': form
     }
 
-    return render(request, 'base_form_md.html', context)
+    return render(request, 'financeiro/nova_venda.html', context)
 
 @login_required
 def deletar_venda(request, venda_id):
