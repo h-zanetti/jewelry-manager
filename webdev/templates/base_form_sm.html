@@ -17,10 +17,8 @@
                     {% bootstrap_form form %}
                     <input type="hidden" name="next" value="{{ request.GET.next }}">
                 </div>
-                <div class="row mt-2">
-                    {% buttons %}
+                <div class="row mt-2 px-4">
                     <button type="submit" class="btn btn-primary w-100">Enviar</button>
-                    {% endbuttons %}
                 </div>
             </form>
         </div>
