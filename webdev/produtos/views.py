@@ -3,8 +3,28 @@ from django.urls import reverse
 from django.http import HttpResponseRedirect, Http404
 from django.contrib.auth.decorators import login_required
 from .models import Produto, MaterialDoProduto
-from .forms import ProdutoForm, MaterialDoProdutoForm
+from .forms import ProdutoForm, MaterialDoProdutoForm, CategoriaForm
 from webdev.fornecedores.forms import ServicoForm
+
+@login_required
+def nova_categoria(request):
+    if request.method == 'POST':
+        form = CategoriaForm(request.POST)
+        if form.is_valid():
+            form.save()
+            next_url = request.POST.get('next')
+            if next_url:
+                return redirect(f'{next_url}')
+            return redirect('produtos:estoque_produtos')
+    else:
+        form = CategoriaForm()
+
+    context = {
+        'title': 'Adicionar Nova Categoria',
+        'form': form
+    }
+
+    return render(request, 'base_form_sm.html', context)
 
 @login_required
 def novo_produto(request):

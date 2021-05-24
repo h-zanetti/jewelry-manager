@@ -1,4 +1,5 @@
 from django import forms
+from django.forms import widgets
 from .models import Produto, Categoria, MaterialDoProduto
 
 class CategoriaForm(forms.ModelForm):
@@ -10,6 +11,13 @@ class ProdutoForm(forms.ModelForm):
     data_criacao = forms.DateField(
         input_formats=['%d/%m/%Y', '%d-%m-%Y'],
         widget=forms.DateInput(attrs={'placeholder': 'dd/mm/aaaa'}),
+        required=False
+    )
+    categorias = forms.ModelMultipleChoiceField(
+        queryset=Categoria.objects.all(),
+        widget=forms.SelectMultiple(
+            attrs={'class': 'rounded-0 rounded-start'}
+        ),
         required=False
     )
     class Meta:

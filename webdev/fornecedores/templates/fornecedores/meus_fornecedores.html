@@ -34,13 +34,13 @@
         <tr>
             <th>{{ fornecedor.id }}</th>
             <td>{{ fornecedor.nome }}</td>
-            {% if fornecedor.telefones.first %}
-                <td>{{ fornecedor.telefones.first }}</td>
+            {% if fornecedor.get_telefones.first %}
+                <td>{{ fornecedor.get_telefones.first }}</td>
             {% else %}
-                <td>{{ fornecedor.emails.first|default:"Nenhum" }}</td>
+                <td>{{ fornecedor.get_emails.first|default:"Nenhum" }}</td>
             {% endif %}
-            <td>{{ fornecedor.localizacoes.first|default:"Nenhuma" }}</td>
-            <td>{{ fornecedor.fornecimento.all|slice:":2"|join:", "|default:"Nenhum" }}</td>
+            <td>{{ fornecedor.get_localizacoes.first|default:"Nenhuma" }}</td>
+            <td>{{ fornecedor.get_fornecimentos.all|slice:":2"|join:", "|default:"Nenhum" }}</td>
             <td>
                 <ul class="list-inline m-0">
                     <li class="list-inline-item me-3">
@@ -49,7 +49,7 @@
                             <div class="modal-dialog modal-lg">
                                 <div class="modal-content">
                                     <div class="modal-header">
-                                        <h1 class="modal-title display-6" id="fornecedor{{ fornecedor.id }}Label">{{ fornecedor.nome }}</h1>
+                                        <h1 class="modal-title display-6" id="fornecedor{{ fornecedor.id }}Label">{{ fornecedor.nome }}{% if fornecedor.get_documentos %} - {{ fornecedor.get_documentos.first}}{% endif %}</h1>
                                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                     </div>
                                     <div class="modal-body">
@@ -86,7 +86,7 @@
                                                                         <a href="{% url 'fornecedores:editar_fornecimento' fornecimento.id %}"><i class="fas fa-wrench link-dark"></i></a>
                                                                     </li>
                                                                     <li class="list-inline-item ms-2">
-                                                                        <form action="{% url 'fornecedores:deletar_fornecimento' fornecimento.id %}" method="POST">
+                                                                        <form action="{% url 'fornecedores:remover_fornecimento' fornecimento.id fornecedor.id %}" method="POST">
                                                                             {% csrf_token %}
                                                                             <button type="submit" class="btn p-0 pb-1"><i class="fas fa-trash link-dark"></i></button>
                                                                         </form>
@@ -125,7 +125,7 @@
                                                         </tr>
                                                     </thead>
                                                     <tbody>
-                                                        {% for dados_bancarios in fornecedor.dados_bancarios.all %}
+                                                        {% for dados_bancarios in fornecedor.get_dados_bancarios %}
                                                         <tr>
                                                             <td>{{ dados_bancarios.get_tipo_de_transacao_display }}</td>
                                                             <td>{{ dados_bancarios.banco|default:"Indisponível" }}</td>
@@ -178,7 +178,7 @@
                                                         </tr>
                                                     </thead>
                                                     <tbody>
-                                                        {% for local in fornecedor.localizacoes.all %}
+                                                        {% for local in fornecedor.get_localizacoes %}
                                                         <tr>
                                                             <td>{{ local.pais }}</td>
                                                             <td>{{ local.estado }}</td>
@@ -228,7 +228,7 @@
                                                         </tr>
                                                     </thead>
                                                     <tbody>
-                                                        {% for telefone in fornecedor.telefones.all %}
+                                                        {% for telefone in fornecedor.get_telefones %}
                                                             <tr>
                                                                 <td>{{ telefone.telefone }}</td>
                                                                 <td>
@@ -263,7 +263,7 @@
                                                         </tr>
                                                     </thead>
                                                     <tbody>
-                                                        {% for email in fornecedor.emails.all %}
+                                                        {% for email in fornecedor.get_emails %}
                                                             <tr>
                                                                 <td>{{ email.email }}</td>
                                                                 <td>
@@ -331,24 +331,8 @@
                                         </div>
                                     </div>
                                     <div class="modal-footer">
-                                        <div class="row d-flex justify-content-between w-100">
-                                            <div class="col-auto px-0">
-                                                <div class="row gx-0">
-                                                    <div class="col-6">
-                                                        <a href="{% url 'fornecedores:editar_fornecedor' fornecedor.id %}"  class="btn btn-primary">Editar</a>
-                                                    </div>
-                                                    <div class="col-6">
-                                                        <form action="{% url 'fornecedores:deletar_fornecedor' fornecedor.id %}" method="POST">
-                                                            {% csrf_token %}
-                                                            <button type="submit" class="btn btn-danger">Deletar</button>
-                                                        </form>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-auto px-0">
-                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
-                                            </div>
-                                        </div>
+                                        <a href="{% url 'fornecedores:editar_fornecedor' fornecedor.id %}"  class="btn btn-primary">Editar</a>
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
                                     </div>
                                 </div>
                             </div>            

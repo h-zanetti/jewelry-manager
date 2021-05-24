@@ -6,26 +6,24 @@ from webdev.fornecedores.models import Fornecedor, Fornecimento, Email, Telefone
 
 # Novo Fornecedor
 @pytest.fixture
-def resposta_autenticada(client, db):
-    usr = User.objects.create_user(username='TestUser', password='MinhaSenha123')
+def fornecimento(db):
+    return Fornecimento.objects.create(
+        nome="Programador",
+        qualidade=10
+    )
+
+@pytest.fixture
+def resposta_autenticada(client, fornecimento):
+    User.objects.create_user(username='TestUser', password='MinhaSenha123')
     client.login(username='TestUser', password='MinhaSenha123')
     resp = client.post(reverse('fornecedores:novo_fornecedor'), data={
-        'nome': 'Isaac Newton'
+        'nome': 'Isaac Newton',
+        'fornecimento': [fornecimento.id]
     })
     return resp
 
 def test_fornecedor_existe_no_bd(resposta_autenticada):
     assert Fornecedor.objects.exists()
-
-def test_foto_padrao_do_fornecedor(resposta_autenticada):
-    assert Fornecedor.objects.first().foto.name == 'default.jpg'
-
-def test_novo_fornecedor_nao_autenticado_status_code(client, db):
-    resp = client.post(reverse('fornecedores:novo_fornecedor'), data={
-        'nome': 'Isaac Newton'
-    })
-    assert resp.status_code == 302
-
 
 # Novo Fornecimento
 @pytest.fixture
@@ -56,41 +54,38 @@ def test_fornecimento_nao_autenticado_status_code(client, criar_fornecedor):
 # Novo Email
 @pytest.fixture
 def resposta_novo_email(client, criar_fornecedor):
-    usr = User.objects.create_user(username='TestUser', password='MinhaSenha123')
+    User.objects.create_user(username='TestUser', password='MinhaSenha123')
     client.login(username='TestUser', password='MinhaSenha123')
-    resp = client.post(reverse('fornecedores:novo_email', kwargs={'fornecedor_id':criar_fornecedor.id}), data={
-        'email': 'testEmail@gmail.com'
-    })
+    resp = client.post(
+        reverse('fornecedores:novo_email', kwargs={'fornecedor_id':criar_fornecedor.id}),
+        data={
+            'fornecedor': criar_fornecedor.id,
+            'email': 'testEmail@gmail.com'
+        }
+    )
     return resp
 
-def test_fornecimento_existe_no_bd(resposta_novo_email):
+def test_email_existe_no_bd(resposta_novo_email):
     assert Email.objects.exists()
-
-def test_fornecimento_nao_autenticado_status_code(client, criar_fornecedor):
-    resp = client.post(reverse('fornecedores:novo_email', kwargs={'fornecedor_id':criar_fornecedor.id}), data={
-        'email': 'testEmail@gmail.com'
-    })
-    assert resp.status_code == 302
-
 
 # Novo Telefone
 @pytest.fixture
 def resposta_novo_telefone(client, criar_fornecedor):
     usr = User.objects.create_user(username='TestUser', password='MinhaSenha123')
     client.login(username='TestUser', password='MinhaSenha123')
-    resp = client.post(reverse('fornecedores:novo_telefone', kwargs={'fornecedor_id':criar_fornecedor.id}), data={
-        'telefone': 11944647420
-    })
+    resp = client.post(
+        reverse(
+            'fornecedores:novo_telefone',
+            kwargs={'fornecedor_id':criar_fornecedor.id}
+        ), data={
+            'fornecedor': criar_fornecedor.id,
+            'telefone': 11944647420
+        }
+    )
     return resp
 
-def test_fornecimento_existe_no_bd(resposta_novo_telefone):
+def test_telefone_existe_no_bd(resposta_novo_telefone):
     assert Telefone.objects.exists()
-
-def test_fornecimento_nao_autenticado_status_code(client, criar_fornecedor):
-    resp = client.post(reverse('fornecedores:novo_telefone', kwargs={'fornecedor_id':criar_fornecedor.id}), data={
-        'telefone': 11944647420
-    })
-    assert resp.status_code == 302
 
 
 # Nova Localização
@@ -98,47 +93,41 @@ def test_fornecimento_nao_autenticado_status_code(client, criar_fornecedor):
 def resposta_novo_local(client, criar_fornecedor):
     usr = User.objects.create_user(username='TestUser', password='MinhaSenha123')
     client.login(username='TestUser', password='MinhaSenha123')
-    resp = client.post(reverse('fornecedores:novo_local', kwargs={'fornecedor_id':criar_fornecedor.id}), data={
-        'pais': 'Brasil',
-        'estado': 'SP',
-        'cidade': 'São Paulo',
-        'bairro': 'Campo Belo',
-        'endereco': 'Av Barão de Vali, 240',
-        'cep': '04613-030',
-    })
+    resp = client.post(
+        reverse(
+            'fornecedores:novo_local',
+            kwargs={'fornecedor_id':criar_fornecedor.id}
+        ), data={
+            'fornecedor': criar_fornecedor.id,
+            'pais': 'Brasil',
+            'estado': 'SP',
+            'cidade': 'São Paulo',
+            'bairro': 'Campo Belo',
+            'endereco': 'Av Barão de Vali, 240',
+            'cep': '04613-030',
+        }
+    )
     return resp
 
-def test_fornecimento_existe_no_bd(resposta_novo_local):
+def test_local_existe_no_bd(resposta_novo_local):
     assert Local.objects.exists()
-
-def test_fornecimento_nao_autenticado_status_code(client, criar_fornecedor):
-    resp = client.post(reverse('fornecedores:novo_local', kwargs={'fornecedor_id':criar_fornecedor.id}), data={
-        'pais': 'Brasil',
-        'estado': 'SP',
-        'cidade': 'São Paulo',
-        'bairro': 'Campo Belo',
-        'endereco': 'Av Barão de Vali, 240',
-        'cep': '04613-030',
-    })
-    assert resp.status_code == 302
 
 # Novos Dados Bancários
 @pytest.fixture
 def resposta_novos_dados_bancarios(client, criar_fornecedor):
     usr = User.objects.create_user(username='TestUser', password='MinhaSenha123')
     client.login(username='TestUser', password='MinhaSenha123')
-    resp = client.post(reverse('fornecedores:novos_dados_bancarios', kwargs={'fornecedor_id':criar_fornecedor.id}), data={
+    resp = client.post(
+        reverse(
+            'fornecedores:novos_dados_bancarios',
+            kwargs={'fornecedor_id':criar_fornecedor.id}
+        ), data={
+        'fornecedor': criar_fornecedor.id,
         'tipo_de_transacao': 'px',
         'numero': '0000030',
-    })
+        }
+    )
     return resp
 
-def test_fornecimento_existe_no_bd(resposta_novos_dados_bancarios):
+def test_dados_bancarios_existe_no_bd(resposta_novos_dados_bancarios):
     assert DadosBancarios.objects.exists()
-
-def test_fornecimento_nao_autenticado_status_code(client, criar_fornecedor):
-    resp = client.post(reverse('fornecedores:novos_dados_bancarios', kwargs={'fornecedor_id':criar_fornecedor.id}), data={
-        'tipo_de_transacao': 'px',
-        'numero': '0000030',
-    })
-    assert resp.status_code == 302

@@ -2,15 +2,21 @@ import pytest
 from django.urls import reverse
 from django.contrib.auth.models import User
 from webdev.materiais.models import Material
+from webdev.fornecedores.models import Fornecedor
 
 # Nova Entrada
 @pytest.fixture
-def resposta_nova_entrada(client, db):
+def fornecedor(db):
+    return Fornecedor.objects.create(nome='Zé Comédia')
+
+@pytest.fixture
+def resposta_nova_entrada(client, fornecedor):
     User.objects.create_user(username='TestUser', password='MinhaSenha123')
     client.login(username='TestUser', password='MinhaSenha123')
     resp = client.post(
         reverse('materiais:nova_entrada'),
         data={
+            'fornecedor': fornecedor.id,
             'entrada': '26/04/2021',
             'unidades_compradas': 3,
             'nome': 'Diamante',
@@ -42,12 +48,13 @@ def material(db):
     )
 
 @pytest.fixture
-def resposta_editar_material(client, material):
+def resposta_editar_material(client, material, fornecedor):
     User.objects.create_user(username='TestUser', password='MinhaSenha123')
     client.login(username='TestUser', password='MinhaSenha123')
     resp = client.post(
         reverse('materiais:editar_material', kwargs={'material_id': material.id}),
         data={
+            'fornecedor': fornecedor.id,
             'entrada': '26/04/2021',
             'unidades_compradas': 3,
             'nome': 'Diamante',

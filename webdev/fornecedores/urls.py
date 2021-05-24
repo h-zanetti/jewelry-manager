@@ -10,9 +10,11 @@ urlpatterns = [
     path('editar/<int:fornecedor_id>/', views.editar_fornecedor, name='editar_fornecedor'),
     path('deletar/<int:fornecedor_id>/', views.deletar_fornecedor, name='deletar_fornecedor'),
     # Fornecimento
+    path('adicionar_fornecimento/', views.adicionar_fornecimento, name='adicionar_fornecimento'),
     path('novo_fornecimento/<int:fornecedor_id>/', views.novo_fornecimento, name='novo_fornecimento'),
     path('editar_fornecimento/<int:fornecimento_id>/', views.editar_fornecimento, name='editar_fornecimento'),
     path('deletar_fornecimento/<int:fornecimento_id>/', views.deletar_fornecimento, name='deletar_fornecimento'),
+    path('remover_fornecimento/<int:fornecimento_id>/<int:fornecedor_id>/', views.remover_fornecimento, name='remover_fornecimento'),
     # Email
     path('novo_email/<int:fornecedor_id>/', views.novo_email, name='novo_email'),
     path('editar_email/<int:email_id>/', views.editar_email, name='editar_email'),

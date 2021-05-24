@@ -7,7 +7,7 @@ from webdev.produtos.models import Produto
 class Cliente(models.Model):
     nome = models.CharField(_("Nome"), max_length=150)
     sobrenome = models.CharField(_("Sobrenome"), max_length=150)
-    email = models.EmailField(_("Endereço de Email"), blank=True, null=True)
+    email = models.EmailField(_("Email"), blank=True, null=True)
     telefone = models.CharField(_('Telefone'), max_length=15, blank=True, null=True)
     endereco = models.CharField(_('Endereço'), max_length=100, blank=True, null=True)
 

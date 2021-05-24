@@ -18,6 +18,7 @@ class Material(models.Model):
     comprimento = models.DecimalField(_("Comprimento"), max_digits=8, decimal_places=2, blank=True, null=True) 
     peso = models.DecimalField(_("Peso Unitário"), max_digits=8, decimal_places=2, blank=True, null=True) 
     UNIDADE_DE_MEDIDA_CHOICES = (
+        ('', 'Uniade de Medida'),
         ('g', 'Gramas'),
         ('ct', 'Quilates'),
     )
