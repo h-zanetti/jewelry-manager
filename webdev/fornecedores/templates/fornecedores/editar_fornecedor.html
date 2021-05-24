@@ -21,12 +21,12 @@
                         {% bootstrap_field fornecedor_form.nome %}
                     </div>
                     <div class="col-12">
-                        <div class="row g-1">
+                        <div class="row g-0">
                             <div class="col-11">
                                 {% bootstrap_field fornecedor_form.fornecimento %}
                             </div>
-                            <div class="col-1 align-self-center">
-                                <a href="{% url 'fornecedores:novo_fornecimento' fornecedor.id %}?next={{ request.path|urlencode }}" class="btn btn-outline-secondary round mt-4">
+                            <div class="col-1">
+                                <a href="{% url 'fornecedores:novo_fornecimento' fornecedor.id %}?next={{ request.path|urlencode }}" class="btn btn-outline-secondary rounded-0 rounded-end" style="padding: 39px 9px 38px 9px; margin-top: 32px;">
                                     <i class="fas fa-plus"></i>
                                 </a>
                             </div>
@@ -40,7 +40,7 @@
                     {{ email_formset.management_form }}
                     {% for form in email_formset %}
                         <div class="col-6">
-                            {% bootstrap_field form.email show_label=False %}
+                        {% bootstrap_field form.email show_label=False placeholder="Novo Email" %}
                         </div>
                     {% endfor %}
                 </div>
@@ -51,7 +51,7 @@
                     {{ telefone_formset.management_form }}
                     {% for form in telefone_formset %}
                         <div class="col-6">
-                            {% bootstrap_field form.telefone show_label=False %}
+                            {% bootstrap_field form.telefone show_label=False placeholder="Novo Telefone" %}
                         </div>
                     {% endfor %}
                 </div>
@@ -62,6 +62,9 @@
                     {{ dados_bancarios_formset.management_form }}
                     {% for form in dados_bancarios_formset %}
                     <div class="col-12">
+                        {% if forloop.last %}
+                        <p class="mt-1 mb-0">Novos dados bancários</p>
+                        {% endif %}
                         <div class="row gx-1 gy-2">
                             <div class="col-4">
                                 {% bootstrap_field form.tipo_de_transacao show_label=False %}
@@ -86,6 +89,9 @@
                     <div class="col-12">
                         {{ documentos_formset.management_form }}
                         {% for form in documentos_formset %}
+                        {% if forloop.last %}
+                        <p class="mt-1 mb-0">Novo documento</p>
+                        {% endif %}
                         <div class="row gx-1 gy-2">
                             <div class="col-6">
                                 {% bootstrap_field form.nome show_label=False %}
@@ -104,7 +110,10 @@
                     <div class="col-12">
                         {{ local_formset.management_form }}
                         {% for form in local_formset %}
-                            <div class="row gx-1 gy-2 mb-3 pb-2 border-bottom">
+                        {% if forloop.last %}
+                        <p class="mt-1 mb-0">Nova Localização</p>
+                        {% endif %}
+                            <div class="row gx-1 gy-2 mb-3 border-bottom">
                                 <div class="col-4">
                                     {% bootstrap_field form.cidade show_label=False %}
                                 </div>
@@ -127,9 +136,7 @@
                         {% endfor %}
                     </div>
                 </div>
-                <div class="row mt-3 px-2">
-                    <button type="submit" class="btn btn-primary">Enviar</button>
-                </div>
+                <button type="submit" class="btn btn-primary w-100">Enviar</button>
             </form>
         </div>
     </div>

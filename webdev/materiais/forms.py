@@ -18,28 +18,33 @@ class MaterialForm(forms.ModelForm):
     altura = forms.IntegerField(
         widget=forms.widgets.NumberInput(
             attrs={'class': 'rounded-0 rounded-start'}
-        )
+        ),
+        required=False
     )
     largura = forms.IntegerField(
         widget=forms.widgets.NumberInput(
             attrs={'class': 'rounded-0'}
-        )
+        ),
+        required=False
     )
     comprimento = forms.IntegerField(
         widget=forms.widgets.NumberInput(
             attrs={'class': 'rounded-0 rounded-end'}
-        )
+        ),
+        required=False
     )
     peso = forms.IntegerField(
         widget=forms.widgets.NumberInput(
             attrs={'class': 'rounded-0 rounded-start'}
-        )
+        ),
+        required=False
     )
     unidade_de_medida = forms.ChoiceField(
         choices=Material.UNIDADE_DE_MEDIDA_CHOICES,
         widget=forms.Select(
             attrs={'class': 'rounded-0 rounded-end'}
-        )
+        ),
+        required=False
     )
     class Meta:
         model = Material

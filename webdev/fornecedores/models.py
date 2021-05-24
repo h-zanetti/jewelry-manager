@@ -34,9 +34,6 @@ class Fornecedor(models.Model):
     def get_localizacoes(self):
         return Local.objects.filter(fornecedor=self.id)
 
-    def get_fornecimentos(self):
-        return Fornecimento.objects.filter(fornecedor=self.id).order_by('-qualidade')
-
 
 class Email(models.Model):
     fornecedor = models.ForeignKey(Fornecedor, models.CASCADE, verbose_name=_("Fornecedor"))
@@ -74,7 +71,7 @@ class DadosBancarios(models.Model):
     fornecedor = models.ForeignKey(Fornecedor, models.CASCADE, verbose_name=_("Fornecedor"))
     TIPO_DE_TRANSACAO_CHOICES = (
         ('', 'Tipo de Transação'),
-        ('cc', 'Conta Corrente'),
+        ('dp', 'Depósito'),
         ('px', 'Pix'),
     )
     tipo_de_transacao = models.CharField(_("Tipo de Transação"), max_length=2, choices=TIPO_DE_TRANSACAO_CHOICES)
@@ -86,6 +83,9 @@ class Documento(models.Model):
     fornecedor = models.ForeignKey(Fornecedor, models.CASCADE, verbose_name=_("Fornecedor"))
     nome = models.CharField(_('Tipo de Documento'), max_length=20, help_text='Exemplos: CNPJ, IE')
     numero = models.CharField(_('Número'), max_length=20)
+
+    def __str__(self):
+        return f"{self.nome}: {self.numero}"
 
 class Servico(models.Model):
     fornecedor = models.ForeignKey(Fornecedor, on_delete=models.SET_NULL, null=True, verbose_name=_("Fornecedor"))

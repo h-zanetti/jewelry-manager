@@ -17,7 +17,8 @@ class ProdutoForm(forms.ModelForm):
         queryset=Categoria.objects.all(),
         widget=forms.SelectMultiple(
             attrs={'class': 'rounded-0 rounded-start'}
-        )
+        ),
+        required=False
     )
     class Meta:
         model = Produto

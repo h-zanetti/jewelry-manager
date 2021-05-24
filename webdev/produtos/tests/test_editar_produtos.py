@@ -12,12 +12,12 @@ def produto(db):
 
 @pytest.fixture
 def resposta_editar_produto(client, produto):
-    usr = User.objects.create_user(username='TestUser', password='MinhaSenha123')
+    User.objects.create_user(username='TestUser', password='MinhaSenha123')
     client.login(username='TestUser', password='MinhaSenha123')
     resp = client.post(
         reverse('produtos:editar_produto', kwargs={'produto_id': produto.id}),
         data={
-            'foto': produto.foto.url,
+            'foto': 'default.jpg',
             'nome': 'Novo Nome',
             'colecao': produto.colecao,
             'unidades': produto.unidades,

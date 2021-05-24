@@ -20,12 +20,12 @@
                         {% bootstrap_field form.nome %}
                     </div>
                     <div class="col-12">
-                        <div class="row g-1">
+                        <div class="row g-0">
                             <div class="col-11">
                                 {% bootstrap_field form.fornecimento %}
                             </div>
-                            <div class="col-1 align-self-center">
-                                <a href="{% url 'fornecedores:adicionar_fornecimento' %}?next={{ request.path|urlencode }}" class="btn btn-outline-secondary round mt-4">
+                            <div class="col-1">
+                                <a href="{% url 'fornecedores:adicionar_fornecimento' %}?next={{ request.path|urlencode }}" class="btn btn-outline-secondary rounded-0 rounded-end mt-4" style="padding: 38px 9px 38px 9px;">
                                     <i class="fas fa-plus"></i>
                                 </a>
                             </div>

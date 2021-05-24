@@ -69,44 +69,31 @@ def editar_fornecedor(request, fornecedor_id):
         extra=1
     )
     if request.method == 'POST':
-        fornecedor_form = FornecedorForm(request.POST, instance=fornecedor, prefix='fornecedor')
-        email_formset = EmailFormSet(request.POST, instance=fornecedor, prefix='email')
-        telefone_formset = TelefoneFormSet(request.POST, instance=fornecedor, prefix='telefone')
-        local_formset = LocalFormSet(request.POST, instance=fornecedor, prefix='local')
-        dados_bancarios_formset = DadosBancariosFormSet(request.POST, instance=fornecedor, prefix='dados_bancarios')
-        documentos_formset = DocumentoFormSet(request.POST, instance=fornecedor, prefix='documentos')
-        
-        if fornecedor_form.is_valid():
-            fornecedor_form.save()
-        if email_formset.is_valid():
-            email_formset.save()
-        if telefone_formset.is_valid():
-            telefone_formset.save()
-        if local_formset.is_valid():
-            local_formset.save()
-        if dados_bancarios_formset.is_valid():
-            dados_bancarios_formset.save()
-        if documentos_formset.is_valid():
-            documentos_formset.save()
+        forms = {
+            'fornecedor_form': FornecedorForm(request.POST, instance=fornecedor, prefix='fornecedor'),
+            'email_formset': EmailFormSet(request.POST, instance=fornecedor, prefix='email'),
+            'telefone_formset': TelefoneFormSet(request.POST, instance=fornecedor, prefix='telefone'),
+            'local_formset': LocalFormSet(request.POST, instance=fornecedor, prefix='local'),
+            'dados_bancarios_formset': DadosBancariosFormSet(request.POST, instance=fornecedor, prefix='dados_bancarios'),
+            'documentos_formset': DocumentoFormSet(request.POST, instance=fornecedor, prefix='documento'),
+        }
+        for form in forms.values():
+            if form.is_valid():
+                form.save()
         return redirect('fornecedores:meus_fornecedores')
     else:
-        fornecedor_form = FornecedorForm(instance=fornecedor, prefix='fornecedor')
-        email_formset = EmailFormSet(instance=fornecedor, prefix='email')
-        telefone_formset = TelefoneFormSet(instance=fornecedor, prefix='telefone')
-        local_formset = LocalFormSet(instance=fornecedor, prefix='local')
-        dados_bancarios_formset = DadosBancariosFormSet(instance=fornecedor, prefix='dados_bancarios')
-        documentos_formset = DocumentoFormSet(instance=fornecedor, prefix='documentos')
+        forms = {
+            'fornecedor': fornecedor,
+            'fornecedor_form': FornecedorForm(instance=fornecedor, prefix='fornecedor'),
+            'email_formset': EmailFormSet(instance=fornecedor, prefix='email'),
+            'telefone_formset': TelefoneFormSet(instance=fornecedor, prefix='telefone'),
+            'local_formset': LocalFormSet(instance=fornecedor, prefix='local'),
+            'dados_bancarios_formset': DadosBancariosFormSet(instance=fornecedor, prefix='dados_bancarios'),
+            'documentos_formset': DocumentoFormSet(instance=fornecedor, prefix='documento'),
+        }
 
-    context = {
-        'title': f"Editar fornecedor - {fornecedor.nome}",
-        'fornecedor': fornecedor,
-        'fornecedor_form': fornecedor_form,
-        'email_formset': email_formset,
-        'telefone_formset': telefone_formset,
-        'local_formset': local_formset,
-        'dados_bancarios_formset': dados_bancarios_formset,
-        'documentos_formset': documentos_formset,
-    }
+    context = forms
+    context['title'] = f"Editar fornecedor - {fornecedor.nome}"
 
     return render(request, 'fornecedores/editar_fornecedor.html', context)
 
@@ -208,13 +195,12 @@ def novo_email(request, fornecedor_id):
         raise Http404('Fornecedor não encontrado')
 
     if request.method == 'POST':
-        form = EmailForm(request.POST)
+        form = EmailForm(request.POST, initial={'fornecedor': fornecedor})
         if form.is_valid():
-            f = form.save()
-            fornecedor.emails.add(f)
+            form.save()
             return redirect('fornecedores:meus_fornecedores')
     else:
-        form = EmailForm()
+        form = EmailForm(initial={'fornecedor': fornecedor})
 
     context = {
         'title': f'Adicionar novo email para {fornecedor.nome}',
@@ -228,7 +214,7 @@ def editar_email(request, email_id):
     try:
         email = Email.objects.get(id=email_id)
     except:
-        raise Http404('Fornecimento não encontrado')
+        raise Http404('Email não encontrado')
 
     if request.method == 'POST':
         form = EmailForm(request.POST, instance=email)
@@ -259,13 +245,12 @@ def novo_telefone(request, fornecedor_id):
         raise Http404('Fornecedor não encontrado')
 
     if request.method == 'POST':
-        form = TelefoneForm(request.POST)
+        form = TelefoneForm(request.POST, initial={'fornecedor': fornecedor})
         if form.is_valid():
-            f = form.save()
-            fornecedor.telefones.add(f)
+            form.save()
             return redirect('fornecedores:meus_fornecedores')
     else:
-        form = TelefoneForm()
+        form = TelefoneForm(initial={'fornecedor': fornecedor})
 
     context = {
         'title': f'Adicionar novo número de Telefone para {fornecedor.nome}',
@@ -310,13 +295,12 @@ def novo_local(request, fornecedor_id):
         raise Http404('Fornecedor não encontrado')
 
     if request.method == 'POST':
-        form = LocalForm(request.POST)
+        form = LocalForm(request.POST, initial={'fornecedor': fornecedor})
         if form.is_valid():
-            f = form.save()
-            fornecedor.localizacoes.add(f)
+            form.save()
             return redirect('fornecedores:meus_fornecedores')
     else:
-        form = LocalForm()
+        form = LocalForm(initial={'fornecedor': fornecedor})
 
     context = {
         'title': f'Adicionar nova localização para {fornecedor.nome}',
@@ -361,13 +345,12 @@ def novos_dados_bancarios(request, fornecedor_id):
         raise Http404('Fornecedor não encontrado')
 
     if request.method == 'POST':
-        form = DadosBancariosForm(request.POST)
+        form = DadosBancariosForm(request.POST, initial={'fornecedor': fornecedor})
         if form.is_valid():
-            f = form.save()
-            fornecedor.dados_bancarios.add(f)
+            form.save()
             return redirect('fornecedores:meus_fornecedores')
     else:
-        form = DadosBancariosForm()
+        form = DadosBancariosForm(initial={'fornecedor': fornecedor})
 
     context = {
         'title': f'Adicionar novos dados bancários para {fornecedor.nome}',

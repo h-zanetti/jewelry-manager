@@ -48,8 +48,11 @@ def test_apagar_fornecimento(resposta_com_fornecimento):
 
 # Emails
 @pytest.fixture
-def email(db):
-    return Email.objects.create(email='test@email.com')
+def email(fornecedor):
+    return Email.objects.create(
+        fornecedor=fornecedor,
+        email='test@email.com'
+    )
 
 @pytest.fixture
 def resposta_com_email(client, email):
@@ -67,8 +70,11 @@ def test_apagar_email(resposta_com_email):
 
 # Telefones
 @pytest.fixture
-def telefone(db):
-    return Telefone.objects.create(telefone='11999999999')
+def telefone(fornecedor):
+    return Telefone.objects.create(
+        fornecedor=fornecedor,
+        telefone='11999999999'
+    )
 
 @pytest.fixture
 def resposta_com_telefone(client, telefone):
@@ -86,8 +92,9 @@ def test_apagar_telefone(resposta_com_telefone):
 
 # Localizações
 @pytest.fixture
-def local(db):
+def local(fornecedor):
     return Local.objects.create(
+        fornecedor=fornecedor,
         pais='Brasil', estado='SP', cidade='São Paulo', bairro='Campo Belo',
         endereco='Rua República do Iraque', cep='04613-031'
     )
@@ -108,8 +115,9 @@ def test_apagar_telefone(resposta_com_local):
 
 # Dados Bancários
 @pytest.fixture
-def dados_bancarios(db):
+def dados_bancarios(fornecedor):
     return DadosBancarios.objects.create(
+        fornecedor=fornecedor,
         tipo_de_transacao='px',
         numero='(11) 94464-7420',
     )

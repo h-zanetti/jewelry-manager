@@ -49,7 +49,7 @@
                             <div class="modal-dialog modal-lg">
                                 <div class="modal-content">
                                     <div class="modal-header">
-                                        <h1 class="modal-title display-6" id="fornecedor{{ fornecedor.id }}Label">{{ fornecedor.nome }}</h1>
+                                        <h1 class="modal-title display-6" id="fornecedor{{ fornecedor.id }}Label">{{ fornecedor.nome }}{% if fornecedor.get_documentos %} - {{ fornecedor.get_documentos.first}}{% endif %}</h1>
                                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                     </div>
                                     <div class="modal-body">
@@ -76,7 +76,7 @@
                                                         </tr>
                                                     </thead>
                                                     <tbody>
-                                                        {% for fornecimento in fornecedor.get_fornecimentos %}
+                                                        {% for fornecimento in fornecedor.fornecimento.all %}
                                                         <tr>
                                                             <td>{{ fornecimento.nome }}</td>
                                                             <td>{{ fornecimento.qualidade }}</td>
@@ -331,24 +331,8 @@
                                         </div>
                                     </div>
                                     <div class="modal-footer">
-                                        <div class="row d-flex justify-content-between w-100">
-                                            <div class="col-auto px-0">
-                                                <div class="row gx-0">
-                                                    <div class="col-6">
-                                                        <a href="{% url 'fornecedores:editar_fornecedor' fornecedor.id %}"  class="btn btn-primary">Editar</a>
-                                                    </div>
-                                                    <div class="col-6">
-                                                        <form action="{% url 'fornecedores:deletar_fornecedor' fornecedor.id %}" method="POST">
-                                                            {% csrf_token %}
-                                                            <button type="submit" class="btn btn-danger">Deletar</button>
-                                                        </form>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-auto px-0">
-                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
-                                            </div>
-                                        </div>
+                                        <a href="{% url 'fornecedores:editar_fornecedor' fornecedor.id %}"  class="btn btn-primary">Editar</a>
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
                                     </div>
                                 </div>
                             </div>            
