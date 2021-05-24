@@ -24,6 +24,7 @@ class Material(models.Model):
     )
     unidade_de_medida = models.CharField(_("Unidade de Medida"), max_length=2, choices=UNIDADE_DE_MEDIDA_CHOICES, blank=True, null=True)
     estoque = models.IntegerField(_("Unidades em Estoque"), default=0)
+    observacao = models.TextField(_('Observação'), blank=True, null=True)
 
     def __str__(self):
         return f"{self.nome}"

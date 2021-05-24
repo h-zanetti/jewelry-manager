@@ -107,6 +107,15 @@
                                                         </div>
                                                     </div>
                                                 </div>
+                                                <!-- Observação -->
+                                                {% if material.observacao %}
+                                                <div class="col-12">
+                                                    <h1 class="display-6">Observação</h1>
+                                                    <p class="px-3">
+                                                        {{ material.observacao }}
+                                                    </p>
+                                                </div>
+                                                {% endif %}
                                             </div>
                                         </div>
                                         <div class="modal-footer">
