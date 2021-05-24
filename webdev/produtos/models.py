@@ -41,6 +41,7 @@ class Produto(models.Model):
     nome = models.CharField(_('Nome'), max_length=150)
     colecao = models.CharField(_('Coleção'), max_length=150)
     familia = models.CharField(_('Família'), max_length=150, blank=True, null=True)
+    observacao = models.TextField(_('Observação'), blank=True, null=True)
     categorias = models.ManyToManyField(Categoria, verbose_name=_('Categorias'), blank=True)
     data_criacao = models.DateField(_('Data de Criação'), blank=True, null=True)
     unidades = models.IntegerField(_("Unidades em Estoque"), default=0)

@@ -34,22 +34,28 @@
                 </div>
                 <div class="row gx-2">
                     <div class="col-lg-6">
+                        {% bootstrap_field form.unidades %}
+                    </div>
+                    <div class="col-lg-6">
+                        {% bootstrap_field form.tamanho %}
+                    </div>
+                </div>
+                <div class="row gx-2">
+                    <div class="col-lg-6">
                         <div class="row g-0">
                             <div class="col-11">
                                 {% bootstrap_field form.categorias %}
                             </div>
                             <div class="col-1">
-                                <a href="{% url 'produtos:nova_categoria' %}?next={{ request.path|urlencode }}" class="btn btn-outline-secondary rounded-0 rounded-end mt-4" style="padding: 38px 9px 38px 9px;">
+                                <a href="{% url 'produtos:nova_categoria' %}?next={{ request.path|urlencode }}" class="btn btn-outline-secondary rounded-0 rounded-end" style="padding: 41px 9px 42px 9px; margin-top: 32px;">
                                     <i class="fas fa-plus"></i>
                                 </a>
                             </div>
                         </div>
                     </div>
                     <div class="col-lg-6">
-                        {% bootstrap_field form.unidades %}
-                        {% bootstrap_field form.tamanho %}
+                        {% bootstrap_field form.observacao %}
                     </div>
-                </div>
                 <button type="submit" class="btn btn-primary w-100 mt-2">Enviar</button>
             </form>
         </div>
