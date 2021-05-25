@@ -11,7 +11,7 @@
 <div class="container-lg mb-4">
     <div class="row d-flex justify-content-center">
         <div class="col-lg-12 border shadow py-3 px-4">
-            <form action="{% url 'materiais:nova_entrada' %}" method="POST" enctype="multipart/form-data" >
+            <form method="POST" enctype="multipart/form-data" >
                 {% csrf_token %}
                 <input type="hidden" name="next" value="{{ request.GET.next }}">
                 <div class="row gx-2">

@@ -7,7 +7,12 @@ from webdev.fornecedores.models import Fornecedor
 class MaterialForm(forms.ModelForm):
     entrada = forms.DateField(
         input_formats=['%d/%m/%Y', '%d-%m-%Y'],
-        widget=forms.DateInput(attrs={'placeholder': 'dd/mm/aaaa'})
+        widget=forms.DateInput(attrs={'placeholder': 'dd/mm/aaaa'}),
+        required=False
+    )
+    foto = forms.ImageField(
+        widget=forms.FileInput(),
+        required=False
     )
     fornecedor = forms.ModelChoiceField(
         queryset=Fornecedor.objects.all(),
