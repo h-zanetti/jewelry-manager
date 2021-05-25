@@ -63,7 +63,7 @@ def editar_produto(request, produto_id):
         'form': form
     }
 
-    return render(request, 'produtos/produto_form.html', context)
+    return render(request, 'produtos/novo_produto.html', context)
 
 @login_required
 def deletar_produto(request, produto_id):

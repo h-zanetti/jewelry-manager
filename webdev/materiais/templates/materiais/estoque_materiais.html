@@ -127,6 +127,9 @@
                                 </div>
                             </div>
                         </li>
+                        <li class="list-inline-item me-3">
+                            <a href="{% url 'materiais:editar_material' material.id %}"><i class="fas fa-wrench link-dark"></i></a>
+                        </li>
                         <li class="list-inline-item">
                             <form action="{% url 'materiais:deletar_material' material.id %}" method="POST">
                                 {% csrf_token %}

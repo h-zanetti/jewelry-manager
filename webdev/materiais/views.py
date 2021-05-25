@@ -57,7 +57,7 @@ def editar_material(request, material_id):
         'form': form,
     }
 
-    return render(request, 'base_form_lg.html', context)
+    return render(request, 'materiais/entrada_form.html', context)
 
 @login_required
 def deletar_material(request, material_id):
