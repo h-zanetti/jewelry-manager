@@ -63,9 +63,6 @@ def resposta_nova_entrada(client, db):
 def test_nova_entrada_status_code(resposta_nova_entrada):
     assert resposta_nova_entrada.status_code == 200
 
-def test_formulario_nova_entrada_presente(resposta_nova_entrada):
-    assertContains(resposta_nova_entrada, f'<form action="{reverse("materiais:nova_entrada")}"')
-
 def test_btn_submit_presente(resposta_nova_entrada):
     assertContains(resposta_nova_entrada, '<button type="submit"')
 
