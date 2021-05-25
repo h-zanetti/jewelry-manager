@@ -40,7 +40,7 @@
                 <td>{{ fornecedor.get_emails.first|default:"Nenhum" }}</td>
             {% endif %}
             <td>{{ fornecedor.get_localizacoes.first|default:"Nenhuma" }}</td>
-            <td>{{ fornecedor.get_fornecimentos.all|slice:":2"|join:", "|default:"Nenhum" }}</td>
+            <td>{{ fornecedor.fornecimento.all|slice:":2"|join:", "|default:"Nenhum" }}</td>
             <td>
                 <ul class="list-inline m-0">
                     <li class="list-inline-item me-3">

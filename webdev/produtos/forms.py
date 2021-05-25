@@ -8,6 +8,10 @@ class CategoriaForm(forms.ModelForm):
         fields = '__all__'
 
 class ProdutoForm(forms.ModelForm):
+    foto = forms.ImageField(
+        widget=forms.FileInput(),
+        required=False
+    )
     data_criacao = forms.DateField(
         input_formats=['%d/%m/%Y', '%d-%m-%Y'],
         widget=forms.DateInput(attrs={'placeholder': 'dd/mm/aaaa'}),
@@ -17,11 +21,11 @@ class ProdutoForm(forms.ModelForm):
         queryset=Categoria.objects.all(),
         widget=forms.SelectMultiple(
             attrs={
-                'class': 'rounded-0 rounded-start',
                 'rows': "5",
                 'style': 'padding: 9px 6px;'
             }
         ),
+        help_text='Precione "Ctrl", ou "Command", para selecionar múltiplas opções ou remover alguma seleção.',
         required=False
     )
     observacao = forms.CharField(
