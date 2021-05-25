@@ -16,7 +16,17 @@ class ProdutoForm(forms.ModelForm):
     categorias = forms.ModelMultipleChoiceField(
         queryset=Categoria.objects.all(),
         widget=forms.SelectMultiple(
-            attrs={'class': 'rounded-0 rounded-start'}
+            attrs={
+                'class': 'rounded-0 rounded-start',
+                'rows': "5",
+                'style': 'padding: 9px 6px;'
+            }
+        ),
+        required=False
+    )
+    observacao = forms.CharField(
+        widget=forms.Textarea(
+            attrs={'rows': "4"}
         ),
         required=False
     )

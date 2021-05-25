@@ -46,6 +46,15 @@ class MaterialForm(forms.ModelForm):
         ),
         required=False
     )
+    observacao = forms.CharField(
+        widget=forms.Textarea(
+            attrs={
+                'rows': "4",
+                'style': "padding: 14px 10px",
+            }
+        ),
+        required=False
+    )
     class Meta:
         model = Material
         fields = '__all__'

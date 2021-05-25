@@ -13,6 +13,7 @@ def material(db):
         categoria='Pedra',
         qualidade=5,
         estoque=3,
+        observacao="Incididunt cupidatat occaecat laborum minim nisi esse proident nostrud aliqua sint sit ad."
     )
 
 # Estoque de matéria prima
@@ -47,6 +48,9 @@ def test_btn_editar_material_presente(resposta_estoque, material):
 def test_btn_deletar_material_presente(resposta_estoque, material):
     assertContains(resposta_estoque, f'<form action="{reverse("materiais:deletar_material", kwargs={"material_id": material.id})}"')
 
+def test_observacao_presente(resposta_estoque, material):
+    assertContains(resposta_estoque, f"{material.observacao}")
+
 
 # Nova Entrada de Matéria Prima
 @pytest.fixture
@@ -64,3 +68,6 @@ def test_formulario_nova_entrada_presente(resposta_nova_entrada):
 
 def test_btn_submit_presente(resposta_nova_entrada):
     assertContains(resposta_nova_entrada, '<button type="submit"')
+
+def test_campo_observacao_presente(resposta_nova_entrada):
+    assertContains(resposta_nova_entrada, '<textarea name="observacao"')

@@ -15,11 +15,11 @@
                 {% csrf_token %}
                 <input type="hidden" name="next" value="{{ request.GET.next }}">
                 <div class="row gx-2">
-                    <div class="col-lg-8">
-                        {% bootstrap_field form.foto %}
-                    </div>
                     <div class="col-lg-4">
                         {% bootstrap_field form.nome %}
+                    </div>
+                    <div class="col-lg-8">
+                        {% bootstrap_field form.foto %}
                     </div>
                 </div>
                 <div class="row gx-2">
@@ -32,7 +32,7 @@
                                 {% bootstrap_field form.fornecedor %}
                             </div>
                             <div class="col-2">
-                                <a href="{% url 'fornecedores:novo_fornecedor' %}?next=/materiais/nova_entrada/" class="btn btn-outline-secondary rounded-0 rounded-end mt-4 px-3">
+                                <a href="{% url 'fornecedores:novo_fornecedor' %}?next=/materiais/nova_entrada/" class="btn btn-outline-secondary rounded-0 rounded-end px-3" style="margin-top: 32px;">
                                     <i class="fas fa-plus"></i>
                                 </a>
                             </div>
@@ -52,14 +52,6 @@
                 </div>
                 <div class="row gx-2">
                     <div class="col-lg-6">
-                        {% bootstrap_field form.unidades_compradas %}
-                    </div>
-                    <div class="col-lg-6">
-                        {% bootstrap_field form.estoque %}
-                    </div>
-                </div>
-                <div class="row gx-2">
-                    <div class="col-lg-6">
                         {% bootstrap_label form.peso.label %}
                         <div class="row g-0">
                             <div class="col-6">
@@ -69,9 +61,7 @@
                                 {% bootstrap_field form.unidade_de_medida show_label=False %}
                             </div>
                         </div>
-                    </div>
-                    <div class="col-lg-6">
-                        <label for="">Dimenssões</label>
+                        {% bootstrap_label "Dimenssões" %}
                         <div class="row g-0">
                             <div class="col-4">
                                 {% bootstrap_field form.altura show_label=False %}
@@ -83,6 +73,20 @@
                                 {% bootstrap_field form.comprimento show_label=False %}
                             </div>
                         </div>
+                    </div>
+                    <div class="col-lg-6">
+                        {% bootstrap_field form.observacao %}
+                    </div>
+                </div>
+                <div class="row gx-2">
+                    <div class="col-lg-4">
+                        {% bootstrap_field form.unidades_compradas %}
+                    </div>
+                    <div class="col-lg-4">
+                        {% bootstrap_field form.estoque %}
+                    </div>
+                    <div class="col-lg-4">
+                        {% bootstrap_field form.total_pago %}
                     </div>
                 </div>
                 <div class="row mt-2 px-2">

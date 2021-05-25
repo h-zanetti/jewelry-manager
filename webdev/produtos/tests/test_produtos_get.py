@@ -29,8 +29,8 @@ def test_btn_novo_produto_presente(resposta_estoque_autenticado):
 @pytest.fixture
 def estoque_de_produtos(db):
     return [
-        Produto.objects.create(nome='Produto1', colecao="d'Mentira"),
-        Produto.objects.create(nome='Produto2', colecao="d'Mentira")
+        Produto.objects.create(nome='Produto1', colecao="d'Mentira", observacao="Essa é uma observação do produto."),
+        Produto.objects.create(nome='Produto2', colecao="d'Mentira", observacao="Essa é uma observação do produto.")
     ]
 
 @pytest.fixture
@@ -69,6 +69,10 @@ def test_btn_deletar_produto_presente(resposta_com_estoque, estoque_de_produtos)
             f'''<form action="{reverse('produtos:deletar_produto', kwargs={'produto_id': produto.id})}"'''
         )
 
+def test_observacao_presente(resposta_com_estoque, estoque_de_produtos):
+    for produto in estoque_de_produtos:
+        assertContains(resposta_com_estoque, f"{produto.observacao}")
+
 # Novo Produto
 @pytest.fixture
 def resposta_novo_produto(client, db):
@@ -86,3 +90,5 @@ def test_form_present(resposta_novo_produto):
 def test_btn_submit_present(resposta_novo_produto):
     assertContains(resposta_novo_produto, '<button type="submit"')
 
+def test_campo_observacao_presente(resposta_novo_produto):
+    assertContains(resposta_novo_produto, '<textarea name="observacao"')
