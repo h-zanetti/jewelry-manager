@@ -6,6 +6,11 @@ class CategoriaForm(forms.ModelForm):
     class Meta:
         model = Categoria
         fields = '__all__'
+        error_messages = {
+            'nome': {
+                'unique': 'Categoria com este nome já existe.',
+            }
+        }
 
 class ProdutoForm(forms.ModelForm):
     foto = forms.ImageField(
@@ -39,6 +44,19 @@ class ProdutoForm(forms.ModelForm):
         exclude = ('servicos', 'materiais')
 
 class MaterialDoProdutoForm(forms.ModelForm):
+    peso = forms.IntegerField(
+        widget=forms.widgets.NumberInput(
+            attrs={'class': 'rounded-0 rounded-start'}
+        ),
+        required=False
+    )
+    unidade_de_medida = forms.ChoiceField(
+        choices=MaterialDoProduto.UNIDADE_DE_MEDIDA_CHOICES,
+        widget=forms.Select(
+            attrs={'class': 'rounded-0 rounded-end'}
+        ),
+        required=False
+    )
     class Meta:
         model = MaterialDoProduto
         fields = '__all__'

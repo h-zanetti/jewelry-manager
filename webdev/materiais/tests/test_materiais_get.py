@@ -63,8 +63,11 @@ def resposta_nova_entrada(client, db):
 def test_nova_entrada_status_code(resposta_nova_entrada):
     assert resposta_nova_entrada.status_code == 200
 
-def test_btn_submit_presente(resposta_nova_entrada):
-    assertContains(resposta_nova_entrada, '<button type="submit"')
+def test_btn_submit_stay_presente(resposta_nova_entrada):
+    assertContains(resposta_nova_entrada, '<button type="submit" name="submit-stay"')
+
+def test_btn_submit_leave_presente(resposta_nova_entrada):
+    assertContains(resposta_nova_entrada, '<button type="submit" name="submit-leave"')
 
 def test_campo_observacao_presente(resposta_nova_entrada):
     assertContains(resposta_nova_entrada, '<textarea name="observacao"')

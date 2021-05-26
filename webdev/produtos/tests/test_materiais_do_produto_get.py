@@ -74,6 +74,9 @@ def test_adicionar_material_do_produto_status_code(resposta_adicionar_material_d
 def test_form_present(resposta_adicionar_material_do_produto):
     assertContains(resposta_adicionar_material_do_produto, '<form')
 
-def test_btn_submit_present(resposta_adicionar_material_do_produto):
-    assertContains(resposta_adicionar_material_do_produto, '<button type="submit"')
+def test_btn_submit_and_leave_present(resposta_adicionar_material_do_produto):
+    assertContains(resposta_adicionar_material_do_produto, '<button type="submit" name="submit-leave"')
+
+def test_btn_submit_and_stay_present(resposta_adicionar_material_do_produto):
+    assertContains(resposta_adicionar_material_do_produto, '<button type="submit" name="submit-stay"')
 

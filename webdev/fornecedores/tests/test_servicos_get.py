@@ -19,6 +19,12 @@ def resposta_novo_servico(client, fornecedor):
 def test_novo_servico_status_code(resposta_novo_servico):
     assert resposta_novo_servico.status_code == 200
 
+def test_btn_submit_stay_presente(resposta_novo_servico):
+    assertContains(resposta_novo_servico, '<button type="submit" name="submit-stay"')
+
+def test_btn_submit_leave_presente(resposta_novo_servico):
+    assertContains(resposta_novo_servico, '<button type="submit" name="submit-leave"')
+
 # Visualização de serviços
 @pytest.fixture
 def servico(fornecedor):

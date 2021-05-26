@@ -2,29 +2,36 @@ from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.http import HttpResponseRedirect, Http404
 from django.contrib.auth.decorators import login_required
-from .models import Produto, MaterialDoProduto
+from django.forms import modelformset_factory
+from .models import Produto, MaterialDoProduto, Categoria
 from .forms import ProdutoForm, MaterialDoProdutoForm, CategoriaForm
 from webdev.fornecedores.forms import ServicoForm
 
 @login_required
-def nova_categoria(request):
+def categorias(request):
+    CategoriaFormSet = modelformset_factory(Categoria, fields='__all__', can_delete=True, form=CategoriaForm)
     if request.method == 'POST':
-        form = CategoriaForm(request.POST)
-        if form.is_valid():
-            form.save()
+        formset = CategoriaFormSet(request.POST, error_messages={
+            'nome': 'Categoria com este nome já existe.'
+        })
+        if formset.is_valid():
+            formset.save()
             next_url = request.POST.get('next')
-            if next_url:
+            if 'submit-stay' in request.POST:
+                return redirect('produtos:categorias')
+            elif next_url:
                 return redirect(f'{next_url}')
-            return redirect('produtos:estoque_produtos')
+            else:
+                return redirect('produtos:estoque_produtos')
     else:
-        form = CategoriaForm()
+        formset = CategoriaFormSet()
 
     context = {
-        'title': 'Adicionar Nova Categoria',
-        'form': form
+        'title': 'Categorias de Produtos Disponíveis',
+        'formset': formset
     }
 
-    return render(request, 'base_form_sm.html', context)
+    return render(request, 'produtos/categorias.html', context)
 
 @login_required
 def novo_produto(request):
@@ -32,13 +39,20 @@ def novo_produto(request):
         form = ProdutoForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
-            return redirect('produtos:estoque_produtos')
+            next_url = request.POST.get('next')
+            if 'submit-stay' in request.POST:
+                return redirect('produtos:novo_produto')
+            elif next_url:
+                return redirect(f'{next_url}')
+            else:
+                return redirect('produtos:estoque_produtos')
     else:
         form = ProdutoForm()
 
     context = {
         'title': 'Adicionar Novo Produto',
-        'form': form
+        'form': form,
+        'novo_obj': True
     }
 
     return render(request, 'produtos/novo_produto.html', context)
@@ -60,7 +74,8 @@ def editar_produto(request, produto_id):
 
     context = {
         'title': 'Editar Produto',
-        'form': form
+        'form': form,
+        'novo_obj': False
     }
 
     return render(request, 'produtos/novo_produto.html', context)
@@ -91,7 +106,13 @@ def adicionar_servico(request, produto_id):
         if form.is_valid():
             servico = form.save()
             produto.servicos.add(servico)
-            return redirect('produtos:estoque_produtos')
+            next_url = request.POST.get('next')
+            if 'submit-stay' in request.POST:
+                return redirect('produtos:adicionar_servico', produto_id)
+            elif next_url:
+                return redirect(f'{next_url}')
+            else:
+                return redirect('produtos:estoque_produtos')
     else:
         form = ServicoForm()
 
@@ -118,16 +139,23 @@ def adicionar_material(request, produto_id):
                 material_dp.unidade_de_medida = material_dp.material.unidade_de_medida
                 material_dp.save()
             produto.materiais.add(material_dp)
-            return redirect('produtos:estoque_produtos')
+            next_url = request.POST.get('next')
+            if 'submit-stay' in request.POST:
+                return redirect('produtos:adicionar_material', produto_id)
+            elif next_url:
+                return redirect(f'{next_url}')
+            else:
+                return redirect('produtos:estoque_produtos')
     else:
         form = MaterialDoProdutoForm()
 
     context = {
         'title': f'Adicionar material ao produto {produto.nome} #{produto.id}',
-        'form': form
+        'form': form,
+        'novo_obj': True
     }
 
-    return render(request, 'base_form_md.html', context)
+    return render(request, 'produtos/adicionar_material.html', context)
 
 @login_required
 def editar_material_dp(request, material_dp_id):
@@ -149,7 +177,7 @@ def editar_material_dp(request, material_dp_id):
         'form': form
     }
 
-    return render(request, 'base_form_md.html', context)
+    return render(request, 'produtos/adicionar_material.html', context)
 
 @login_required
 def remover_material_dp(request, material_dp_id):

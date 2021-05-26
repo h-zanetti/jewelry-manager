@@ -72,8 +72,11 @@ def test_nova_venda_status_code(resposta_nova_venda):
 def test_form_presente(resposta_nova_venda):
     assertContains(resposta_nova_venda, f'<form')
 
-def test_btn_submit_presente(resposta_nova_venda):
-    assertContains(resposta_nova_venda, f'<button type="submit"')
+def test_btn_submit_stay_presente(resposta_nova_venda):
+    assertContains(resposta_nova_venda, f'<button type="submit" name="submit-stay"')
+
+def test_btn_submit_leave_presente(resposta_nova_venda):
+    assertContains(resposta_nova_venda, f'<button type="submit" name="submit-leave"')
 
 
 # Editar Venda
