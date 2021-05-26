@@ -1,12 +1,12 @@
 from dateutil.relativedelta import relativedelta
 import datetime as dt
-import calendar
-from itertools import chain
+from itertools import chain, repeat
 from django.urls import reverse
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect, Http404
 from django.utils import timezone
+from webdev.materiais.models import Material
 from .models import Despesa, Cliente, Venda
 from .forms import DespesaForm, ClienteForm, VendaForm
 
@@ -25,6 +25,9 @@ def nova_despesa(request):
         form = DespesaForm(request.POST)
         if form.is_valid():
             form.save()
+            next_url = request.POST.get('next')
+            if next_url:
+                return redirect(f'{next_url}')
             return redirect('financeiro:despesas')
     else:
         form = DespesaForm()
@@ -136,6 +139,9 @@ def nova_venda(request):
             ultima_parcela = venda.data + relativedelta(months=venda.parcelas-1)
             venda.ultima_parcela = ultima_parcela
             venda.save()
+            next_url = request.POST.get('next')
+            if next_url:
+                return redirect(f'{next_url}')
             return redirect('financeiro:vendas')
     else:
         form = VendaForm(initial={'data': timezone.now})
@@ -187,20 +193,27 @@ def fluxo_de_caixa(request, ano, mes):
     despesas_do_mes = Despesa.objects.filter(data__year=ano, data__month=mes)
     despesas_fixas = Despesa.objects.filter(repetir__in=['d', 'm'], data__lt=dt.date(ano, mes, 1))
     despesas_anuais = Despesa.objects.filter(repetir='a', data__lt=dt.date(ano, 1, 1), data__month=mes)
-    
+    entradas_de_material = Material.objects.filter(entrada__year=ano, entrada__month=mes)
+
     # Saldo do mes
     receita = 0
     for venda in chain(vendas_do_mes, vendas_anteriores):
         receita += venda.get_preco_parcela()
     despesas =  0
-    for despesa in chain(despesas_do_mes, despesas_fixas, despesas_anuais):
+    for despesa in chain(despesas_do_mes, despesas_fixas, despesas_anuais, entradas_de_material):
         despesas += despesa.total_pago
     
     # Dados anuais para o gráfico
     # Vendas
+    def f(instance):
+        tipo_despesa = instance.get_categoria_fluxo_de_caixa().split()[0]
+        if tipo_despesa == 'Entrada':
+            return instance.entrada
+        else: 
+            return instance.data
     transacoes = sorted(
-        chain(vendas_do_mes, vendas_anteriores, despesas_do_mes, despesas_fixas, despesas_anuais),
-        key=lambda instance: instance.data
+        chain(vendas_do_mes, vendas_anteriores, despesas_do_mes, despesas_fixas, despesas_anuais, entradas_de_material),
+        key=lambda instance: f(instance)
     )
     dados = {1:0, 2:0, 3:0, 4:0, 5:0, 6:0, 7:0, 8:0, 9:0, 10:0, 11:0, 12:0}
     vendas_ano = Venda.objects.filter(data__year=ano)
@@ -209,12 +222,19 @@ def fluxo_de_caixa(request, ano, mes):
         for parcela_data in parcelas:
             if parcela_data.year == ano:
                 dados[parcela_data.month] += float(parcelas[parcela_data])
+    
+    # Entradas de Material
+    materiais_ano = Material.objects.filter(entrada__year=ano)
+    for material in materiais_ano:
+        dados[material.entrada.month] -= float(material.total_pago)
+
     # Despesas variáveis
     despesas_variaveis_ano = Despesa.objects.filter(data__year=ano, repetir='n')
     for despesa in despesas_variaveis_ano:
         dados[despesa.data.month] -= float(despesa.total_pago)
+    
     # Despesas fixas
-    despesas_fixas_ano = Despesa.objects.exclude(repetir='n')
+    despesas_fixas_ano = Despesa.objects.filter(data__year=ano).exclude(repetir='n')
     for despesa in despesas_fixas_ano:
         if despesa.repetir == 'a':
             dados[despesa.data.month] -= float(despesa.total_pago)

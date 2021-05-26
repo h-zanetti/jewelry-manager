@@ -35,8 +35,8 @@
             </ul>
         </div>
         <div class="btn-group" role="group">
-            <a href="{% url 'financeiro:nova_venda' %}" class="btn btn-sm btn-outline-secondary">Nova Venda</a>
-            <a href="{% url 'financeiro:nova_despesa' %}" class="btn btn-sm btn-outline-secondary">Nova Despesa</a>
+            <a href="{% url 'financeiro:nova_venda' %}?next={{ request.path|urlencode }}" class="btn btn-sm btn-outline-secondary">Nova Venda</a>
+            <a href="{% url 'financeiro:nova_despesa' %}?next={{ request.path|urlencode }}" class="btn btn-sm btn-outline-secondary">Nova Despesa</a>
         </div>
     </div>
 </div>
@@ -90,26 +90,32 @@ var myChart = new Chart(ctx, {
             {% for t in transacoes %}
             <tr>
                 <th scope="col">{{ t.id }}</th>
-                <td>{{ t.data|date:"d-m-Y" }}</td>
                 <td>
-                    {% if t.categoria == 'Venda' %}
+                    {% if t.get_categoria_fluxo_de_caixa == 'Entrada de Material' %}
+                        {{ t.entrada|date:"d-m-Y" }}
+                    {% else %}
+                        {{ t.data|date:"d-m-Y" }}
+                    {% endif %}
+                </td>
+                <td>
+                    {% if t.get_categoria_fluxo_de_caixa == 'Venda' %}
                         Receita
                     {% else %}
                         Despesa
                     {% endif %}
                 </td>
-                <td>{{ t.categoria }}</td>
+                <td>{{ t.get_categoria_fluxo_de_caixa }}</td>
                 <td>
-                    {% if t.categoria == 'Venda' %}
+                    {% if t.get_categoria_fluxo_de_caixa == 'Venda' %}
                         {% get_parcela t data %}
                     {% else %}
-                        R$ {{ t.total_pago }}
+                        R$ {{ t.total_pago|intcomma }}
                     {% endif %}
                 </td>
                 <td>
                     <ul class="list-inline m-0">
                         <li class="list-inline-item me-3">
-                            {% if t.categoria == 'Venda' %}
+                            {% if t.get_categoria_fluxo_de_caixa == 'Venda' %}
                                 <!-- Venda Trigger -->
                                 <a href="#ModalVisualizarVenda{{ t.id }}" data-bs-toggle="modal">
                                     <i class="far fa-eye link-dark"></i>
@@ -140,7 +146,7 @@ var myChart = new Chart(ctx, {
                                                         <td>{{ t.cliente.get_nome_completo|default:"Desconhecido" }}</td>
                                                         <td>{{ t.produtos.all|join:", " }}</td>
                                                         <td>{{ t.parcelas }}x de R$ {{ t.get_preco_parcela}}</td>
-                                                        <td>{{ t.total_pago }}</td>
+                                                        <td>{{ t.total_pago|intcomma }}</td>
                                                     </tbody>
                                                 </table>
                                             </div>
@@ -155,6 +161,94 @@ var myChart = new Chart(ctx, {
                                                                 <form action="{% url 'financeiro:deletar_venda' t.id %}">
                                                                     <button type="submit" class="btn btn-danger">Deletar</button>
                                                                 </form>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-auto">
+                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% elif t.get_categoria_fluxo_de_caixa == 'Entrada de Material' %}
+                                <!-- Despesa Trigger -->
+                                <a href="#ModalVisualizart{{ t.id }}" data-bs-toggle="modal">
+                                    <i class="far fa-eye link-dark"></i>
+                                </a>
+                                <!-- Despesa Modal -->
+                                <div class="modal fade" id="ModalVisualizart{{ t.id }}" tabindex="-1" aria-labelledby="ModalVisualizart{{ t.id }}Label" aria-hidden="true">
+                                    <div class="modal-dialog modal-lg">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h1 class="modal-title display-6" id="ModalVisualizart{{ t.id }}Label">
+                                                    <strong>{{t.nome}} #{{ t.id }}</strong>
+                                                </h1>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <div class="row">
+                                                    <div class="col-12">
+                                                        <!-- Informações Gerais -->
+                                                        <div class="card" style="flex-direction: row">
+                                                            <div class="card-img-top" style="width: 33%">
+                                                                <img src="{{ t.foto.url }}" class="card-img-top" alt="...">
+                                                            </div>
+                                                            <div class="card-body">
+                                                                <table class="table">
+                                                                    <thead>
+                                                                        <tr>
+                                                                            <th class="fs-5">Informações Gerais</th>
+                                                                            <th></th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                        <tr>
+                                                                            <td><strong>Entrada:</strong> {{ t.entrada|date:"d-m-Y"|default:"Indisponível" }}</td>
+                                                                            <td><strong>Qualidade:</strong> {{ t.qualidade }}</td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td><strong>Categoria:</strong> {{ t.categoria }}</td>
+                                                                            <td><strong>Subcategoria:</strong> {{ t.subcategoria|default:"Nenhuma" }}</td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td><strong>Dimenssões:</strong> {{ t.get_dimenssoes }}</td>
+                                                                            <td><strong>Peso:</strong> {{ t.get_peso }}</td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td><strong>Preço Unitário:</strong> R$ {{ t.get_preco_unitario }}</td>
+                                                                            <td>
+                                                                                {% if t.unidade_de_medida == 'g' %}
+                                                                                    <strong>Preço da Grama :</strong>
+                                                                                {% else %}
+                                                                                    <strong>Preço do Quilate :</strong>
+                                                                                {% endif %}
+                                                                                R$ {{ t.get_preco_por_peso }}
+                                                                            </td>
+                                                                        </tr>
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <!-- Observação -->
+                                                    {% if t.observacao %}
+                                                    <div class="col-12">
+                                                        <h1 class="display-6">Observação</h1>
+                                                        <p class="px-3">
+                                                            {{ t.observacao }}
+                                                        </p>
+                                                    </div>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <div class="row w-100 d-flex justify-content-between">
+                                                    <div class="col-auto">
+                                                        <div class="row g-0 px-0">
+                                                            <div class="col-auto">
+                                                                <a href="{% url 'materiais:editar_material' t.id %}" class="btn btn-primary">Editar</a>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -196,7 +290,7 @@ var myChart = new Chart(ctx, {
                                                         <th scope="col">{{ t.id }}</th>
                                                         <td>{{ t.data }}</td>
                                                         <td>{{ t.categoria }}</td>
-                                                        <td>{{ t.total_pago }}</td>
+                                                        <td>{{ t.total_pago|intcomma }}</td>
                                                         <td>{{ t.get_repetir_display }}</td>
                                                     </tbody>
                                                 </table>
