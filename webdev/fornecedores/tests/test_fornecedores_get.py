@@ -192,7 +192,7 @@ def test_btn_deletar_telefone_presente(resposta_com_telefones, lista_de_telefone
             f'''<form action="{reverse('fornecedores:deletar_telefone', kwargs={'telefone_id': telefone.id})}"'''
         )
 
-# Localisações
+# Localizações
 @pytest.fixture
 def lista_de_locais(lista_de_fornecedores):
     locais = []
@@ -264,7 +264,7 @@ def test_btn_deletar_dados_bancarios(resposta_com_dados_bancarios, lista_de_dado
 # Novo Fornecedor
 @pytest.fixture
 def resposta_novo_fornecedor(client, db):
-    usr = User.objects.create_user(username='TestUser', password='MinhaSenha123')
+    User.objects.create_user(username='TestUser', password='MinhaSenha123')
     client.login(username='TestUser', password='MinhaSenha123')
     resp = client.get(reverse('fornecedores:novo_fornecedor'))
     return resp
@@ -272,9 +272,11 @@ def resposta_novo_fornecedor(client, db):
 def test_novo_fornecedor_status_code(resposta_novo_fornecedor):
     assert resposta_novo_fornecedor.status_code == 200
 
-def test_novo_fornecedor_nao_autenticado_status_code(client, db):
-    resp = client.get(reverse('fornecedores:novo_fornecedor'))
-    assert resp.status_code == 302
+def test_btn_submit_stay_presente(resposta_novo_fornecedor):
+    assertContains(resposta_novo_fornecedor, '<button type="submit" name="submit-stay"')
+
+def test_btn_submit_leave_presente(resposta_novo_fornecedor):
+    assertContains(resposta_novo_fornecedor, '<button type="submit" name="submit-leave"')
 
 
 # Novo Fornecimento
@@ -283,18 +285,20 @@ def criar_fornecedor(db):
     return Fornecedor.objects.create(nome='Zé Comédia')
 
 @pytest.fixture
-def resposta_com_fornecedor(client, criar_fornecedor):
-    usr = User.objects.create_user(username='TestUser', password='MinhaSenha123')
+def resposta_novo_fornecimento(client, criar_fornecedor):
+    User.objects.create_user(username='TestUser', password='MinhaSenha123')
     client.login(username='TestUser', password='MinhaSenha123')
     resp = client.get(reverse('fornecedores:novo_fornecimento', kwargs={'fornecedor_id':criar_fornecedor.id}))
     return resp
 
-def test_novo_fornecimento_status_code(resposta_com_fornecedor):
-    assert resposta_com_fornecedor.status_code == 200
+def test_novo_fornecimento_status_code(resposta_novo_fornecimento):
+    assert resposta_novo_fornecimento.status_code == 200
 
-def test_novo_fornecimento_nao_autenticado_status_code(client, criar_fornecedor):
-    resp = client.get(reverse('fornecedores:novo_fornecimento', kwargs={'fornecedor_id':criar_fornecedor.id}))
-    assert resp.status_code == 302
+def test_btn_submit_stay_presente(resposta_novo_fornecimento):
+    assertContains(resposta_novo_fornecimento, '<button type="submit" name="submit-stay"')
+
+def test_btn_submit_leave_presente(resposta_novo_fornecimento):
+    assertContains(resposta_novo_fornecimento, '<button type="submit" name="submit-leave"')
 
 
 # Novo Email
@@ -311,46 +315,69 @@ def test_novo_email_status_code(resposta_novo_email):
 def test_select_fornecedor_hidden(resposta_novo_email, criar_fornecedor):
     assertContains(resposta_novo_email, f'<input type="hidden" name="fornecedor" value="{criar_fornecedor.id}"')
 
+def test_btn_submit_stay_presente(resposta_novo_email):
+    assertContains(resposta_novo_email, '<button type="submit" name="submit-stay"')
+
+def test_btn_submit_leave_presente(resposta_novo_email):
+    assertContains(resposta_novo_email, '<button type="submit" name="submit-leave"')
+
 
 # Novo Telefone
 @pytest.fixture
-def resposta_com_fornecedor(client, criar_fornecedor):
+def resposta_novo_telefone(client, criar_fornecedor):
     usr = User.objects.create_user(username='TestUser', password='MinhaSenha123')
     client.login(username='TestUser', password='MinhaSenha123')
     resp = client.get(reverse('fornecedores:novo_telefone', kwargs={'fornecedor_id':criar_fornecedor.id}))
     return resp
 
-def test_novo_telefone_status_code(resposta_com_fornecedor):
-    assert resposta_com_fornecedor.status_code == 200
+def test_novo_telefone_status_code(resposta_novo_telefone):
+    assert resposta_novo_telefone.status_code == 200
 
-def test_select_fornecedor_hidden(resposta_novo_email, criar_fornecedor):
-    assertContains(resposta_novo_email, f'<input type="hidden" name="fornecedor" value="{criar_fornecedor.id}"')
+def test_select_fornecedor_hidden(resposta_novo_telefone, criar_fornecedor):
+    assertContains(resposta_novo_telefone, f'<input type="hidden" name="fornecedor" value="{criar_fornecedor.id}"')
+
+def test_btn_submit_stay_presente(resposta_novo_telefone):
+    assertContains(resposta_novo_telefone, '<button type="submit" name="submit-stay"')
+
+def test_btn_submit_leave_presente(resposta_novo_telefone):
+    assertContains(resposta_novo_telefone, '<button type="submit" name="submit-leave"')
 
 # Nova Localização
 @pytest.fixture
-def resposta_com_fornecedor(client, criar_fornecedor):
+def resposta_novo_local(client, criar_fornecedor):
     usr = User.objects.create_user(username='TestUser', password='MinhaSenha123')
     client.login(username='TestUser', password='MinhaSenha123')
     resp = client.get(reverse('fornecedores:novo_local', kwargs={'fornecedor_id':criar_fornecedor.id}))
     return resp
 
-def test_novo_telefone_status_code(resposta_com_fornecedor):
-    assert resposta_com_fornecedor.status_code == 200
+def test_novo_telefone_status_code(resposta_novo_local):
+    assert resposta_novo_local.status_code == 200
 
-def test_select_fornecedor_hidden(resposta_novo_email, criar_fornecedor):
-    assertContains(resposta_novo_email, f'<input type="hidden" name="fornecedor" value="{criar_fornecedor.id}"')
+def test_select_fornecedor_hidden(resposta_novo_local, criar_fornecedor):
+    assertContains(resposta_novo_local, f'<input type="hidden" name="fornecedor" value="{criar_fornecedor.id}"')
 
+def test_btn_submit_stay_presente(resposta_novo_local):
+    assertContains(resposta_novo_local, '<button type="submit" name="submit-stay"')
+
+def test_btn_submit_leave_presente(resposta_novo_local):
+    assertContains(resposta_novo_local, '<button type="submit" name="submit-leave"')
 
 # Novos Dados Bancários
 @pytest.fixture
-def resposta_com_fornecedor(client, criar_fornecedor):
+def resposta_novos_dados_bancarios(client, criar_fornecedor):
     usr = User.objects.create_user(username='TestUser', password='MinhaSenha123')
     client.login(username='TestUser', password='MinhaSenha123')
     resp = client.get(reverse('fornecedores:novos_dados_bancarios', kwargs={'fornecedor_id':criar_fornecedor.id}))
     return resp
 
-def test_novos_dados_bancarios_status_code(resposta_com_fornecedor):
-    assert resposta_com_fornecedor.status_code == 200
+def test_novos_dados_bancarios_status_code(resposta_novos_dados_bancarios):
+    assert resposta_novos_dados_bancarios.status_code == 200
 
-def test_select_fornecedor_hidden(resposta_novo_email, criar_fornecedor):
-    assertContains(resposta_novo_email, f'<input type="hidden" name="fornecedor" value="{criar_fornecedor.id}"')
+def test_select_fornecedor_hidden(resposta_novos_dados_bancarios, criar_fornecedor):
+    assertContains(resposta_novos_dados_bancarios, f'<input type="hidden" name="fornecedor" value="{criar_fornecedor.id}"')
+
+def test_btn_submit_stay_presente(resposta_novos_dados_bancarios):
+    assertContains(resposta_novos_dados_bancarios, '<button type="submit" name="submit-stay"')
+
+def test_btn_submit_leave_presente(resposta_novos_dados_bancarios):
+    assertContains(resposta_novos_dados_bancarios, '<button type="submit" name="submit-leave"')

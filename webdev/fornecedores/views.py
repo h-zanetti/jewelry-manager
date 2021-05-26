@@ -20,7 +20,13 @@ def novo_fornecedor(request):
         form = FornecedorForm(request.POST)
         if form.is_valid():
             form.save()
-            return redirect('fornecedores:meus_fornecedores')
+            next_url = request.POST.get('next')
+            if 'submit-stay' in request.POST:
+                return redirect('fornecedores:novo_fornecedor')
+            elif next_url:
+                return redirect(f'{next_url}')
+            else:
+                return redirect('fornecedores:meus_fornecedores')
     else:
         form = FornecedorForm()
 
@@ -110,15 +116,19 @@ def adicionar_fornecimento(request):
         if form.is_valid():
             form.save()
             next_url = request.POST.get('next')
-            if next_url:
+            if 'submit-stay' in request.POST:
+                return redirect('fornecedores:adicionar_fornecimento')
+            elif next_url:
                 return redirect(f'{next_url}')
-            return redirect('fornecedores:meus_fornecedores')
+            else:
+                return redirect('fornecedores:meus_fornecedores')
     else:
         form = FornecimentoForm()
 
     context = {
         'title': f'Adicionar novo fornecimento',
-        'form': form
+        'form': form,
+        'novo_obj': True
     }
 
     return render(request, 'base_form_sm.html', context)
@@ -137,15 +147,19 @@ def novo_fornecimento(request, fornecedor_id):
             f = form.save()
             fornecedor.fornecimento.add(f)
             next_url = request.POST.get('next')
-            if next_url:
+            if 'submit-stay' in request.POST:
+                return redirect('fornecedores:novo_fornecimento', kwargs={'fornecedor_id': fornecedor_id})
+            elif next_url:
                 return redirect(f'{next_url}')
-            return redirect('fornecedores:meus_fornecedores')
+            else:
+                return redirect('fornecedores:meus_fornecedores')
     else:
         form = FornecimentoForm()
 
     context = {
         'title': f'Adicionar novo fornecimento',
-        'form': form
+        'form': form,
+        'novo_obj': True
     }
 
     return render(request, 'base_form_sm.html', context)
@@ -167,7 +181,8 @@ def editar_fornecimento(request, fornecimento_id):
 
     context = {
         'title': 'Editar fornecimento',
-        'form': form
+        'form': form,
+        'novo_obj': False
     }
 
     return render(request, 'base_form_sm.html', context)
@@ -198,13 +213,20 @@ def novo_email(request, fornecedor_id):
         form = EmailForm(request.POST, initial={'fornecedor': fornecedor})
         if form.is_valid():
             form.save()
-            return redirect('fornecedores:meus_fornecedores')
+            next_url = request.POST.get('next')
+            if 'submit-stay' in request.POST:
+                return redirect('fornecedores:novo_email', kwargs={'fornecedor_id': fornecedor_id})
+            elif next_url:
+                return redirect(f'{next_url}')
+            else:
+                return redirect('fornecedores:meus_fornecedores')
     else:
         form = EmailForm(initial={'fornecedor': fornecedor})
 
     context = {
         'title': f'Adicionar novo email para {fornecedor.nome}',
-        'form': form
+        'form': form,
+        'novo_obj': True
     }
 
     return render(request, 'base_form_sm.html', context)
@@ -226,7 +248,8 @@ def editar_email(request, email_id):
 
     context = {
         'title': 'Editar email',
-        'form': form
+        'form': form,
+        'novo_obj': False
     }
 
     return render(request, 'base_form_sm.html', context)
@@ -248,13 +271,20 @@ def novo_telefone(request, fornecedor_id):
         form = TelefoneForm(request.POST, initial={'fornecedor': fornecedor})
         if form.is_valid():
             form.save()
-            return redirect('fornecedores:meus_fornecedores')
+            next_url = request.POST.get('next')
+            if 'submit-stay' in request.POST:
+                return redirect('fornecedores:novo_telefone', kwargs={'fornecedor_id': fornecedor_id})
+            elif next_url:
+                return redirect(f'{next_url}')
+            else:
+                return redirect('fornecedores:meus_fornecedores')
     else:
         form = TelefoneForm(initial={'fornecedor': fornecedor})
 
     context = {
         'title': f'Adicionar novo número de Telefone para {fornecedor.nome}',
-        'form': form
+        'form': form,
+        'novo_obj': True
     }
 
     return render(request, 'base_form_sm.html', context)
@@ -276,7 +306,8 @@ def editar_telefone(request, telefone_id):
 
     context = {
         'title': 'Editar telefone',
-        'form': form
+        'form': form,
+        'novo_obj': False
     }
 
     return render(request, 'base_form_sm.html', context)
@@ -298,13 +329,20 @@ def novo_local(request, fornecedor_id):
         form = LocalForm(request.POST, initial={'fornecedor': fornecedor})
         if form.is_valid():
             form.save()
-            return redirect('fornecedores:meus_fornecedores')
+            next_url = request.POST.get('next')
+            if 'submit-stay' in request.POST:
+                return redirect('fornecedores:novo_local', kwargs={'fornecedor_id': fornecedor_id})
+            elif next_url:
+                return redirect(f'{next_url}')
+            else:
+                return redirect('fornecedores:meus_fornecedores')
     else:
         form = LocalForm(initial={'fornecedor': fornecedor})
 
     context = {
         'title': f'Adicionar nova localização para {fornecedor.nome}',
-        'form': form
+        'form': form,
+        'novo_obj': True
     }
 
     return render(request, 'base_form_md.html', context)
@@ -326,10 +364,11 @@ def editar_local(request, local_id):
 
     context = {
         'title': 'Editar localização',
-        'form': form
+        'form': form,
+        'novo_obj': False
     }
 
-    return render(request, 'base_form_sm.html', context)
+    return render(request, 'base_form_md.html', context)
 
 @login_required
 def deletar_local(request, local_id):
@@ -348,13 +387,20 @@ def novos_dados_bancarios(request, fornecedor_id):
         form = DadosBancariosForm(request.POST, initial={'fornecedor': fornecedor})
         if form.is_valid():
             form.save()
-            return redirect('fornecedores:meus_fornecedores')
+            next_url = request.POST.get('next')
+            if 'submit-stay' in request.POST:
+                return redirect('fornecedores:novos_dados_bancarios', kwargs={'fornecedor_id': fornecedor_id})
+            elif next_url:
+                return redirect(f'{next_url}')
+            else:
+                return redirect('fornecedores:meus_fornecedores')
     else:
         form = DadosBancariosForm(initial={'fornecedor': fornecedor})
 
     context = {
         'title': f'Adicionar novos dados bancários para {fornecedor.nome}',
-        'form': form
+        'form': form,
+        'novo_obj': True
     }
 
     return render(request, 'base_form_md.html', context)
@@ -376,7 +422,8 @@ def editar_dados_bancarios(request, dados_bancarios_id):
 
     context = {
         'title': 'Editar dados bancários',
-        'form': form
+        'form': form,
+        'novo_obj': False
     }
 
     return render(request, 'base_form_sm.html', context)
@@ -394,7 +441,9 @@ def novo_servico(request):
         if form.is_valid():
             form.save()
             next_url = request.POST.get('next')
-            if next_url:
+            if 'submit-stay' in request.POST:
+                return redirect('fornecedores:novo_servico')
+            elif next_url:
                 return redirect(f'{next_url}')
             else:
                 return redirect('fornecedores:meus_fornecedores')
@@ -403,7 +452,8 @@ def novo_servico(request):
 
     context = {
         'title': f'Cadastrar novo serviço',
-        'form': form
+        'form': form,
+        'novo_obj': True
     }
 
     return render(request, 'fornecedores/servico_form.html', context)
@@ -429,7 +479,8 @@ def editar_servico(request, servico_id):
 
     context = {
         'title': 'Editar serviço',
-        'form': form
+        'form': form,
+        'novo_obj': False
     }
 
     return render(request, 'base_form_sm.html', context)

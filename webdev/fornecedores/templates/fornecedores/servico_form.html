@@ -17,10 +17,13 @@
                     {% bootstrap_form form %}
                     <input type="hidden" name="next" value="{{ request.GET.next }}">
                 </div>
-                <div class="row mt-2">
-                    {% buttons %}
-                    <button type="submit" class="btn btn-primary">Enviar</button>
-                    {% endbuttons %}
+                <div class="row g-2 d-flex justify-content-between">
+                    <div class="col-md-6">
+                        <button type="submit" name="submit-stay" class="btn btn-primary w-100">Enviar e Continuar</button>
+                    </div>
+                    <div class="col-md-6">
+                        <button type="submit" name="submit-leave" class="btn btn-primary w-100">Enviar e Sair</button>
+                    </div>
                 </div>
             </form>
         </div>

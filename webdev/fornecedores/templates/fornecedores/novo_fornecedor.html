@@ -13,7 +13,7 @@
         <div class="col-md-9 border shadow px-4 py-3">
             <form method="POST">
                 <div class="row">
-                    <div class="col-12 px-2">
+                    <div class="col-12">
                         {% csrf_token %}
                     </div>
                     <div class="col-12">
@@ -32,8 +32,13 @@
                         </div>
                     </div>
                 </div>
-                <div class="row mt-3 px-2">
-                    <button type="submit" class="btn btn-primary">Enviar</button>
+                <div class="row g-2 d-flex justify-content-between">
+                    <div class="col-md-6">
+                        <button type="submit" name="submit-stay" class="btn btn-primary w-100">Enviar e Continuar</button>
+                    </div>
+                    <div class="col-md-6">
+                        <button type="submit" name="submit-leave" class="btn btn-primary w-100">Enviar e Sair</button>
+                    </div>
                 </div>
             </form>
         </div>
