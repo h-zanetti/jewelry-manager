@@ -53,8 +53,11 @@ def test_despesas_status_code(resposta_novo_cliente):
 def test_form_presente(resposta_novo_cliente):
     assertContains(resposta_novo_cliente, f'<form')
 
-def test_btn_submit_presente(resposta_novo_cliente):
-    assertContains(resposta_novo_cliente, f'<button type="submit"')
+def test_btn_submit_stay_presente(resposta_novo_cliente):
+    assertContains(resposta_novo_cliente, f'<button type="submit" name="submit-stay"')
+
+def test_btn_submit_leave_presente(resposta_novo_cliente):
+    assertContains(resposta_novo_cliente, f'<button type="submit" name="submit-leave"')
 
 
 # Editar Cliente

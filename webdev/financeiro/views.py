@@ -26,9 +26,12 @@ def nova_despesa(request):
         if form.is_valid():
             form.save()
             next_url = request.POST.get('next')
-            if next_url:
+            if 'submit-stay' in request.POST:
+                return redirect('financeiro:nova_despesa')
+            elif next_url:
                 return redirect(f'{next_url}')
-            return redirect('financeiro:despesas')
+            else:
+                return redirect('financeiro:despesas')
     else:
         form = DespesaForm()
 
@@ -82,7 +85,13 @@ def novo_cliente(request):
         form = ClienteForm(request.POST)
         if form.is_valid():
             form.save()
-            return redirect('financeiro:clientes')
+            next_url = request.POST.get('next')
+            if 'submit-stay' in request.POST:
+                return redirect('financeiro:novo_cliente')
+            elif next_url:
+                return redirect(f'{next_url}')
+            else:
+                return redirect('financeiro:clientes')
     else:
         form = ClienteForm()
 
@@ -119,7 +128,7 @@ def editar_cliente(request, cliente_id):
 def deletar_cliente(request, cliente_id):
     if request.method == 'POST':
         Cliente.objects.get(id=cliente_id).delete()
-    return HttpResponseRedirect(reverse('financeiro:despesas'))
+    return HttpResponseRedirect(reverse('financeiro:clientes'))
 
 # Vendas
 @login_required
@@ -140,9 +149,12 @@ def nova_venda(request):
             venda.ultima_parcela = ultima_parcela
             venda.save()
             next_url = request.POST.get('next')
-            if next_url:
+            if 'submit-stay' in request.POST:
+                return redirect('financeiro:nova_venda')
+            elif next_url:
                 return redirect(f'{next_url}')
-            return redirect('financeiro:vendas')
+            else:
+                return redirect('financeiro:vendas')
     else:
         form = VendaForm(initial={'data': timezone.now})
 

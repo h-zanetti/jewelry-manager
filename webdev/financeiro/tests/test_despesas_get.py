@@ -52,8 +52,11 @@ def test_nova_despesa_status_code(resposta_nova_despesa):
 def test_form_presente(resposta_nova_despesa):
     assertContains(resposta_nova_despesa, f'<form')
 
-def test_btn_submit_presente(resposta_nova_despesa):
-    assertContains(resposta_nova_despesa, f'<button type="submit"')
+def test_btn_submit_stay_presente(resposta_nova_despesa):
+    assertContains(resposta_nova_despesa, f'<button type="submit" name="submit-stay"')
+
+def test_btn_submit_leave_presente(resposta_nova_despesa):
+    assertContains(resposta_nova_despesa, f'<button type="submit" name="submit-leave"')
 
 # Editar Despesas
 @pytest.fixture
