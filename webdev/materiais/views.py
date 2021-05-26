@@ -23,8 +23,10 @@ def nova_entrada(request):
         if form.is_valid():
             form.save()
             next_url = request.POST.get('next')
-            if next_url:
-                return redirect(f"{next_url}")
+            if 'submit-stay' in request.POST:
+                return redirect('fornecedores:nova_entrada')
+            elif next_url:
+                return redirect(f'{next_url}')
             else:
                 return redirect('materiais:estoque_materiais')
     else:
@@ -33,6 +35,7 @@ def nova_entrada(request):
     context = {
         'title': 'Entrada de matéria prima',
         'form': form,
+        'novo_obj': True
     }
 
     return render(request, 'materiais/entrada_form.html', context)
@@ -55,6 +58,7 @@ def editar_material(request, material_id):
     context = {
         'title': 'Editar matéria prima',
         'form': form,
+        'novo_obj': False
     }
 
     return render(request, 'materiais/entrada_form.html', context)
