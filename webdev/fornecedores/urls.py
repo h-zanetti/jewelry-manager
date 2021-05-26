@@ -10,6 +10,7 @@ urlpatterns = [
     path('editar/<int:fornecedor_id>/', views.editar_fornecedor, name='editar_fornecedor'),
     path('deletar/<int:fornecedor_id>/', views.deletar_fornecedor, name='deletar_fornecedor'),
     # Fornecimento
+    path('fornecimentos/', views.fornecimentos, name='fornecimentos'),
     path('adicionar_fornecimento/', views.adicionar_fornecimento, name='adicionar_fornecimento'),
     path('novo_fornecimento/<int:fornecedor_id>/', views.novo_fornecimento, name='novo_fornecimento'),
     path('editar_fornecimento/<int:fornecimento_id>/', views.editar_fornecimento, name='editar_fornecimento'),

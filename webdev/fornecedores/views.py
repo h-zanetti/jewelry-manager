@@ -4,7 +4,7 @@ from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 from .models import Documento, Fornecedor, Fornecimento, Email, Telefone, Local, DadosBancarios, Servico
 from .forms import FornecedorForm, FornecimentoForm, EmailForm, TelefoneForm, LocalForm, DadosBancariosForm, ServicoForm
-from django.forms import inlineformset_factory
+from django.forms import inlineformset_factory, modelformset_factory
 
 @login_required
 def meus_fornecedores(request):
@@ -108,6 +108,30 @@ def deletar_fornecedor(request, fornecedor_id):
     if request.method == 'POST':
         Fornecedor.objects.get(id=fornecedor_id).delete()
     return HttpResponseRedirect(reverse('fornecedores:meus_fornecedores'))
+
+@login_required
+def fornecimentos(request):
+    FornecimentoFormSet = modelformset_factory(Fornecimento, fields='__all__', can_delete=True, form=FornecimentoForm)
+    if request.method == 'POST':
+        formset = FornecimentoFormSet(request.POST)
+        if formset.is_valid():
+            formset.save()
+            next_url = request.POST.get('next')
+            if 'submit-stay' in request.POST:
+                return redirect('fornecedores:fornecimentos')
+            elif next_url:
+                return redirect(f'{next_url}')
+            else:
+                return redirect('fornecedores:meus_fornecedores')
+    else:
+        formset = FornecimentoFormSet()
+
+    context = {
+        'title': 'Fornecimentos Disponíveis',
+        'formset': formset
+    }
+
+    return render(request, 'fornecedores/fornecimentos.html', context)
 
 @login_required
 def adicionar_fornecimento(request):
