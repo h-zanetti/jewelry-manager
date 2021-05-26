@@ -49,3 +49,6 @@ class Material(models.Model):
             return round(self.total_pago, 2)
         else:
             return round(self.total_pago / self.peso, 2)
+
+    def get_categoria_fluxo_de_caixa(self):
+        return 'Entrada de Material'

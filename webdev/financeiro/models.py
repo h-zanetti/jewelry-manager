@@ -43,9 +43,8 @@ class Venda(models.Model):
 
     def __str__(self):
         return f'{self.cliente} - R${self.total_pago}'
-
-    @property
-    def categoria(self):
+    
+    def get_categoria_fluxo_de_caixa(self):
         return 'Venda'
 
     def get_preco_parcela(self):
@@ -54,7 +53,11 @@ class Venda(models.Model):
     def get_parcela(self, data):
         parcela = self.parcelas - ((self.ultima_parcela.year - data.year) * 12 + (self.ultima_parcela.month - data.month))
         if parcela > 0 and parcela <= self.parcelas:
-            return f"R$ {self.get_preco_parcela()} ({parcela}/{self.parcelas})"
+            # Formatando o float para o padrão brasileiro -> Ex: 12,000,000.00
+            p_str = f"{self.get_preco_parcela():,.2f}".split('.')
+            inteiro = '.'.join(p_str[0].split(','))
+            parcela_str = f"{inteiro},{p_str[1]}"
+            return f"R$ {parcela_str} ({parcela}/{self.parcelas})"
         else:
             return None
 
@@ -79,4 +82,7 @@ class Despesa(models.Model):
 
     def __str__(self):
         return f'{self.data} {self.categoria}'
+
+    def get_categoria_fluxo_de_caixa(self):
+        return self.categoria
 

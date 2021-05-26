@@ -6,6 +6,7 @@ from pytest_django.asserts import assertContains
 from django.contrib.auth.models import User
 from webdev.financeiro.models import Cliente, Venda, Despesa
 from webdev.produtos.models import Produto
+from webdev.materiais.models import Material
 
 @pytest.fixture
 def cliente(db):
@@ -48,9 +49,17 @@ def lista_de_despesas(db):
         Despesa.objects.create(data=timezone.now(), categoria='Domínio', total_pago=65, repetir='a')
     ]
 
+@pytest.fixture
+def lista_de_materiais(db):
+    return [
+        Material.objects.create(nome='Esmeralda', entrada=timezone.now(), categoria='Pedra', qualidade=5, estoque=3, unidades_compradas=3, total_pago=1000,),
+        Material.objects.create(nome='Diamante', entrada=timezone.now(), categoria='Pedra', qualidade=8, estoque=3, unidades_compradas=3, total_pago=75000,),
+        Material.objects.create(nome='Ouro', entrada=timezone.now(), categoria='Metal', qualidade=7, estoque=1, unidades_compradas=3, total_pago=1000,),
+    ]
+
 # Visualizar Fluxo de Caixa
 @pytest.fixture
-def resposta_fluxo_de_caixa(client, lista_de_vendas, lista_de_despesas):
+def resposta_fluxo_de_caixa(client, lista_de_vendas, lista_de_despesas, lista_de_materiais):
     User.objects.create_user(username='TestUser', password='MinhaSenha123')
     client.login(username='TestUser', password='MinhaSenha123')
     resp = client.get(
@@ -70,15 +79,23 @@ def test_vendas_presente(resposta_fluxo_de_caixa, lista_de_vendas):
     for venda in lista_de_vendas:
         assertContains(resposta_fluxo_de_caixa, venda.cliente.get_nome_completo())
 
-def test_saldo_presente(resposta_fluxo_de_caixa, lista_de_vendas, lista_de_despesas):
+def test_entradas_presente(resposta_fluxo_de_caixa, lista_de_materiais):
+    for material in lista_de_materiais:
+        assertContains(resposta_fluxo_de_caixa, material.nome)
+
+def test_saldo_presente(resposta_fluxo_de_caixa, lista_de_vendas, lista_de_despesas, lista_de_materiais):
     receitas = []
     for venda in lista_de_vendas:
         receitas.append(venda.get_preco_parcela())
     despesas = []
     for despesa in lista_de_despesas:
         despesas.append(despesa.total_pago)
-    saldo = str(sum(receitas) - sum(despesas)).split('.')
-    assertContains(resposta_fluxo_de_caixa, ','.join([saldo[0], saldo[1]]))
+    for material in lista_de_materiais:
+        despesas.append(material.total_pago)
+    saldo = sum(receitas) - sum(despesas)
+    saldo_split = f"{saldo:,.2f}".split('.')
+    saldo_str = '.'.join(saldo_split[0].split(','))
+    assertContains(resposta_fluxo_de_caixa, f"{saldo_str},{saldo_split[1]}")
 
 def test_btn_nova_despesa_presente(resposta_fluxo_de_caixa):
     assertContains(
