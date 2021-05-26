@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load bootstrap5 %}
+{% load humanize %}
 
 {% block content %}
 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
@@ -51,7 +52,7 @@
                     <div class="modal-dialog modal-lg">
                       <div class="modal-content">
                           <div class="modal-header">
-                            <h1 class="modal-title display-6" id="ModelProduto{{ produto.id }}Label">{{ produto.nome }} <strong>#{{ produto.id }}</strong></h1>
+                            <h1 class="modal-title display-6" id="ModelProduto{{ produto.id }}Label"><strong>{{ produto.nome }} #{{ produto.id }}</strong></h1>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                           </div>
                           <div class="modal-body">
@@ -132,8 +133,8 @@
                                           <td>{{ material_dp.material.nome }}</td>
                                           <td>{{ material_dp.material.qualidade }}</td>
                                           <td>{{ material_dp.unidades }}</td>
-                                          <td>{{ material_dp.get_peso }}</td>
-                                          <td>R$ {{ material_dp.get_custo }}</td>
+                                          <td>{{ material_dp.peso|intcomma }} {{ material_dp.unidade_de_medida }}</td>
+                                          <td>R$ {{ material_dp.get_custo|intcomma }}</td>
                                           <td>
                                               <ul class="list-inline">
                                                   <li class="list-inline-item me-2">
@@ -186,7 +187,7 @@
                                           <td>{{ servico.nome }}</td>
                                           <td>{{ servico.data }}</td>
                                           <td>{{ servico.qualidade }}</td>
-                                          <td>{{ servico.total_pago }}</td>
+                                          <td>{{ servico.total_pago|intcomma }}</td>
                                           <td>
                                               <ul class="list-inline">
                                                   <li class="list-inline-item me-2">
@@ -216,19 +217,19 @@
                                   <tbody>
                                     <tr>
                                         <th scope="col">Custo de Produção</th>
-                                        <td>R$ {{ produto.get_custo_de_producao }}</td>
+                                        <td>R$ {{ produto.get_custo_de_producao|intcomma }}</td>
                                     </tr>
                                     <tr>
                                       <th scope="col">Preço para Atacado</th>
-                                      <td>R$ {% widthratio produto.get_custo_de_producao 1 2 %}</td>
+                                      <td>R$ {{ produto.get_preco_atacado|intcomma }}</td>
                                     </tr>
                                     <tr>
                                       <th scope="col">Preço para Revenda</th>
-                                      <td>R$ {% widthratio produto.get_custo_de_producao 1 3 %}</td>
+                                      <td>R$ {{ produto.get_preco_revenda|intcomma }}</td>
                                     </tr>
                                     <tr>
                                       <th scope="col">Preço para Cliente Final</th>
-                                      <td>R$ {% widthratio produto.get_custo_de_producao 1 4 %}</td>
+                                      <td>R$ {{ produto.get_preco_cliente_final|intcomma }}</td>
                                     </tr>
                                   </tbody>
                                 </table>
@@ -271,7 +272,7 @@
                       <div class="modal-dialog">
                         <div class="modal-content">
                           <div class="modal-header">
-                            <h1 class="modal-title display-6" id="modalDeletarProduto{{ produto.id }}Label">{{ produto.nome }} <strong>#{{ produto.id }}</strong></h1>
+                            <h1 class="modal-title display-6" id="modalDeletarProduto{{ produto.id }}Label"><strong>{{ produto.nome }} #{{ produto.id }}</strong></h1>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                           </div>
                           <div class="modal-body">

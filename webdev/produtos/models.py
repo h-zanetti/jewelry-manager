@@ -14,6 +14,7 @@ class MaterialDoProduto(models.Model):
     unidades = models.IntegerField(_("Unidades Utilizadas"), default=1)
     peso = models.DecimalField(_("Peso Unitário"), max_digits=8, decimal_places=2, blank=True, null=True) 
     UNIDADE_DE_MEDIDA_CHOICES = (
+        ('', 'Unidade de Medida'),
         ('g', 'Gramas'),
         ('ct', 'Quilates'),
     )
@@ -34,7 +35,7 @@ class MaterialDoProduto(models.Model):
             preco = self.peso * self.material.get_preco_por_peso()
         else:
             preco= self.unidades * self.material.get_preco_unitario()
-        return preco
+        return round(preco, 2)
 
 class Produto(models.Model):
     foto = models.ImageField(_('Foto do Produto'), upload_to='produtos', default='default.jpg', blank=True, null=True)
@@ -59,4 +60,12 @@ class Produto(models.Model):
         for material_dp in self.materiais.all():
             custo += material_dp.get_custo()
         return round(custo, 2)
-                
+
+    def get_preco_atacado(self):
+        return self.get_custo_de_producao() * 2
+
+    def get_preco_revenda(self):
+        return self.get_custo_de_producao() * 3
+
+    def get_preco_cliente_final(self):
+        return self.get_custo_de_producao() * 4

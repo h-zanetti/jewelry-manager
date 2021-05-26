@@ -57,11 +57,29 @@ def test_btn_deletar_servico_presente(resposta_estoque_produtos, produto_com_ser
             f'<form action="{reverse("fornecedores:deletar_servico", kwargs={"servico_id": s.id})}"'
         )
 
-# Adicionar serviço ao produto
+# Adicionar serviço ao produto 
 @pytest.fixture
 def produto_sem_servico(db):
     return Produto.objects.create(nome='Produto1', colecao="d'Mentira")
 
+# GET
+@pytest.fixture
+def resposta_adicionar_servico_ao_produto_get(client, produto_sem_servico, fornecedor):
+    usr = User.objects.create_user(username='TestUser', password='MinhaSenha123')
+    client.login(username='TestUser', password='MinhaSenha123')
+    resp = client.get(reverse('produtos:adicionar_servico', kwargs={"produto_id": produto_sem_servico.id}))
+    return resp
+
+def test_adicionar_servico_status_code(resposta_adicionar_servico_ao_produto_get):
+    assert resposta_adicionar_servico_ao_produto_get.status_code == 200
+
+def test_btn_submit_and_leave_present(resposta_adicionar_servico_ao_produto_get):
+    assertContains(resposta_adicionar_servico_ao_produto_get, '<button type="submit" name="submit-leave"')
+
+def test_btn_submit_and_stay_present(resposta_adicionar_servico_ao_produto_get):
+    assertContains(resposta_adicionar_servico_ao_produto_get, '<button type="submit" name="submit-stay"')
+
+# POST
 @pytest.fixture
 def resposta_adicionar_servico_ao_produto(client, produto_sem_servico, fornecedor):
     usr = User.objects.create_user(username='TestUser', password='MinhaSenha123')

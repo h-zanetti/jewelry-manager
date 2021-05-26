@@ -87,8 +87,11 @@ def test_novo_produto_status_code(resposta_novo_produto):
 def test_form_present(resposta_novo_produto):
     assertContains(resposta_novo_produto, '<form')
 
-def test_btn_submit_present(resposta_novo_produto):
-    assertContains(resposta_novo_produto, '<button type="submit"')
+def test_btn_submit_and_leave_present(resposta_novo_produto):
+    assertContains(resposta_novo_produto, '<button type="submit" name="submit-leave"')
+
+def test_btn_submit_and_stay_present(resposta_novo_produto):
+    assertContains(resposta_novo_produto, '<button type="submit" name="submit-stay"')
 
 def test_campo_observacao_presente(resposta_novo_produto):
     assertContains(resposta_novo_produto, '<textarea name="observacao"')

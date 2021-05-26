@@ -47,7 +47,21 @@
                     <div class="col-lg-6">
                         {% bootstrap_field form.observacao %}
                     </div>
-                <button type="submit" class="btn btn-primary w-100 mt-2">Enviar</button>
+                </div>
+                <div class="row g-2 mt-2">
+                    {% if novo_obj %}
+                        <div class="col-md-6">
+                            <button type="submit" name="submit-stay" class="btn btn-primary w-100">Enviar e Continuar</button>
+                        </div>
+                        <div class="col-md-6">
+                            <button type="submit" name="submit-leave" class="btn btn-primary w-100">Enviar e Sair</button>
+                        </div>
+                    {% else %}
+                        <div class="col-12">
+                            <button type="submit" name="submit-stay" class="btn btn-primary w-100">Enviar</button>
+                        </div>
+                    {% endif %}
+                </div>
             </form>
         </div>
     </div>
