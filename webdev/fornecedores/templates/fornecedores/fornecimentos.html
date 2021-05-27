@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% load bootstrap5 %}
+
+{% block content %}
+{% if title %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">{{ title }}</h1>
+</div>
+{% endif %}
+
+<div class="container-sm mb-4">
+    <div class="row d-flex justify-content-center">
+        <div class="col-md-12 border shadow px-4 py-3">
+            <form method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="next" value="{{ request.GET.next }}">
+                <div class="row gy-3 gx-2">
+                    <h1 class="display-6 mt-2">Fornecimentos Cadastrados</h1>
+                    {{ formset.management_form }}
+                    {% for form in formset %}
+                        {% if not forloop.last %}
+                            <div class="col-lg-4 col-md-6 col-sm-12">
+                                {% bootstrap_form form layout='inline' %}
+                            </div>
+                        {% else %}
+                            <h1 class="display-6 mt-2">Novo Fornecimento</h1>
+                            {% if form.errors %}
+                            <div class="col-lg-12 col-md-6 col-sm-12">
+                                {% bootstrap_form_errors form %}
+                            </div>
+                            {% endif %}
+                            <div class="col-lg-4 col-md-6 col-sm-12 mt-1">
+                                {% bootstrap_form form layout='inline' %}
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+                <div class="row g-2 mt-2">
+                    <div class="col-md-6">
+                        <button type="submit" name="submit-stay" class="btn btn-primary w-100">Enviar e Continuar</button>
+                    </div>
+                    <div class="col-md-6">
+                        <button type="submit" name="submit-leave" class="btn btn-primary w-100">Enviar e Sair</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
