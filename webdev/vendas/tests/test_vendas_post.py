@@ -1,7 +1,9 @@
 import pytest
 from django.urls import reverse
 from django.contrib.auth.models import User
-from webdev.financeiro.models import Venda, Produto, Cliente
+from webdev.produtos.models import Produto
+from webdev.financeiro.models import Receita
+from webdev.vendas.models import Venda, Cliente
 
 @pytest.fixture
 def cliente(db):
@@ -23,16 +25,16 @@ def produto(db):
 # Nova Venda
 @pytest.fixture
 def resposta_nova_venda(client, produto, cliente):
-    usr = User.objects.create_user(username='TestUser', password='MinhaSenha123')
+    User.objects.create_user(username='TestUser', password='MinhaSenha123')
     client.login(username='TestUser', password='MinhaSenha123')
     resp = client.post(
-        reverse('financeiro:nova_venda'),
+        reverse('vendas:nova_venda'),
         data={
             'data': '26-04-2021',
             'cliente': cliente.id,
             'produtos': [produto.id],
             'parcelas': 12,
-            'total_pago': 4500
+            'valor': 4500
         }
     )
     return resp
@@ -40,8 +42,11 @@ def resposta_nova_venda(client, produto, cliente):
 def test_nova_venda_status_code(resposta_nova_venda):
     assert resposta_nova_venda.status_code == 302
 
-def test_nova_despesa_criada(resposta_nova_venda):
+def test_nova_venda_criada(resposta_nova_venda):
     assert Venda.objects.exists()
+
+def test_receita_criada(resposta_nova_venda):
+    assert Receita.objects.exists()
 
 # Editar Venda
 @pytest.fixture
@@ -50,23 +55,23 @@ def venda(cliente, produto):
         data='2021-04-26',
         cliente=cliente,
         parcelas=6,
-        total_pago=1200
+        valor=1200
     )
     v.produtos.add(produto)
     return v
 
 @pytest.fixture
 def resposta_editar_venda(client, venda, cliente, produto):
-    usr = User.objects.create_user(username='TestUser', password='MinhaSenha123')
+    User.objects.create_user(username='TestUser', password='MinhaSenha123')
     client.login(username='TestUser', password='MinhaSenha123')
     resp = client.post(
-        reverse('financeiro:editar_venda', kwargs={'venda_id': venda.id}),
+        reverse('vendas:editar_venda', kwargs={'venda_id': venda.id}),
         data={
             'data': '26-04-2021',
             'cliente': cliente.id,
             'produtos': [produto.id],
             'parcelas': 6,
-            'total_pago': 4500
+            'valor': 4500
         }
     )
     return resp
@@ -80,9 +85,9 @@ def test_venda_editada(resposta_editar_venda):
 # Deletar Venda
 @pytest.fixture
 def resposta_deletar_venda(client, venda):
-    usr = User.objects.create_user(username='TestUser', password='MinhaSenha123')
+    User.objects.create_user(username='TestUser', password='MinhaSenha123')
     client.login(username='TestUser', password='MinhaSenha123')
-    resp = client.post(reverse('financeiro:deletar_venda', kwargs={'venda_id': venda.id}))
+    resp = client.post(reverse('vendas:deletar_venda', kwargs={'venda_id': venda.id}))
     return resp
 
 def test_deletar_despesa_status_code(resposta_deletar_venda):

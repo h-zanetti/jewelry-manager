@@ -1,11 +1,13 @@
-from django.utils import timezone
 from django import forms
-from .models import Despesa, Cliente, Venda
+from .models import Despesa, Receita
 
-class DespesaForm(forms.ModelForm):
+class CriarDespesaForm(forms.ModelForm):
     data = forms.DateField(
         input_formats=['%d/%m/%Y', '%d-%m-%Y'],
-        widget=forms.DateInput(attrs={'placeholder': 'dd/mm/aaaa', 'class': 'm-0'}),
+        widget=forms.DateInput(attrs={
+            'placeholder': 'dd/mm/aaaa',
+            'class': 'm-0'
+        }),
     )
     repetir = forms.ChoiceField(
         choices=Despesa.REPETIR_CHOICES,
@@ -13,18 +15,29 @@ class DespesaForm(forms.ModelForm):
     )
     class Meta:
         model = Despesa
-        fields = '__all__'
+        exclude = ('is_active', 'data_de_encerramento')
 
-class ClienteForm(forms.ModelForm):
-    class Meta:
-        model = Cliente
-        fields = '__all__'
-
-class VendaForm(forms.ModelForm):
+class EditarDespesaForm(forms.ModelForm):
     data = forms.DateField(
         input_formats=['%d/%m/%Y', '%d-%m-%Y'],
-        widget=forms.DateInput(attrs={'placeholder': 'dd/mm/aaaa'}),
+        widget=forms.DateInput(attrs={
+            'placeholder': 'dd/mm/aaaa',
+            'class': 'm-0'
+        }),
     )
     class Meta:
-        model = Venda
-        exclude = ('ultima_parcela',)
+        model = Despesa
+        fields = '__all__'
+
+class ReceitaForm(forms.ModelForm):
+    data = forms.DateField(
+        input_formats=['%d/%m/%Y', '%d-%m-%Y'],
+        widget=forms.DateInput(attrs={
+            'placeholder': 'dd/mm/aaaa',
+            'class': 'm-0'
+        }),
+    )
+    class Meta:
+        model = Receita
+        fields = '__all__'
+

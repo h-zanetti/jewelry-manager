@@ -12,7 +12,7 @@
             <button type="button" class="btn btn-sm btn-outline-secondary">Importar</button>
             <button type="button" class="btn btn-sm btn-outline-secondary">Exportar</button>
         </div>
-        <a href="{% url 'financeiro:nova_venda' %}" class="btn btn-sm btn-outline-secondary">
+        <a href="{% url 'vendas:nova_venda' %}" class="btn btn-sm btn-outline-secondary">
             Cadastrar Uma Venda
         </a>
     </div>
@@ -38,17 +38,17 @@
                 <td>{{ venda.data|date:"d-m-Y" }}</td>
                 <td>{{ venda.cliente.get_nome_completo|default:"Desconhecido" }}</td>
                 <td>{{ venda.produtos.all|join:", " }}</td>
-                <td>{{ venda.parcelas }}x de R$ {{ venda.get_preco_parcela|intcomma }}</td>
-                <td>R$ {{ venda.total_pago|intcomma }}</td>
+                <td>{{ venda.parcelas }}x de R$ {{ venda.get_valor_parcela|intcomma }}</td>
+                <td>R$ {{ venda.valor|intcomma }}</td>
                 <td>
                     <ul class="list-inline m-0">
                         <li class="list-inline-item me-3">
-                            <a href="{% url 'financeiro:editar_venda' venda.id %}">
+                            <a href="{% url 'vendas:editar_venda' venda.id %}">
                                 <i class="fas fa-wrench link-dark"></i>
                             </a>
                         </li>
                         <li class="list-inline-item me-3">
-                            <form action="{% url 'financeiro:deletar_venda' venda.id %}" method="POST">
+                            <form action="{% url 'vendas:deletar_venda' venda.id %}" method="POST">
                                 {% csrf_token %}
                                 <!-- Delete Modal Trigger -->
                                 <a href="#ModalDeletarVenda{{ venda.id }}" data-bs-toggle="modal"><i class="fas fa-trash link-dark"></i></a>

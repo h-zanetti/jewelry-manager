@@ -1,16 +1,15 @@
 import pytest
 from django.urls import reverse
 from django.contrib.auth.models import User
-from webdev.financeiro.models import Cliente
-from django.utils import timezone
+from webdev.vendas.models import Cliente
 
 # Novo Cliente
 @pytest.fixture
 def resposta_novo_cliente(client, db):
-    usr = User.objects.create_user(username='TestUser', password='MinhaSenha123')
+    User.objects.create_user(username='TestUser', password='MinhaSenha123')
     client.login(username='TestUser', password='MinhaSenha123')
     resp = client.post(
-        reverse('financeiro:novo_cliente'),
+        reverse('vendas:novo_cliente'),
         data={
             'nome': 'José',
             'sobrenome': 'Azevedo',
@@ -34,7 +33,7 @@ def resposta_editar_cliente(client, cliente):
     usr = User.objects.create_user(username='TestUser', password='MinhaSenha123')
     client.login(username='TestUser', password='MinhaSenha123')
     resp = client.post(
-        reverse('financeiro:editar_cliente', kwargs={'cliente_id': cliente.id}),
+        reverse('vendas:editar_cliente', kwargs={'cliente_id': cliente.id}),
         data={
             'nome': 'Pedro',
             'sobrenome': 'Azevedo',
@@ -53,7 +52,7 @@ def test_cliente_editada(resposta_editar_cliente):
 def resposta_deletar_cliente(client, cliente):
     usr = User.objects.create_user(username='TestUser', password='MinhaSenha123')
     client.login(username='TestUser', password='MinhaSenha123')
-    resp = client.post(reverse('financeiro:deletar_cliente', kwargs={'cliente_id': cliente.id}))
+    resp = client.post(reverse('vendas:deletar_cliente', kwargs={'cliente_id': cliente.id}))
     return resp
 
 def test_deletar_cliente_status_code(resposta_deletar_cliente):

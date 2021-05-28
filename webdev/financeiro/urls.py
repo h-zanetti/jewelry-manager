@@ -5,19 +5,14 @@ app_name = 'financeiro'
 
 urlpatterns = [
     path('fluxo_de_caixa/<int:ano>/<int:mes>/', views.fluxo_de_caixa, name='fluxo_de_caixa'),
+    # Receitas
+    path('receitas/', views.receitas, name='receitas'),
+    path('nova_receita/', views.nova_receita, name='nova_receita'),
+    path('editar_receita/<int:receita_id>', views.editar_receita, name='editar_receita'),
+    path('deletar_receita/<int:receita_id>', views.deletar_receita, name='deletar_receita'),
     # Despesas
     path('despesas/', views.despesas, name='despesas'),
     path('nova_despesa/', views.nova_despesa, name='nova_despesa'),
     path('editar_despesa/<int:despesa_id>', views.editar_despesa, name='editar_despesa'),
     path('deletar_despesa/<int:despesa_id>', views.deletar_despesa, name='deletar_despesa'),
-    # Clientes
-    path('clientes/', views.clientes, name='clientes'),
-    path('novo_cliente/', views.novo_cliente, name='novo_cliente'),
-    path('editar_cliente/<int:cliente_id>', views.editar_cliente, name='editar_cliente'),
-    path('deletar_cliente/<int:cliente_id>', views.deletar_cliente, name='deletar_cliente'),
-    # Vendas
-    path('vendas/', views.vendas, name='vendas'),
-    path('nova_venda/', views.nova_venda, name='nova_venda'),
-    path('editar_venda/<int:venda_id>', views.editar_venda, name='editar_venda'),
-    path('deletar_venda/<int:venda_id>', views.deletar_venda, name='deletar_venda'),
 ]

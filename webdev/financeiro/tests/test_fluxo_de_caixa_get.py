@@ -4,7 +4,8 @@ from django.urls import reverse
 from django.utils import timezone
 from pytest_django.asserts import assertContains
 from django.contrib.auth.models import User
-from webdev.financeiro.models import Cliente, Venda, Despesa
+from webdev.financeiro.models import Despesa
+from webdev.vendas.models import Cliente, Venda
 from webdev.produtos.models import Produto
 from webdev.materiais.models import Material
 
