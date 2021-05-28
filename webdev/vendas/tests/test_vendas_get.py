@@ -1,7 +1,7 @@
 import pytest
 from django.urls import reverse
 from django.utils import timezone
-from pytest_django.asserts import assertContains
+from pytest_django.asserts import assertContains, assertNotContains
 from django.contrib.auth.models import User
 from webdev.vendas.models import Venda, Cliente
 from webdev.produtos.models import Produto
@@ -79,19 +79,22 @@ def test_btn_submit_leave_presente(resposta_nova_venda):
     assertContains(resposta_nova_venda, f'<button type="submit" name="submit-leave"')
 
 
-# Editar Venda
-@pytest.fixture
-def resposta_editar_venda(client, venda):
-    User.objects.create_user(username='TestUser', password='MinhaSenha123')
-    client.login(username='TestUser', password='MinhaSenha123')
-    resp = client.get(reverse('vendas:editar_venda', kwargs={'venda_id': venda.id}))
-    return resp
+# # Editar Venda
+# @pytest.fixture
+# def resposta_editar_venda(client, venda):
+#     User.objects.create_user(username='TestUser', password='MinhaSenha123')
+#     client.login(username='TestUser', password='MinhaSenha123')
+#     resp = client.get(reverse('vendas:editar_venda', kwargs={'venda_id': venda.id}))
+#     return resp
 
-def test_editar_venda_status_code(resposta_editar_venda):
-    assert resposta_editar_venda.status_code == 200
+# def test_editar_venda_status_code(resposta_editar_venda):
+#     assert resposta_editar_venda.status_code == 200
 
-def test_form_editar_venda_presente(resposta_editar_venda):
-    assertContains(resposta_editar_venda, f'<form')
+# def test_form_editar_venda_presente(resposta_editar_venda):
+#     assertContains(resposta_editar_venda, f'<form')
 
-def test_btn_submit_editar_venda_presente(resposta_editar_venda):
-    assertContains(resposta_editar_venda, f'<button type="submit"')
+# def test_btn_submit_stay_nao_presente(resposta_nova_venda):
+#     assertNotContains(resposta_nova_venda, f'<button type="submit" name="submit-stay"')
+
+# def test_btn_submit_leave_presente(resposta_nova_venda):
+#     assertContains(resposta_nova_venda, f'<button type="submit" name="submit-leave"')

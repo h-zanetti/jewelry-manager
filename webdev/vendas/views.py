@@ -1,4 +1,4 @@
-from webdev.financeiro.models import Receita
+from webdev.financeiro.models import Parcela, Receita
 from dateutil.relativedelta import relativedelta
 from django.http.response import Http404, HttpResponseRedirect
 from django.urls.base import reverse
@@ -80,15 +80,19 @@ def minhas_vendas(request):
 @login_required
 def nova_venda(request):
     if request.method == 'POST':
-        form = VendaForm(request.POST, initial={'data': timezone.now})
+        form = VendaForm(request.POST)
         if form.is_valid():
+            # Salvar venda
             venda = form.save()
+            # Criar receita
+            receita = Receita.objects.create(categoria='Venda')
             for i in range(venda.parcelas):
-                Receita.objects.create(
+                parcela = Parcela.objects.create(
                     data=venda.data + relativedelta(months=i),
-                    categoria='Venda',
                     valor=venda.get_valor_parcela()
                 )
+                receita.parcelas.add(parcela)
+            # Redirecionamento
             next_url = request.POST.get('next')
             if 'submit-stay' in request.POST:
                 return redirect('vendas:nova_venda')
@@ -97,14 +101,15 @@ def nova_venda(request):
             else:
                 return redirect('vendas:minhas_vendas')
     else:
-        form = VendaForm(initial={'data': timezone.now})
+        form = VendaForm()
 
     context = {
         'title': 'Nova Venda',
-        'form': form
+        'form': form,
+        'novo_obj': True
     }
 
-    return render(request, 'vendas/nova_venda.html', context)
+    return render(request, 'vendas/form_venda.html', context)
 
 @login_required
 def editar_venda(request, venda_id):
@@ -126,7 +131,7 @@ def editar_venda(request, venda_id):
         'form': form
     }
 
-    return render(request, 'vendas/nova_venda.html', context)
+    return render(request, 'vendas/form_venda.html', context)
 
 @login_required
 def deletar_venda(request, venda_id):

@@ -13,4 +13,4 @@ class VendaForm(forms.ModelForm):
     )
     class Meta:
         model = Venda
-        exclude = ('ultima_parcela',)
+        exclude = ('receita',)

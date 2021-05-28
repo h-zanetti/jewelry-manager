@@ -2,11 +2,17 @@ from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
-class Receita(models.Model):
+class Parcela(models.Model):
     data = models.DateField(_("Data"), default=timezone.now)
-    categoria = models.CharField(_("Categoria"), max_length=150)
     valor = models.DecimalField(_("Valor"), max_digits=8, decimal_places=2)
+    
+    def __str__(self):
+        return f"{self.data} {self.valor}"
 
+class Receita(models.Model):
+    categoria = models.CharField(_("Categoria"), max_length=150)
+    parcelas = models.ManyToManyField(Parcela, verbose_name=_("Parcelas"))
+    
     class Meta:
         get_latest_by = "data"
 

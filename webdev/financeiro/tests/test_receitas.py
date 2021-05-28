@@ -1,42 +1,52 @@
+from dateutil.relativedelta import relativedelta
 import pytest
 from django.urls import reverse
 from django.contrib.auth.models import User
 from django.utils import timezone
 from pytest_django.asserts import assertContains, assertNotContains
-from webdev.financeiro.models import Receita
+from webdev.financeiro.models import Receita, Parcela
 
-# Receitas
+# Parcelas
 @pytest.fixture
-def receitas(db):
-    return [
-        Receita.objects.create(data=timezone.now(), categoria='Motoboy', valor=150),
-        Receita.objects.create(data=timezone.now(), categoria='MEI', valor=65)
-    ]
+def lista_de_parcelas(db):
+    parcelas = []
+    for i in range(7):
+        parcela = Parcela.objects.create(
+            data=timezone.now() + relativedelta(months=i),
+            valor=150
+        )
+        parcelas.append(parcela)
+    return parcelas
 
-# Visualizar receitas
+# Receita
 @pytest.fixture
-def resposta_receitas(client, receitas):
+def receita(lista_de_parcelas):
+    r = Receita.objects.create(categoria='Motoboy')
+    for parcela in lista_de_parcelas:
+        r.parcelas.add(parcela)
+    return r
+
+# Visualizar receita
+@pytest.fixture
+def resposta_receita(client, receita):
     User.objects.create_user(username='TestUser', password='MinhaSenha123')
     client.login(username='TestUser', password='MinhaSenha123')
     resp = client.get(reverse('financeiro:receitas'))
     return resp
 
-def test_receitas_status_code(resposta_receitas):
-    assert resposta_receitas.status_code == 200
+def test_receita_status_code(resposta_receita):
+    assert resposta_receita.status_code == 200
 
-def test_receitas_presente(resposta_receitas, receitas):
-    for receita in receitas:
-        assertContains(resposta_receitas, receita.categoria)
+def test_receita_presente(resposta_receita, receita):
+    assertContains(resposta_receita, receita.categoria)
 
-def test_btn_editar_receita_presente(resposta_receitas, receitas):
-    for receita in receitas:
-        assertContains(resposta_receitas, f'<a href="{reverse("financeiro:editar_receita", kwargs={"receita_id": receita.id})}')
+def test_btn_editar_receita_presente(resposta_receita, receita):
+    assertContains(resposta_receita, f'<a href="{reverse("financeiro:editar_receita", kwargs={"receita_id": receita.id})}')
 
-def test_btn_deletar_receita_presente(resposta_receitas, receitas):
-    for receita in receitas:
-        assertContains(resposta_receitas, f'<form action="{reverse("financeiro:deletar_receita", kwargs={"receita_id": receita.id})}')
+def test_btn_deletar_receita_presente(resposta_receita, receita):
+    assertContains(resposta_receita, f'<form action="{reverse("financeiro:deletar_receita", kwargs={"receita_id": receita.id})}')
 
-# Novas Receitas
+# Novas receita
 @pytest.fixture
 def resposta_nova_receita(client, db):
     User.objects.create_user(username='TestUser', password='MinhaSenha123')
@@ -56,12 +66,12 @@ def test_btn_submit_stay_presente(resposta_nova_receita):
 def test_btn_submit_leave_presente(resposta_nova_receita):
     assertContains(resposta_nova_receita, f'<button type="submit" name="submit-leave"')
 
-# Editar Receitas
+# Editar receita
 @pytest.fixture
-def resposta_editar_receita(client, receitas):
+def resposta_editar_receita(client, receita):
     User.objects.create_user(username='TestUser', password='MinhaSenha123')
     client.login(username='TestUser', password='MinhaSenha123')
-    resp = client.get(reverse('financeiro:editar_receita', kwargs={'receita_id': receitas[0].id}))
+    resp = client.get(reverse('financeiro:editar_receita', kwargs={'receita_id': receita.id}))
     return resp
 
 def test_editar_receita_status_code(resposta_editar_receita):
