@@ -1,16 +1,17 @@
-# import datetime as dt
-# from itertools import chain
+import datetime as dt
+from itertools import chain
+from django.db.models.aggregates import Sum
+from django.db.models.functions.datetime import TruncMonth
 from django.urls import reverse
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect, Http404
 from django.utils import timezone
-# from webdev.materiais.models import Material
-# from webdev.vendas.models import Venda
-from .models import Despesa, Receita
+from .models import Despesa, Parcela, Receita
 from .forms import CriarDespesaForm, EditarDespesaForm, ReceitaForm
 
 # Receitas
+@login_required
 def receitas(request):
     context = {
         'title': 'Minhas receitas',
@@ -135,75 +136,43 @@ def deletar_despesa(request, despesa_id):
     return HttpResponseRedirect(reverse('financeiro:despesas'))
 
 
-# # Fluxo de Caixa
-# @login_required
+# Fluxo de Caixa
+@login_required
 def fluxo_de_caixa(request, ano, mes):
-    pass
-#     # Fluxo de caixa mensal - Dados da tabela
-#     vendas_do_mes = Venda.objects.filter(data__year=ano, data__month=mes)
-#     vendas_anteriores = Venda.objects.filter(
-#         data__lt=dt.date(ano, mes, 1),
-#         ultima_parcela__gte=dt.date(ano, mes, 1)
-#     )
-#     despesas_do_mes = Despesa.objects.filter(data__year=ano, data__month=mes)
-#     despesas_fixas = Despesa.objects.filter(repetir__in=['d', 'm'], data__lt=dt.date(ano, mes, 1))
-#     despesas_anuais = Despesa.objects.filter(repetir='a', data__lt=dt.date(ano, 1, 1), data__month=mes)
-#     entradas_de_material = Material.objects.filter(entrada__year=ano, entrada__month=mes)
+    # Dados do gráfico
+    parcelas_do_ano = Parcela.objects.filter(data__year=ano).annotate(month=TruncMonth('data')).values('month').annotate(valor=Sum('valor'))
+    despesas_do_ano = Despesa.objects.filter(data__year=ano).annotate(month=TruncMonth('data')).values('month').annotate(valor=Sum('valor'))
+    dados = []
+    for m in range(1, 13):
+        receita_mes = parcelas_do_ano.filter(month__month=m).aggregate(Sum('valor'))['valor__sum']
+        receita_mes = 0 if receita_mes == None else float(receita_mes)
+        despesa_do_mes = despesas_do_ano.filter(month__month=m).aggregate(Sum('valor'))['valor__sum']
+        despesa_do_mes = 0 if despesa_do_mes == None else float(despesa_do_mes)
+        dados.append(receita_mes - despesa_do_mes)
+    # Fluxo de caixa mensal - Dados da tabela
+    receita = Parcela.objects.filter(data__year=ano, data__month=mes)
+    despesas = Despesa.objects.filter(data__year=ano, data__month=mes)
+    transacoes = sorted(
+        chain(receita, despesas),
+        key=lambda instance: instance.data
+    )
+    # Saldo do mes
+    receitas_sum = receita.aggregate(Sum('valor'))['valor__sum']
+    receitas_sum = 0 if receitas_sum == None else float(receitas_sum)
+    despesas_sum = despesas.aggregate(Sum('valor'))['valor__sum']
+    despesas_sum = 0 if despesas_sum == None else float(despesas_sum)
+    saldo = receitas_sum - despesas_sum
 
-#     # Saldo do mes
-#     receita = 0
-#     for venda in chain(vendas_do_mes, vendas_anteriores):
-#         receita += venda.get_preco_parcela()
-#     despesas =  0
-#     for despesa in chain(despesas_do_mes, despesas_fixas, despesas_anuais, entradas_de_material):
-#         despesas += despesa.total_pago
-    
-#     # Dados anuais para o gráfico
-#     # Vendas
-#     def f(instance):
-#         tipo_despesa = instance.get_categoria_fluxo_de_caixa().split()[0]
-#         if tipo_despesa == 'Entrada':
-#             return instance.entrada
-#         else: 
-#             return instance.data
-#     transacoes = sorted(
-#         chain(vendas_do_mes, vendas_anteriores, despesas_do_mes, despesas_fixas, despesas_anuais, entradas_de_material),
-#         key=lambda instance: f(instance)
-#     )
-#     dados = {1:0, 2:0, 3:0, 4:0, 5:0, 6:0, 7:0, 8:0, 9:0, 10:0, 11:0, 12:0}
-#     vendas_ano = Venda.objects.filter(data__year=ano)
-#     for venda in vendas_ano:
-#         parcelas = venda.get_todas_parcelas()
-#         for parcela_data in parcelas:
-#             if parcela_data.year == ano:
-#                 dados[parcela_data.month] += float(parcelas[parcela_data])
-    
-#     # Entradas de Material
-#     materiais_ano = Material.objects.filter(entrada__year=ano)
-#     for material in materiais_ano:
-#         dados[material.entrada.month] -= float(material.total_pago)
+    context = {
+        # Data da requisição
+        'data': dt.date(ano, mes, 1),
+        'anos': [ano-2, ano-1, ano, ano+1, ano+2],
+        # Gráfico
+        'nomes': ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'],
+        'dados': dados,
+        # Tabela
+        'saldo': saldo,
+        'transacoes': transacoes,
+    }
 
-#     # Despesas variáveis
-#     despesas_variaveis_ano = Despesa.objects.filter(data__year=ano, repetir='n')
-#     for despesa in despesas_variaveis_ano:
-#         dados[despesa.data.month] -= float(despesa.total_pago)
-    
-#     # Despesas fixas
-#     despesas_fixas_ano = Despesa.objects.filter(data__year=ano).exclude(repetir='n')
-#     for despesa in despesas_fixas_ano:
-#         if despesa.repetir == 'a':
-#             dados[despesa.data.month] -= float(despesa.total_pago)
-#         elif despesa.repetir == 'm':
-#             for m in range(despesa.data.month, 13):
-#                 dados[m] -= float(despesa.total_pago)
-    
-#     context = {
-#         'data': dt.date(ano, mes, 1),
-#         'saldo': receita - despesas,
-#         'transacoes': transacoes,
-#         'nomes': ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'],
-#         'dados': list(dados.values()),
-#         'anos': [ano-2, ano-1, ano, ano+1, ano+2],
-#     }
-
-#     return render(request, 'financeiro/fluxo_de_caixa.html', context)
+    return render(request, 'financeiro/fluxo_de_caixa.html', context)

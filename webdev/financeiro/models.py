@@ -1,17 +1,10 @@
 from django.db import models
+from django.db.models.aggregates import Sum
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
-class Parcela(models.Model):
-    data = models.DateField(_("Data"), default=timezone.now)
-    valor = models.DecimalField(_("Valor"), max_digits=8, decimal_places=2)
-    
-    def __str__(self):
-        return f"{self.data} {self.valor}"
-
 class Receita(models.Model):
     categoria = models.CharField(_("Categoria"), max_length=150)
-    parcelas = models.ManyToManyField(Parcela, verbose_name=_("Parcelas"))
     
     class Meta:
         get_latest_by = "data"
@@ -19,6 +12,24 @@ class Receita(models.Model):
     def __str__(self):
         return self.categoria
 
+    @classmethod
+    def get_tipo_de_transacao(cls):
+        return 'Receita'
+
+    def get_parcelas(self):
+        return Parcela.objects.filter(receita=self.id)
+
+    def get_valor_total(self):
+        return float(self.get_parcelas().aggregate(Sum('valor'))['valor__sum'])
+
+
+class Parcela(models.Model):
+    data = models.DateField(_("Data"), default=timezone.now)
+    valor = models.DecimalField(_("Valor"), max_digits=8, decimal_places=2)
+    receita = models.ForeignKey(Receita, on_delete=models.CASCADE, verbose_name=_("Receita"))
+
+    def __str__(self):
+        return f"{self.data} {self.valor}"
 
 class Despesa(models.Model):
     data = models.DateField(_("Data"), default=timezone.now)
@@ -39,3 +50,6 @@ class Despesa(models.Model):
     def __str__(self):
         return self.categoria
 
+    @classmethod
+    def get_tipo_de_transacao(cls):
+        return 'Despesa'

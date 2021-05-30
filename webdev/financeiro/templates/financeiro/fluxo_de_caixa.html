@@ -8,9 +8,9 @@
     <h1 class="h2">
         Fluxo de Caixa
         {% if saldo >= 0%}
-        <span class="text-success">+{{ saldo|intcomma }}</span>
+        <span class="text-success">+{{ saldo|floatformat:2|intcomma }}</span>
         {% else %}
-        <span class="text-danger">{{ saldo|intcomma }}</span>
+        <span class="text-danger">{{ saldo|floatformat:2|intcomma }}</span>
         {% endif %}
     </h1>
     <div class="btn-toolbar mb-2 mb-md-0">
@@ -34,10 +34,10 @@
                 {% endfor %}
             </ul>
         </div>
-        <div class="btn-group" role="group">
+        {% comment %} <div class="btn-group" role="group">
             <a href="{% url 'financeiro:nova_venda' %}?next={{ request.path|urlencode }}" class="btn btn-sm btn-outline-secondary">Nova Venda</a>
             <a href="{% url 'financeiro:nova_despesa' %}?next={{ request.path|urlencode }}" class="btn btn-sm btn-outline-secondary">Nova Despesa</a>
-        </div>
+        </div> {% endcomment %}
     </div>
 </div>
 
@@ -83,36 +83,18 @@ var myChart = new Chart(ctx, {
                 <th scope="col">Tipo</th>
                 <th scope="col">Categoria</th>
                 <th scope="col">Valor (parcela)</th>
-                <th scope="col">Ações</th>
+                {% comment %} <th scope="col">Ações</th> {% endcomment %}
             </tr>
         </thead>
         <tbody>
             {% for t in transacoes %}
             <tr>
                 <th scope="col">{{ t.id }}</th>
-                <td>
-                    {% if t.get_categoria_fluxo_de_caixa == 'Entrada de Material' %}
-                        {{ t.entrada|date:"d-m-Y" }}
-                    {% else %}
-                        {{ t.data|date:"d-m-Y" }}
-                    {% endif %}
-                </td>
-                <td>
-                    {% if t.get_categoria_fluxo_de_caixa == 'Venda' %}
-                        Receita
-                    {% else %}
-                        Despesa
-                    {% endif %}
-                </td>
-                <td>{{ t.get_categoria_fluxo_de_caixa }}</td>
-                <td>
-                    {% if t.get_categoria_fluxo_de_caixa == 'Venda' %}
-                        {% get_parcela t data %}
-                    {% else %}
-                        R$ {{ t.total_pago|intcomma }}
-                    {% endif %}
-                </td>
-                <td>
+                <td>{{ t.data|date:"d-m-Y" }}</td>
+                <td>{{ t.get_tipo_de_transacao }}</td>
+                <td>{{ t.categoria }}</td>
+                <td>{{ t.valor|intcomma }}</td>
+                {% comment %} <td>
                     <ul class="list-inline m-0">
                         <li class="list-inline-item me-3">
                             {% if t.get_categoria_fluxo_de_caixa == 'Venda' %}
@@ -320,7 +302,7 @@ var myChart = new Chart(ctx, {
                             {% endif %}
                         </li>
                     </ul>
-                </td>
+                </td> {% endcomment %}
             </tr>
             {% endfor %}
         </tbody>
