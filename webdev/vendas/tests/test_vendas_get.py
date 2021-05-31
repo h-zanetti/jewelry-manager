@@ -79,22 +79,25 @@ def test_btn_submit_leave_presente(resposta_nova_venda):
     assertContains(resposta_nova_venda, f'<button type="submit" name="submit-leave"')
 
 
-# # Editar Venda
-# @pytest.fixture
-# def resposta_editar_venda(client, venda):
-#     User.objects.create_user(username='TestUser', password='MinhaSenha123')
-#     client.login(username='TestUser', password='MinhaSenha123')
-#     resp = client.get(reverse('vendas:editar_venda', kwargs={'venda_id': venda.id}))
-#     return resp
+# Editar Venda
+@pytest.fixture
+def resposta_editar_venda(client, venda):
+    User.objects.create_user(username='TestUser', password='MinhaSenha123')
+    client.login(username='TestUser', password='MinhaSenha123')
+    resp = client.get(reverse('vendas:editar_venda', kwargs={'venda_id': venda.id}))
+    return resp
 
-# def test_editar_venda_status_code(resposta_editar_venda):
-#     assert resposta_editar_venda.status_code == 200
+def test_editar_venda_status_code(resposta_editar_venda):
+    assert resposta_editar_venda.status_code == 200
 
-# def test_form_editar_venda_presente(resposta_editar_venda):
-#     assertContains(resposta_editar_venda, f'<form')
+def test_form_editar_venda_presente(resposta_editar_venda):
+    assertContains(resposta_editar_venda, f'<form')
 
-# def test_btn_submit_stay_nao_presente(resposta_nova_venda):
-#     assertNotContains(resposta_nova_venda, f'<button type="submit" name="submit-stay"')
+def test_btn_submit_stay_nao_presente(resposta_editar_venda):
+    assertNotContains(resposta_editar_venda, f'<button type="submit" name="submit-stay"')
 
-# def test_btn_submit_leave_presente(resposta_nova_venda):
-#     assertContains(resposta_nova_venda, f'<button type="submit" name="submit-leave"')
+def test_btn_submit_leave_presente(resposta_editar_venda):
+    assertContains(resposta_editar_venda, f'<button type="submit" name="submit-leave"')
+
+def test_receita_presente_e_escondida(resposta_editar_venda, venda):
+    assertContains(resposta_editar_venda, f'<input type="hidden" name="receita" value="{venda.receita.id}"')

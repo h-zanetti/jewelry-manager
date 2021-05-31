@@ -1,8 +1,8 @@
 from webdev.financeiro.models import Parcela, Receita
+from django.utils import timezone
 from dateutil.relativedelta import relativedelta
 from django.http.response import Http404, HttpResponseRedirect
 from django.urls.base import reverse
-from django.utils import timezone
 from webdev.vendas.forms import ClienteForm, VendaForm
 from webdev.vendas.models import Cliente, Venda
 from django.contrib.auth.decorators import login_required
@@ -82,17 +82,7 @@ def nova_venda(request):
     if request.method == 'POST':
         form = VendaForm(request.POST)
         if form.is_valid():
-            # Salvar venda
-            venda = form.save()
-            # Criar receita
-            receita = Receita.objects.create(categoria='Venda')
-            for i in range(venda.parcelas):
-                parcela = Parcela.objects.create(
-                    data=venda.data + relativedelta(months=i),
-                    valor=venda.get_valor_parcela()
-                )
-                receita.parcelas.add(parcela)
-            # Redirecionamento
+            form.save()
             next_url = request.POST.get('next')
             if 'submit-stay' in request.POST:
                 return redirect('vendas:nova_venda')
@@ -116,7 +106,7 @@ def editar_venda(request, venda_id):
     try:
         venda = Venda.objects.get(id=venda_id)
     except:
-        raise Http404('Cliente não encontrado')
+        raise Http404('Venda não encontrada')
 
     if request.method == 'POST':
         form = VendaForm(request.POST, instance=venda)

@@ -18,9 +18,13 @@
                         <input type="hidden" name="next" value="{{ request.GET.next }}">
                     </div>
                     {% for field in form %}
-                        <div class="col-lg-6 col-md-12">
+                        {% if field.name == 'receita' %}
                             {% bootstrap_field field %}
-                        </div>
+                        {% else %}
+                            <div class="col-lg-6 col-md-12">
+                                {% bootstrap_field field %}
+                            </div>
+                        {% endif %}
                     {% endfor %}
                 </div>
                 <div class="row g-2 d-flex justify-content-between">

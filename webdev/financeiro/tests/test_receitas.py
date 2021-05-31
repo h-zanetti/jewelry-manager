@@ -6,25 +6,23 @@ from django.utils import timezone
 from pytest_django.asserts import assertContains, assertNotContains
 from webdev.financeiro.models import Receita, Parcela
 
+# Receita
+@pytest.fixture
+def receita(db):
+    return Receita.objects.create(categoria='Venda')
+
 # Parcelas
 @pytest.fixture
-def lista_de_parcelas(db):
+def lista_de_parcelas(receita):
     parcelas = []
     for i in range(7):
         parcela = Parcela.objects.create(
             data=timezone.now() + relativedelta(months=i),
-            valor=150
+            valor=150,
+            receita=receita
         )
         parcelas.append(parcela)
     return parcelas
-
-# Receita
-@pytest.fixture
-def receita(lista_de_parcelas):
-    r = Receita.objects.create(categoria='Motoboy')
-    for parcela in lista_de_parcelas:
-        r.parcelas.add(parcela)
-    return r
 
 # Visualizar receita
 @pytest.fixture

@@ -11,7 +11,7 @@ class CriarDespesaForm(forms.ModelForm):
     )
     repetir = forms.ChoiceField(
         choices=Despesa.REPETIR_CHOICES,
-        initial='n'
+        required=False
     )
     class Meta:
         model = Despesa

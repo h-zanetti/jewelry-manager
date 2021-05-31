@@ -24,7 +24,7 @@ class Venda(models.Model):
     produtos = models.ManyToManyField(Produto, verbose_name=_("Produtos"))
     observacao = models.TextField(_('Observação'), blank=True, null=True)
     valor = models.DecimalField(_("Valor"), max_digits=8, decimal_places=2)
-    receita = OneToOneField(Receita, on_delete=models.SET_NULL, null=True, verbose_name=_("Receita"))
+    receita = OneToOneField(Receita, on_delete=models.SET_NULL, null=True, blank=True, verbose_name=_("Receita"))
     PARCELAS_CHOICES = (
         (1, '1x'),
         (2, '2x'),
