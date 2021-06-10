@@ -22,6 +22,9 @@ def resposta_fornecimentos(client, fornecimentos):
 def test_resposta_status_code_get(resposta_fornecimentos, fornecimentos):
     assert resposta_fornecimentos.status_code == 200
 
+def test_btn_fornecimentos_presente(resposta_fornecimentos):
+    assertContains(resposta_fornecimentos, f'<a href="{reverse("fornecedores:fornecimentos")}"')
+
 def test_fornecimentos_existentes_presente(resposta_fornecimentos, fornecimentos):
     for fornecimento in fornecimentos:
         assertContains(resposta_fornecimentos, fornecimento.nome)
