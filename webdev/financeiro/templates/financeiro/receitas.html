@@ -11,8 +11,8 @@
             <button type="button" class="btn btn-sm btn-outline-secondary">Importar</button>
             <button type="button" class="btn btn-sm btn-outline-secondary">Exportar</button>
         </div>
-        <a href="{% url 'financeiro:novo_cliente' %}" class="btn btn-sm btn-outline-secondary">
-            Novo Cliente
+        <a href="{% url 'financeiro:nova_receita' %}" class="btn btn-sm btn-outline-secondary">
+            Nova Receita
         </a>
     </div>
 </div>
@@ -22,46 +22,44 @@
         <thead>
             <tr>
                 <th scope="col">#</th>
-                <th scope="col">Nome</th>
-                <th scope="col">Email</th>
-                <th scope="col">Telefone</th>
-                <th scope="col">Endereço</th>
+                <th scope="col">Data</th>
+                <th scope="col">Categoria</th>
+                <th scope="col">Valor</th>
                 <th scope="col">Ações</th>
             </tr>
         </thead>
         <tbody>
-            {% for cliente in clientes %}
+            {% for receita in receitas %}
             <tr>
-                <th scope="col">{{ cliente.id }}</th>
-                <td>{{ cliente.get_nome_completo }}</td>
-                <td>{{ cliente.email }}</td>
-                <td>{{ cliente.telefone }}</td>
-                <td>{{ cliente.endereco }}</td>
+                <th scope="col">{{ receita.id }}</th>
+                <td>{{ receita.data }}</td>
+                <td>{{ receita.categoria }}</td>
+                <td>R$ {{ receita.valor }}</td>
                 <td>
                     <ul class="list-inline m-0">
                         <li class="list-inline-item me-3">
-                            <a href="{% url 'financeiro:editar_cliente' cliente.id %}">
+                            <a href="{% url 'financeiro:editar_receita' receita.id %}">
                                 <i class="fas fa-wrench link-dark"></i>
                             </a>
                         </li>
                         <li class="list-inline-item me-3">
-                            <form action="{% url 'financeiro:deletar_cliente' cliente.id %}" method="POST">
+                            <form action="{% url 'financeiro:deletar_receita' receita.id %}" method="POST">
                                 {% csrf_token %}
                                 <!-- Delete Modal Trigger -->
-                                <a href="#ModalDeletarCliente{{ cliente.id }}" data-bs-toggle="modal"><i class="fas fa-trash link-dark"></i></a>
+                                <a href="#ModelDeletarReceita{{ receita.id }}" data-bs-toggle="modal"><i class="fas fa-trash link-dark"></i></a>
                                 <!-- Delete Modal -->
-                                <div class="modal fade" id="ModalDeletarCliente{{ cliente.id }}" tabindex="-1" aria-labelledby="ModalDeletarCliente{{ cliente.id }}Label" aria-hidden="true">
+                                <div class="modal fade" id="ModelDeletarReceita{{ receita.id }}" tabindex="-1" aria-labelledby="ModelDeletarReceita{{ receita.id }}Label" aria-hidden="true">
                                     <div class="modal-dialog">
                                         <div class="modal-content">
                                             <div class="modal-header">
-                                                <h1 class="modal-title display-6 fw-normal" id="ModalDeletarCliente{{ cliente.id }}Label">
-                                                    {{ cliente.get_nome_completo }}
+                                                <h1 class="modal-title display-6" id="ModelDeletarReceita{{ receita.id }}Label">
+                                                    <strong>Deletar {{ receita.categoria }} #{{ receita.id }}</strong>
                                                 </h1>
                                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                             </div>
                                             <div class="modal-body">
-                                                <p>Você tem certeza que deseja deletar este cliente?</p>
-                                                <p><strong>Ele será deletado para sempre!</strong></p>
+                                                <p>Você tem certeza que deseja deletar esta receita?</p>
+                                                <p><strong>Ela será deletada para sempre!</strong></p>
                                             </div>
                                             <div class="modal-footer">
                                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>

@@ -13,33 +13,33 @@
         <div class="col-md-9 border shadow px-4 py-3">
             <form method="POST">
                 <div class="row gx-2">
-                    <div class="col-12 px-2">
+                    <div class="col-12">
                         {% csrf_token %}
                         <input type="hidden" name="next" value="{{ request.GET.next }}">
                     </div>
-                    <div class="col-6">
-                        {% bootstrap_field form.data %}
-                    </div>
-                    <div class="col-6">
-                        {% bootstrap_field form.cliente %}
-                    </div>
-                    <div class="col-12">
-                        {% bootstrap_field form.produtos %}
-                    </div>
-                    <div class="col-6">
-                        {% bootstrap_field form.parcelas %}
-                    </div>
-                    <div class="col-6">
-                        {% bootstrap_field form.total_pago %}
-                    </div>
+                    {% for field in form %}
+                        {% if field.name == 'receita' %}
+                            {% bootstrap_field field %}
+                        {% else %}
+                            <div class="col-lg-6 col-md-12">
+                                {% bootstrap_field field %}
+                            </div>
+                        {% endif %}
+                    {% endfor %}
                 </div>
                 <div class="row g-2 d-flex justify-content-between">
+                    {% if novo_obj %}
                     <div class="col-md-6">
                         <button type="submit" name="submit-stay" class="btn btn-primary w-100">Enviar e Continuar</button>
                     </div>
                     <div class="col-md-6">
                         <button type="submit" name="submit-leave" class="btn btn-primary w-100">Enviar e Sair</button>
                     </div>
+                    {% else %}
+                    <div class="col-md-12">
+                        <button type="submit" name="submit-leave" class="btn btn-primary w-100">Salvar</button>
+                    </div>
+                    {% endif %}
                 </div>
             </form>
         </div>

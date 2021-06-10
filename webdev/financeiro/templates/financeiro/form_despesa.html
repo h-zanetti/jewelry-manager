@@ -17,26 +17,25 @@
                         {% csrf_token %}
                         <input type="hidden" name="next" value="{{ request.GET.next }}">
                     </div>
-                    <div class="col-12">
-                        {% bootstrap_field form.categoria %}
-                    </div>
-                    <div class="col-12">
-                        {% bootstrap_field form.data %}
-                    </div>
-                    <div class="col-6">
-                        {% bootstrap_field form.total_pago %}
-                    </div>
-                    <div class="col-6">
-                        {% bootstrap_field form.repetir %}
-                    </div>
+                    {% for field in form %}
+                        <div class="col-lg-4 col-md-6 col-sm-12">
+                            {% bootstrap_field field %}
+                        </div>
+                    {% endfor %}
                 </div>
                 <div class="row g-2 d-flex justify-content-between">
+                {% if novo_obj %}
                     <div class="col-md-6">
                         <button type="submit" name="submit-stay" class="btn btn-primary w-100">Enviar e Continuar</button>
                     </div>
                     <div class="col-md-6">
                         <button type="submit" name="submit-leave" class="btn btn-primary w-100">Enviar e Sair</button>
                     </div>
+                {% else %}
+                    <div class="col-md-12">
+                        <button type="submit" name="submit-leave" class="btn btn-primary w-100">Enviar</button>
+                    </div>
+                {% endif %}
                 </div>
             </form>
         </div>
