@@ -1,3 +1,4 @@
+from webdev.financeiro.models import Despesa
 import pytest
 from django.urls import reverse
 from django.contrib.auth.models import User
@@ -34,6 +35,9 @@ def test_nova_entrada_status_code(resposta_nova_entrada):
 def test_material_em_estoque(resposta_nova_entrada):
     assert Material.objects.exists()
 
+def test_despesa_criada(resposta_nova_entrada):
+    assert Despesa.objects.exists()
+
 
 # Editar material
 @pytest.fixture
@@ -60,8 +64,9 @@ def resposta_editar_material(client, material, fornecedor):
             'nome': 'Diamante',
             'categoria': 'Pedra',
             'qualidade': 9,
-            'total_pago': 1000,
-            'estoque': 3
+            'total_pago': 2000,
+            'estoque': 3,
+            'despesa': material.despesa.id
         }
     )
     return resp
@@ -71,6 +76,9 @@ def test_editar_material_status_code(resposta_editar_material):
 
 def test_material_alterado(resposta_editar_material):
     assert Material.objects.first().nome == "Diamante"
+
+def test_despesa_alterada(resposta_editar_material):
+    assert Despesa.objects.first().valor == 2000
 
 # Deletar Entrada
 @pytest.fixture
@@ -85,3 +93,6 @@ def test_deletar_material_status_code(resposta_deletar_material):
 
 def test_material_deletada(resposta_deletar_material):
     assert not Material.objects.exists()
+
+def test_despesa_deletada(resposta_deletar_material):
+    assert not Despesa.objects.exists()

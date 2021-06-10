@@ -1,3 +1,4 @@
+from webdev.financeiro.models import Despesa
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django.utils import timezone
@@ -25,6 +26,7 @@ class Material(models.Model):
     unidade_de_medida = models.CharField(_("Unidade de Medida"), max_length=2, choices=UNIDADE_DE_MEDIDA_CHOICES, blank=True, null=True)
     estoque = models.IntegerField(_("Unidades em Estoque"), default=0)
     observacao = models.TextField(_('Observação'), blank=True, null=True)
+    despesa = models.OneToOneField(Despesa, on_delete=models.SET_NULL, null=True, blank=True, verbose_name=_("Despesa"))
 
     def __str__(self):
         return f"{self.nome}"
