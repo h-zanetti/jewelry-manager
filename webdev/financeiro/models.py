@@ -31,6 +31,13 @@ class Parcela(models.Model):
     def __str__(self):
         return f"{self.data} {self.valor}"
 
+    @property
+    def categoria(self):
+        return f'{self.receita.categoria}'
+
+    def get_tipo_de_transacao(self):
+        return f'{self.receita.get_tipo_de_transacao()}'
+
 class Despesa(models.Model):
     data = models.DateField(_("Data"), default=timezone.now)
     categoria = models.CharField(_("Categoria"), max_length=150)

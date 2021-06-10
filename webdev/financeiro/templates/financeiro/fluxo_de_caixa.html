@@ -8,9 +8,9 @@
     <h1 class="h2">
         Fluxo de Caixa
         {% if saldo >= 0%}
-        <span class="text-success">+{{ saldo|floatformat:2|intcomma }}</span>
+        <span class="text-success">+{{ saldo|floatformat:"2g" }}</span>
         {% else %}
-        <span class="text-danger">{{ saldo|floatformat:2|intcomma }}</span>
+        <span class="text-danger">{{ saldo|floatformat:"2g" }}</span>
         {% endif %}
     </h1>
     <div class="btn-toolbar mb-2 mb-md-0">
@@ -19,7 +19,7 @@
                 {{ data|date:"F" }}
             </button>
             <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton2">
-                {% for mes in nomes %}
+                {% for mes in meses %}
                     <li><a class="dropdown-item {% if data.month == forloop.counter %}active{% endif %}" href="{% url 'financeiro:fluxo_de_caixa' data.year forloop.counter %}">{{ mes }}</a></li>
                 {% endfor %}
             </ul>
@@ -47,7 +47,7 @@ var ctx = document.getElementById('myChart').getContext('2d');
 var myChart = new Chart(ctx, {
     type: 'line',
     data: {
-        labels: {{ nomes|safe }},
+        labels: {{ meses|safe }},
         datasets: [{
             data: {{ dados|safe }},
             backgroundColor: [
@@ -83,7 +83,7 @@ var myChart = new Chart(ctx, {
                 <th scope="col">Tipo</th>
                 <th scope="col">Categoria</th>
                 <th scope="col">Valor (parcela)</th>
-                {% comment %} <th scope="col">Ações</th> {% endcomment %}
+                <th scope="col">Visualizar</th>
             </tr>
         </thead>
         <tbody>
@@ -94,10 +94,10 @@ var myChart = new Chart(ctx, {
                 <td>{{ t.get_tipo_de_transacao }}</td>
                 <td>{{ t.categoria }}</td>
                 <td>{{ t.valor|intcomma }}</td>
-                {% comment %} <td>
+                <td>
                     <ul class="list-inline m-0">
                         <li class="list-inline-item me-3">
-                            {% if t.get_categoria_fluxo_de_caixa == 'Venda' %}
+                            {% if t.categoria == 'Venda' %}
                                 <!-- Venda Trigger -->
                                 <a href="#ModalVisualizarVenda{{ t.id }}" data-bs-toggle="modal">
                                     <i class="far fa-eye link-dark"></i>
@@ -108,7 +108,7 @@ var myChart = new Chart(ctx, {
                                         <div class="modal-content">
                                             <div class="modal-header">
                                                 <h1 class="modal-title display-6" id="ModalVisualizarVenda{{ t.id }}Label">
-                                                    <strong>Venda #{{ t.id }}</strong>
+                                                    <strong>Venda #{{ t.receita.venda.id }}</strong>
                                                 </h1>
                                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                             </div>
@@ -124,11 +124,11 @@ var myChart = new Chart(ctx, {
                                                     </thead>
                                                     <tbody>
                                                         <th scope="col">{{ t.id }}</th>
-                                                        <td>{{ t.data|date:"d-m-Y" }}</td>
-                                                        <td>{{ t.cliente.get_nome_completo|default:"Desconhecido" }}</td>
-                                                        <td>{{ t.produtos.all|join:", " }}</td>
-                                                        <td>{{ t.parcelas }}x de R$ {{ t.get_preco_parcela}}</td>
-                                                        <td>{{ t.total_pago|intcomma }}</td>
+                                                        <td>{{ t.receita.venda.data|date:"d-m-Y" }}</td>
+                                                        <td>{{ t.receita.venda.cliente.get_nome_completo|default:"Desconhecido" }}</td>
+                                                        <td>{{ t.receita.venda.produtos.all|join:", " }}</td>
+                                                        <td>{{ t.receita.venda.parcelas }}x de R$ {{ t.receita.venda.get_valor_parcela|intcomma }}</td>
+                                                        <td>R$ {{ t.receita.venda.valor|intcomma }}</td>
                                                     </tbody>
                                                 </table>
                                             </div>
@@ -137,10 +137,10 @@ var myChart = new Chart(ctx, {
                                                     <div class="col-auto">
                                                         <div class="row g-0 px-0">
                                                             <div class="col-6">
-                                                                <a href="{% url 'financeiro:editar_venda' t.id %}" class="btn btn-primary">Editar</a>
+                                                                <a href="{% url 'vendas:editar_venda' t.receita.venda.id %}" class="btn btn-primary">Editar</a>
                                                             </div>
                                                             <div class="col-6">
-                                                                <form action="{% url 'financeiro:deletar_venda' t.id %}">
+                                                                <form action="{% url 'vendas:deletar_venda' t.receita.venda.id %}">
                                                                     <button type="submit" class="btn btn-danger">Deletar</button>
                                                                 </form>
                                                             </div>
@@ -153,7 +153,7 @@ var myChart = new Chart(ctx, {
                                             </div>
                                         </div>
                                     </div>
-                                </div>
+                                </div>{% comment %}
                             {% elif t.get_categoria_fluxo_de_caixa == 'Entrada de Material' %}
                                 <!-- Despesa Trigger -->
                                 <a href="#ModalVisualizart{{ t.id }}" data-bs-toggle="modal">
@@ -241,7 +241,7 @@ var myChart = new Chart(ctx, {
                                             </div>
                                         </div>
                                     </div>
-                                </div>
+                                </div>{% endcomment %}
                             {% else %}
                                 <!-- Despesa Trigger -->
                                 <a href="#ModalVisualizarDespesa{{ t.id }}" data-bs-toggle="modal">
@@ -302,7 +302,7 @@ var myChart = new Chart(ctx, {
                             {% endif %}
                         </li>
                     </ul>
-                </td> {% endcomment %}
+                </td>
             </tr>
             {% endfor %}
         </tbody>

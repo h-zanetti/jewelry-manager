@@ -1,4 +1,7 @@
+from django.db.models import Q
+from dateutil.relativedelta import relativedelta
 from django.db.models.aggregates import Sum
+from django.db.models.query_utils import refs_expression
 import pytest
 import datetime as dt
 from django.urls import reverse
@@ -28,18 +31,37 @@ def lista_de_produtos(db):
         Produto.objects.create(nome='Bracelete', colecao="d'Mentira")
     ]
 
-# @pytest.fixture
-# def venda(cliente, lista_de_produtos):
-#     venda = Venda.objects.create(
-#         data=timezone.localdate(),
-#         cliente=cliente,
-#         parcelas=6,
-#         valor=1200
-#     )
-#     for produto in lista_de_produtos:
-#         venda.produtos.add(produto)
-#     return venda
+'''
+Objetos do tipo Parcela e Receita são criados, edidatos ou deletados automaticamente ao salvar, editar ou 
+deletar um objeto do tipo Venda. Para mais informações, ver tests do arquivo test_vendas_post.py ou as 
+funções em webdev.financeiro.signals
+'''
+@pytest.fixture
+def venda(cliente, lista_de_produtos):
+    venda = Venda.objects.create(
+        data=timezone.localdate(),
+        cliente=cliente,
+        parcelas=6,
+        valor=1200
+    )
+    for produto in lista_de_produtos:
+        venda.produtos.add(produto)
+    return venda
 
+# Gerar despesas
+@pytest.fixture
+def lista_de_despesas(db):
+    return [
+        Despesa.objects.create(data=timezone.localdate(), categoria='Motoboy', valor=150, repetir=''),
+        Despesa.objects.create(data=timezone.localdate(), categoria='MEI', valor=50, repetir='m'),
+        Despesa.objects.create(
+            data=timezone.localdate() - relativedelta(years=1), # Despesa criada para testar repetições anuais
+            categoria='Domínio', valor=95, repetir='a'),
+        Despesa.objects.create(
+            data=timezone.localdate() - relativedelta(months=1), # Despesa criada para testar repetições mensais
+            categoria='Conta de Luz', valor=200, repetir='m'),
+    ]
+    
 # @pytest.fixture
 # def lista_de_materiais(db):
 #     return [
@@ -48,34 +70,9 @@ def lista_de_produtos(db):
 #         Material.objects.create(nome='Ouro', entrada=timezone.localdate(), categoria='Metal', qualidade=7, estoque=1, unidades_compradas=3, valor=1000,),
 #     ]
 
-@pytest.fixture
-def receita(db):
-    return Receita.objects.create(categoria='Venda')
-
-@pytest.fixture
-def lista_de_parcelas(receita):
-    parcelas = []
-    for m in range(5):
-        parcela = Parcela.objects.create(
-            data=timezone.localdate(),
-            valor= 55 * (1+m),
-            receita=receita
-        )
-        parcelas.append(parcela)
-    return parcelas
-
-# Gerar despesas
-@pytest.fixture
-def lista_de_despesas(db):
-    return [
-        Despesa.objects.create(data=timezone.localdate(), categoria='Motoboy', valor=150, repetir='n'),
-        Despesa.objects.create(data=timezone.localdate(), categoria='MEI', valor=65, repetir='m'),
-        Despesa.objects.create(data=timezone.localdate(), categoria='Domínio', valor=65, repetir='a')
-    ]
-
 # Visualizar Fluxo de Caixa
 @pytest.fixture
-def resposta_fluxo_de_caixa(client, lista_de_despesas, lista_de_parcelas):
+def resposta_fluxo_de_caixa(client, lista_de_despesas, venda):
     User.objects.create_user(username='TestUser', password='MinhaSenha123')
     client.login(username='TestUser', password='MinhaSenha123')
     resp = client.get(
@@ -87,35 +84,71 @@ def resposta_fluxo_de_caixa(client, lista_de_despesas, lista_de_parcelas):
 def test_fluxo_de_caixa_status_code(resposta_fluxo_de_caixa):
     assert resposta_fluxo_de_caixa.status_code == 200
 
+# Tabela
 def test_despesas_presente(resposta_fluxo_de_caixa, lista_de_despesas):
     for despesa in lista_de_despesas:
         assertContains(resposta_fluxo_de_caixa, despesa.categoria)
 
-def test_parcelas_presente(resposta_fluxo_de_caixa, lista_de_parcelas):
-    for parcela in lista_de_parcelas:
-        assertContains(resposta_fluxo_de_caixa, parcela.valor)
+def test_parcelas_presente(resposta_fluxo_de_caixa, venda):
+    # Formatar parcela -> 1,010.10
+    valor = ','.join(str(round(venda.get_valor_parcela(), 2)).split('.'))
+    assertContains(resposta_fluxo_de_caixa, valor)
 
-# def test_vendas_presente(resposta_fluxo_de_caixa, lista_de_vendas):
-#     for venda in lista_de_vendas:
-#         assertContains(resposta_fluxo_de_caixa, venda.cliente.get_nome_completo())
+def test_vendas_presente(resposta_fluxo_de_caixa, venda):
+    assertContains(resposta_fluxo_de_caixa, venda.cliente.get_nome_completo())
 
-# def test_entradas_presente(resposta_fluxo_de_caixa, lista_de_materiais):
+# def test_materiais_presente(resposta_fluxo_de_caixa, lista_de_materiais):
 #     for material in lista_de_materiais:
 #         assertContains(resposta_fluxo_de_caixa, material.nome)
 
 def test_saldo_presente(resposta_fluxo_de_caixa):
+    current_dt = timezone.localdate()
+    # Receitas
     receitas = Parcela.objects.filter(
-        data__year=timezone.localdate().year,
-        data__month=timezone.localdate().month).aggregate(Sum('valor'))['valor__sum']
-    despesas = Despesa.objects.filter(
-        data__year=timezone.localdate().year,
-        data__month=timezone.localdate().month).aggregate(Sum('valor'))['valor__sum']
-    saldo = receitas - despesas
+        data__year=current_dt.year,
+        data__month=current_dt.month).aggregate(Sum('valor'))['valor__sum']
+    # Despesas Variaveis
+    despesas_variaveis = Despesa.objects.filter(
+        repetir='',
+        data__year=current_dt.year,
+        data__month=current_dt.month).aggregate(Sum('valor'))['valor__sum']
+    despesas_variaveis_sum = 0 if despesas_variaveis == None else float(despesas_variaveis)
+    # Despesas Fixas
+    despesas_mensais = Despesa.objects.filter(
+        repetir='m',
+        data__lte=current_dt,
+        ).aggregate(Sum('valor'))['valor__sum']
+    despesas_mensais_sum = 0 if despesas_mensais == None else float(despesas_mensais)
+    despesas_anuais = Despesa.objects.filter(
+        repetir='a',
+        data__month=current_dt.month,
+        data__year__lte=current_dt.year).aggregate(Sum('valor'))['valor__sum']
+    despesas_anuais_sum = 0 if despesas_anuais == None else float(despesas_anuais)
+    # Saldo
+    despesas = despesas_variaveis_sum + despesas_mensais_sum + despesas_anuais_sum
+    saldo = float(receitas) - despesas
     # Formatação -> 1,010.00
     saldo_split = f"{saldo:,.2f}".split('.')
-    saldo_str = '.'.join(saldo_split[0].split(','))
-    assertContains(resposta_fluxo_de_caixa, f"{saldo_str},{saldo_split[1]}")
+    saldo_str = ','.join(saldo_split)
+    assertContains(resposta_fluxo_de_caixa, saldo_str)
 
+# Gráfico
+def test_dados_do_grafico_corretos(resposta_fluxo_de_caixa, lista_de_despesas):
+    # dados = [0, 0, 0, 0, -200, -295, -50, -50, -50, -50, -50, -250]
+    dados = [0,0,0,0,0,0,0,0,0,0,0,0]
+    for parcela in Parcela.objects.all():
+        dados[parcela.data.month-1] += float(parcela.valor)
+    for despesa in lista_de_despesas:
+        if despesa.repetir == 'm':
+            for mes in range(despesa.data.month, 13):
+                i = mes - 1
+                dados[i] -= float(despesa.valor)
+        else:
+            i = despesa.data.month - 1
+            dados[i] -= float(despesa.valor)
+    assert resposta_fluxo_de_caixa.context['dados'] == dados
+
+# Botões
 # def test_btn_nova_despesa_presente(resposta_fluxo_de_caixa):
 #     assertContains(
 #         resposta_fluxo_de_caixa,

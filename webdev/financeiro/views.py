@@ -1,7 +1,9 @@
+from calendar import monthrange
 import datetime as dt
 from itertools import chain
 from django.db.models.aggregates import Sum
 from django.db.models.functions.datetime import TruncMonth
+from django.db.models.query_utils import Q
 from django.urls import reverse
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
@@ -141,34 +143,65 @@ def deletar_despesa(request, despesa_id):
 def fluxo_de_caixa(request, ano, mes):
     # Dados do gráfico
     parcelas_do_ano = Parcela.objects.filter(data__year=ano).annotate(month=TruncMonth('data')).values('month').annotate(valor=Sum('valor'))
-    despesas_do_ano = Despesa.objects.filter(data__year=ano).annotate(month=TruncMonth('data')).values('month').annotate(valor=Sum('valor'))
+    despesas_variaveis_do_ano = Despesa.objects.filter(repetir='', data__year=ano)
+    despesas_fixas_do_ano = Despesa.objects.exclude(repetir='').filter(
+        Q(is_active=True) | Q(data_de_encerramento__year__gte=ano),
+        data__year__lte=ano
+    )
     dados = []
     for m in range(1, 13):
+        # Receita
         receita_mes = parcelas_do_ano.filter(month__month=m).aggregate(Sum('valor'))['valor__sum']
         receita_mes = 0 if receita_mes == None else float(receita_mes)
-        despesa_do_mes = despesas_do_ano.filter(month__month=m).aggregate(Sum('valor'))['valor__sum']
-        despesa_do_mes = 0 if despesa_do_mes == None else float(despesa_do_mes)
-        dados.append(receita_mes - despesa_do_mes)
+        # Despesas Variáveis
+        despesas_variaveis_mes = despesas_variaveis_do_ano.filter(data__month=m).aggregate(Sum('valor'))['valor__sum']
+        despesas_variaveis_mes = 0 if despesas_variaveis_mes == None else float(despesas_variaveis_mes)
+        # Despesas Fixas
+        despesas_fixas_mensais = despesas_fixas_do_ano.filter(
+            Q(is_active=True) | Q(data_de_encerramento__gte=dt.date(ano, m, 1)),
+            data__month__lte=m,
+            repetir='m',
+        ).aggregate(Sum('valor'))['valor__sum']
+        despesas_fixas_mensais = 0 if despesas_fixas_mensais == None else float(despesas_fixas_mensais)
+        despesas_fixas_anuais = despesas_fixas_do_ano.filter(
+            Q(is_active=True) | Q(data_de_encerramento__gte=dt.date(ano, m, 1)),
+            data__month=m,
+            repetir='a',
+        ).aggregate(Sum('valor'))['valor__sum']
+        despesas_fixas_anuais = 0 if despesas_fixas_anuais == None else float(despesas_fixas_anuais)
+        despesas_mes = despesas_variaveis_mes + despesas_fixas_mensais + despesas_fixas_anuais
+        dados.append(receita_mes - despesas_mes)
     # Fluxo de caixa mensal - Dados da tabela
-    receita = Parcela.objects.filter(data__year=ano, data__month=mes)
-    despesas = Despesa.objects.filter(data__year=ano, data__month=mes)
+    parcelas = Parcela.objects.filter(data__year=ano, data__month=mes)
+    despesas_variaveis = Despesa.objects.filter(repetir='', data__year=ano, data__month=mes)
+    despesas_mensais = Despesa.objects.filter(repetir='m', is_active=True, data__lte=f'{ano}-{mes}-{monthrange(ano, mes)[1]}')
+    despesas_anuais = Despesa.objects.filter(repetir='a', is_active=True, data__lte=f'{ano}-{mes}-{monthrange(ano, mes)[1]}')
     transacoes = sorted(
-        chain(receita, despesas),
+        chain(parcelas, despesas_variaveis, despesas_mensais, despesas_anuais),
         key=lambda instance: instance.data
     )
-    # Saldo do mes
-    receitas_sum = receita.aggregate(Sum('valor'))['valor__sum']
+    # Calculo de Saldo
+    # Receitas
+    receitas_sum = parcelas.aggregate(Sum('valor'))['valor__sum']
     receitas_sum = 0 if receitas_sum == None else float(receitas_sum)
-    despesas_sum = despesas.aggregate(Sum('valor'))['valor__sum']
-    despesas_sum = 0 if despesas_sum == None else float(despesas_sum)
+    # Despesas variaveis
+    despesas_variaveis_sum = despesas_variaveis.aggregate(Sum('valor'))['valor__sum']
+    despesas_variaveis_sum = 0 if despesas_variaveis_sum == None else float(despesas_variaveis_sum)
+    # Despesas mensais
+    despesas_mensais_sum = despesas_mensais.aggregate(Sum('valor'))['valor__sum']
+    despesas_mensais_sum = 0 if despesas_mensais_sum == None else float(despesas_mensais_sum)
+    # Despesas anuais
+    despesas_anuais_sum = despesas_anuais.aggregate(Sum('valor'))['valor__sum']
+    despesas_anuais_sum = 0 if despesas_anuais_sum == None else float(despesas_anuais_sum)
+    despesas_sum = despesas_mensais_sum + despesas_anuais_sum + despesas_variaveis_sum
     saldo = receitas_sum - despesas_sum
 
     context = {
         # Data da requisição
         'data': dt.date(ano, mes, 1),
         'anos': [ano-2, ano-1, ano, ano+1, ano+2],
-        # Gráfico
-        'nomes': ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'],
+        'meses': ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'],
+        # # Gráfico
         'dados': dados,
         # Tabela
         'saldo': saldo,
