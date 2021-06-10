@@ -34,10 +34,10 @@
                 {% endfor %}
             </ul>
         </div>
-        {% comment %} <div class="btn-group" role="group">
-            <a href="{% url 'financeiro:nova_venda' %}?next={{ request.path|urlencode }}" class="btn btn-sm btn-outline-secondary">Nova Venda</a>
+        <div class="btn-group" role="group">
+            <a href="{% url 'vendas:nova_venda' %}?next={{ request.path|urlencode }}" class="btn btn-sm btn-outline-secondary">Nova Venda</a>
             <a href="{% url 'financeiro:nova_despesa' %}?next={{ request.path|urlencode }}" class="btn btn-sm btn-outline-secondary">Nova Despesa</a>
-        </div> {% endcomment %}
+        </div>
     </div>
 </div>
 

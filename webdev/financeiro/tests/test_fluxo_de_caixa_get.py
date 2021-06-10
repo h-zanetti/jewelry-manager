@@ -149,17 +149,17 @@ def test_dados_do_grafico_corretos(resposta_fluxo_de_caixa, lista_de_despesas):
     assert resposta_fluxo_de_caixa.context['dados'] == dados
 
 # Botões
-# def test_btn_nova_despesa_presente(resposta_fluxo_de_caixa):
-#     assertContains(
-#         resposta_fluxo_de_caixa,
-#         f'href="{reverse("financeiro:nova_despesa")}'
-#     )
+def test_btn_nova_despesa_presente(resposta_fluxo_de_caixa):
+    assertContains(
+        resposta_fluxo_de_caixa,
+        f'href="{reverse("financeiro:nova_despesa")}'
+    )
 
-# def test_btn_nova_venda_presente(resposta_fluxo_de_caixa):
-#     assertContains(
-#         resposta_fluxo_de_caixa,
-#         f'href="{reverse("financeiro:nova_venda")}'
-#     )
+def test_btn_nova_venda_presente(resposta_fluxo_de_caixa):
+    assertContains(
+        resposta_fluxo_de_caixa,
+        f'href="{reverse("vendas:nova_venda")}'
+    )
 
 # def test_btn_visualizar_despesa_presente(resposta_fluxo_de_caixa, lista_de_despesas):
 #     for despesa in lista_de_despesas:
