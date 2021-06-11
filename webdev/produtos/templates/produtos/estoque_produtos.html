@@ -262,6 +262,9 @@
                 <li class="list-inline-item me-3">
                   <a href="{% url 'produtos:editar_produto' produto.id %}"><i class="fas fa-wrench link-dark"></i></a>
                 </li>
+                <li class="list-inline-item me-3">
+                  <a href="{% url 'produtos:duplicar_produto' produto.id %}"><i class="fas fa-copy link-dark"></i></a>
+                </li>
                 <li class="list-inline-item">
                   <form action="{% url 'produtos:deletar_produto' produto.id %}" method="POST">
                     {% csrf_token %}

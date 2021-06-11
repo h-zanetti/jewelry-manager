@@ -78,6 +78,35 @@ def editar_produto(request, produto_id):
         'novo_obj': False
     }
 
+    return render(request, 'produtos/editar_produto.html', context)
+
+@login_required
+def duplicar_produto(request, produto_id):
+    try:
+        produto = Produto.objects.get(id=produto_id)
+        initial = produto.__dict__
+        initial.pop('_state')
+        initial.pop('id')
+    except:
+        raise Http404('Produto não encontrado')
+
+    if request.method == 'POST':
+        form = ProdutoForm(request.POST, request.FILES, initial=initial)
+        if form.is_valid():
+            novo_produto = form.save()
+            if 'submit-stay' in request.POST:
+                return redirect(reverse('produtos:duplicar_produto', kwargs={'produto_id': novo_produto.id}))
+            else:
+                return redirect('produtos:estoque_produtos')
+    else:
+        form = ProdutoForm(initial=initial)
+
+    context = {
+        'title': 'Duplicar Produto',
+        'form': form,
+        'novo_obj': True
+    }
+
     return render(request, 'produtos/novo_produto.html', context)
 
 @login_required
