@@ -33,11 +33,12 @@ def criar_receita(sender, instance, created, **kwargs):
 
 @receiver(pre_delete, sender=Venda)
 def deletar_receita(sender, instance, **kwargs):
-    instance.receita.delete()
+    if instance.receita != None:
+        instance.receita.delete()
 
 @receiver(post_save, sender=Material)
 def criar_despesa(sender, instance, created, **kwargs):
-    if created:
+    if created and instance.entrada != None:
         despesa = Despesa.objects.create(
             data=instance.entrada,
             categoria='Entrada de Material',
@@ -46,11 +47,13 @@ def criar_despesa(sender, instance, created, **kwargs):
         instance.despesa = despesa
         instance.save()
     else:
-        despesa = instance.despesa
-        despesa.data = instance.entrada
-        despesa.valor = instance.total_pago
-        despesa.save()
+        if instance.despesa != None:
+            despesa = instance.despesa
+            despesa.data = instance.entrada
+            despesa.valor = instance.total_pago
+            despesa.save()
 
 @receiver(pre_delete, sender=Material)
-def deletar_receita(sender, instance, **kwargs):
-    instance.despesa.delete()
+def deletar_despesa(sender, instance, **kwargs):
+    if instance.despesa != None:
+        instance.despesa.delete()
