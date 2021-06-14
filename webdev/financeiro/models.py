@@ -1,3 +1,5 @@
+import datetime as dt
+from dateutil.relativedelta import relativedelta
 from django.db import models
 from django.db.models.aggregates import Sum
 from django.utils import timezone
@@ -35,6 +37,13 @@ class Parcela(models.Model):
     def categoria(self):
         return f'{self.receita.categoria}'
 
+    def get_parcela_atual(self, data):
+        venda = self.receita.venda
+        primeira_parcela = dt.date(venda.data.year, venda.data.month, 1)
+        ultima_parcela = primeira_parcela + relativedelta(months=venda.parcelas-1)
+        parcela_atual = venda.parcelas - relativedelta(ultima_parcela, dt.date(data.year, data.month, 1)).months
+        return f"({parcela_atual}/{venda.parcelas})"
+
     def get_tipo_de_transacao(self):
         return f'{self.receita.get_tipo_de_transacao()}'
 
@@ -57,6 +66,8 @@ class Despesa(models.Model):
     def __str__(self):
         return self.categoria
 
-    @classmethod
-    def get_tipo_de_transacao(cls):
-        return 'Despesa'
+    def get_tipo_de_transacao(self):
+        if self.repetir:
+            return 'Despesa Fixa'
+        else:
+            return 'Despesa Variável'

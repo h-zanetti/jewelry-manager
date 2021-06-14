@@ -93,7 +93,13 @@ var myChart = new Chart(ctx, {
                 <td>{{ t.data|date:"d-m-Y" }}</td>
                 <td>{{ t.get_tipo_de_transacao }}</td>
                 <td>{{ t.categoria }}</td>
-                <td>{{ t.valor|intcomma }}</td>
+                <td>R$
+                    {% if t.categoria == 'Venda' %}
+                        {{ t.valor|intcomma }} {% get_parcela t data %}
+                    {% else %}
+                        {{ t.valor|intcomma }} (1/1)
+                    {% endif %}
+                </td>
                 <td>
                     <ul class="list-inline m-0">
                         <li class="list-inline-item me-3">
@@ -113,24 +119,50 @@ var myChart = new Chart(ctx, {
                                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                             </div>
                                             <div class="modal-body">
-                                                <table class="table">
-                                                    <thead>
-                                                        <th scope="col">#</th>
-                                                        <th scope="col">Data</th>
-                                                        <th scope="col">Cliente</th>
-                                                        <th scope="col">Produtos</th>
-                                                        <th scope="col">Parcelas</th>
-                                                        <th scope="col">Valor Total</th>
-                                                    </thead>
-                                                    <tbody>
-                                                        <th scope="col">{{ t.id }}</th>
-                                                        <td>{{ t.receita.venda.data|date:"d-m-Y" }}</td>
-                                                        <td>{{ t.receita.venda.cliente.get_nome_completo|default:"Desconhecido" }}</td>
-                                                        <td>{{ t.receita.venda.produtos.all|join:", " }}</td>
-                                                        <td>{{ t.receita.venda.parcelas }}x de R$ {{ t.receita.venda.get_valor_parcela|intcomma }}</td>
-                                                        <td>R$ {{ t.receita.venda.valor|intcomma }}</td>
-                                                    </tbody>
-                                                </table>
+                                                <div class="row">
+                                                    <div class="col-12">
+                                                        <table class="table">
+                                                            <thead>
+                                                                <th scope="col">Data da Venda</th>
+                                                                <th scope="col">Cliente</th>
+                                                                <th scope="col">Parcelas</th>
+                                                                <th scope="col">Total Pago</th>
+                                                            </thead>
+                                                            <tbody>
+                                                                <td>{{ t.receita.venda.data|date:"d-m-Y" }}</td>
+                                                                <td>{{ t.receita.venda.cliente.get_nome_completo|default:"Desconhecido" }}</td>
+                                                                <td>{{ t.receita.venda.parcelas }}x de R$ {{ t.receita.venda.get_valor_parcela|intcomma }}</td>
+                                                                <td>R$ {{ t.receita.venda.valor|intcomma }}</td>
+                                                            </tbody>
+                                                        </table>
+                                                        {% if t.receita.venda.observacao %}
+                                                        <div class="mb-3">
+                                                            <p>Observação: {{ t.receita.venda.observacao }}</p>
+                                                        </div>
+                                                        {% endif %}
+                                                    </div>
+                                                    <div class="col-12">
+                                                        <h1 class="display-6">Produtos Vendidos</h1>
+                                                        <table class="table">
+                                                            <thead>
+                                                                <th scope="col">Código</th>
+                                                                <th scope="col">Produto</th>
+                                                                <th scope="col">Coleção</th>
+                                                                <th scope="col">Custo de Produção</th>
+                                                            </thead>
+                                                            <tbody>
+                                                                {% for produto in t.receita.venda.produtos.all %}
+                                                                <tr>
+                                                                    <td scope="col">{{ produto.id }}</td>
+                                                                    <td>{{ produto.nome }}</td>
+                                                                    <td>{{ produto.colecao }}</td>
+                                                                    <td>R$ {{ produto.get_custo_de_producao|intcomma }}</td>
+                                                                </tr>
+                                                                {% endfor %}
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
                                             </div>
                                             <div class="modal-footer">
                                                 <div class="row w-100 d-flex justify-content-between">
@@ -153,18 +185,18 @@ var myChart = new Chart(ctx, {
                                             </div>
                                         </div>
                                     </div>
-                                </div>{% comment %}
-                            {% elif t.get_categoria_fluxo_de_caixa == 'Entrada de Material' %}
+                                </div>
+                            {% comment %} {% elif t.categoria == 'Entrada de Material' %}
                                 <!-- Despesa Trigger -->
-                                <a href="#ModalVisualizart{{ t.id }}" data-bs-toggle="modal">
+                                <a href="#ModalVisualizarMaterial{{ t.id }}" data-bs-toggle="modal">
                                     <i class="far fa-eye link-dark"></i>
                                 </a>
                                 <!-- Despesa Modal -->
-                                <div class="modal fade" id="ModalVisualizart{{ t.id }}" tabindex="-1" aria-labelledby="ModalVisualizart{{ t.id }}Label" aria-hidden="true">
+                                <div class="modal fade" id="ModalVisualizarMaterial{{ t.id }}" tabindex="-1" aria-labelledby="ModalVisualizarMaterial{{ t.id }}Label" aria-hidden="true">
                                     <div class="modal-dialog modal-lg">
                                         <div class="modal-content">
                                             <div class="modal-header">
-                                                <h1 class="modal-title display-6" id="ModalVisualizart{{ t.id }}Label">
+                                                <h1 class="modal-title display-6" id="ModalVisualizarMaterial{{ t.id }}Label">
                                                     <strong>{{t.nome}} #{{ t.id }}</strong>
                                                 </h1>
                                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -241,7 +273,7 @@ var myChart = new Chart(ctx, {
                                             </div>
                                         </div>
                                     </div>
-                                </div>{% endcomment %}
+                                </div> {% endcomment %}
                             {% else %}
                                 <!-- Despesa Trigger -->
                                 <a href="#ModalVisualizarDespesa{{ t.id }}" data-bs-toggle="modal">
@@ -253,7 +285,7 @@ var myChart = new Chart(ctx, {
                                         <div class="modal-content">
                                             <div class="modal-header">
                                                 <h1 class="modal-title display-6" id="ModalVisualizarDespesa{{ t.id }}Label">
-                                                    <strong>Despesa #{{ t.id }}</strong>
+                                                    <strong>Despesa #{{ t.id }} - {{ t.categoria }}</strong>
                                                 </h1>
                                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                             </div>
@@ -261,7 +293,7 @@ var myChart = new Chart(ctx, {
                                                 <table class="table">
                                                     <thead>
                                                         <tr>
-                                                            <th scope="col">#</th>
+                                                            <th scope="col">Código</th>
                                                             <th scope="col">Data</th>
                                                             <th scope="col">Categoria</th>
                                                             <th scope="col">Valor</th>
@@ -272,7 +304,7 @@ var myChart = new Chart(ctx, {
                                                         <th scope="col">{{ t.id }}</th>
                                                         <td>{{ t.data }}</td>
                                                         <td>{{ t.categoria }}</td>
-                                                        <td>{{ t.total_pago|intcomma }}</td>
+                                                        <td>R$ {{ t.valor|intcomma }}</td>
                                                         <td>{{ t.get_repetir_display }}</td>
                                                     </tbody>
                                                 </table>

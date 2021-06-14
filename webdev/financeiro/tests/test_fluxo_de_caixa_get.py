@@ -161,38 +161,41 @@ def test_btn_nova_venda_presente(resposta_fluxo_de_caixa):
         f'href="{reverse("vendas:nova_venda")}'
     )
 
-# def test_btn_visualizar_despesa_presente(resposta_fluxo_de_caixa, lista_de_despesas):
-#     for despesa in lista_de_despesas:
+def test_btn_visualizar_despesa_presente(resposta_fluxo_de_caixa, lista_de_despesas):
+    for despesa in lista_de_despesas:
+        assertContains(
+            resposta_fluxo_de_caixa, f'<a href="#ModalVisualizarDespesa{despesa.id}'
+        )
+
+def test_btn_visualizar_venda_presente(resposta_fluxo_de_caixa, venda):
+    assertContains(
+        resposta_fluxo_de_caixa, f'<a href="#ModalVisualizarVenda{venda.id}'
+    )
+
+# def test_btn_visualizar_material_presente(resposta_fluxo_de_caixa, lista_de_materiais):
+#     for material in lista_de_materiais:
 #         assertContains(
-#             resposta_fluxo_de_caixa, f'href="#ModalVisualizarDespesa{despesa.id}'
+#             resposta_fluxo_de_caixa, f'href="#ModalVisualizarMaterial{material.id}'
 #         )
 
-# def test_btn_visualizar_venda_presente(resposta_fluxo_de_caixa, lista_de_vendas):
-#     for venda in lista_de_vendas:
-#         assertContains(
-#             resposta_fluxo_de_caixa, f'href="#ModalVisualizarDespesa{venda.id}'
-#         )
+def test_btn_editar_despesa_presente(resposta_fluxo_de_caixa, lista_de_despesas):
+    for despesa in lista_de_despesas:
+        assertContains(
+            resposta_fluxo_de_caixa, f'<a href="{reverse("financeiro:editar_despesa", kwargs={"despesa_id": despesa.id})}'
+        )
 
-# def test_btn_editar_despesa_presente(resposta_fluxo_de_caixa, lista_de_despesas):
-#     for despesa in lista_de_despesas:
-#         assertContains(
-#             resposta_fluxo_de_caixa, f'<a href="{reverse("financeiro:editar_despesa", kwargs={"despesa_id": despesa.id})}'
-#         )
+def test_btn_deletar_despesa_presente(resposta_fluxo_de_caixa, lista_de_despesas):
+    for despesa in lista_de_despesas:
+        assertContains(
+            resposta_fluxo_de_caixa, f'<form action="{reverse("financeiro:deletar_despesa", kwargs={"despesa_id": despesa.id})}'
+        )
 
-# def test_btn_editar_venda_presente(resposta_fluxo_de_caixa, lista_de_vendas):
-#     for venda in lista_de_vendas:
-#         assertContains(
-#             resposta_fluxo_de_caixa, f'<a href="{reverse("financeiro:editar_venda", kwargs={"venda_id": venda.id})}'
-#         )
+def test_btn_editar_venda_presente(resposta_fluxo_de_caixa, venda):
+    assertContains(
+        resposta_fluxo_de_caixa, f'<a href="{reverse("vendas:editar_venda", kwargs={"venda_id": venda.id})}'
+    )
 
-# def test_btn_deletar_despesa_presente(resposta_fluxo_de_caixa, lista_de_despesas):
-#     for despesa in lista_de_despesas:
-#         assertContains(
-#             resposta_fluxo_de_caixa, f'<form action="{reverse("financeiro:deletar_despesa", kwargs={"despesa_id": despesa.id})}'
-#         )
-
-# def test_btn_deletar_venda_presente(resposta_fluxo_de_caixa, lista_de_vendas):
-#     for venda in lista_de_vendas:
-#         assertContains(
-#             resposta_fluxo_de_caixa, f'<form action="{reverse("financeiro:deletar_venda", kwargs={"venda_id": venda.id})}'
-#         )
+def test_btn_deletar_venda_presente(resposta_fluxo_de_caixa, venda):
+    assertContains(
+        resposta_fluxo_de_caixa, f'<form action="{reverse("vendas:deletar_venda", kwargs={"venda_id": venda.id})}'
+    )

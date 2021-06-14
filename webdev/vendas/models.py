@@ -47,22 +47,6 @@ class Venda(models.Model):
     def __str__(self):
         return f'Venda #{self.id}'
     
-    # def get_receita(self):
-    #     pass
-
     def get_valor_parcela(self):
         return round(self.valor / self.parcelas, 2)
 
-    # def get_parcela(self, data):
-    #     primeira_parcela = dt.date(self.data.year, self.data.month, 1)
-    #     ultima_parcela = primeira_parcela + relativedelta(months=self.parcelas)
-    #     pagamentos = 1 + relativedelta(ultima_parcela, dt.date(data.year, data.month, 1)).months
-    #     parcela = self.parcelas - pagamentos
-    #     if parcela > 0:
-    #         # Formatando o float para o padrão brasileiro -> Ex: 12,000,000.00
-    #         p_str = f"{self.get_valor_parcela():,.2f}".split('.')
-    #         inteiro = '.'.join(p_str[0].split(','))
-    #         parcela_str = f"{inteiro},{p_str[1]}"
-    #         return f"R$ {parcela_str} ({parcela}/{self.parcelas})"
-    #     else:
-    #         return None
