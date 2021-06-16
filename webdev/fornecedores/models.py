@@ -1,4 +1,6 @@
+from webdev.financeiro.models import Despesa
 from django.db import models
+from django.db.models.fields.related import OneToOneField
 from django.utils.translation import gettext_lazy as _
 from django.utils import timezone
 
@@ -92,7 +94,8 @@ class Servico(models.Model):
     nome = models.CharField(_('Serviço'), max_length=150)
     data = models.DateField(_("Data"), default=timezone.now)
     qualidade = models.IntegerField(_("Qualidade"), default=0)
-    total_pago = models.DecimalField(_("Total Pago"), max_digits=8, decimal_places=2)
+    valor = models.DecimalField(_("Total Pago"), max_digits=8, decimal_places=2)
+    despesa = OneToOneField(Despesa, on_delete=models.SET_NULL, null=True, blank=True, verbose_name=_("Despesa"))
 
     def __str__(self):
         return f"{self.fornecedor} - {self.nome} ({self.qualidade})"

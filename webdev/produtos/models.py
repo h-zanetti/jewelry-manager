@@ -56,7 +56,7 @@ class Produto(models.Model):
     def get_custo_de_producao(self):
         custo = 0
         for servico in self.servicos.all():
-            custo += servico.total_pago
+            custo += servico.valor
         for material_dp in self.materiais.all():
             custo += material_dp.get_custo()
         return round(custo, 2)

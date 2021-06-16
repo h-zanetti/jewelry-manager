@@ -105,15 +105,15 @@ var myChart = new Chart(ctx, {
                         <li class="list-inline-item me-3">
                             {% if t.categoria == 'Venda' %}
                                 <!-- Venda Trigger -->
-                                <a href="#ModalVisualizarVenda{{ t.id }}" data-bs-toggle="modal">
+                                <a href="#ModalVisualizarVenda{{ t.receita.venda.id }}" data-bs-toggle="modal">
                                     <i class="far fa-eye link-dark"></i>
                                 </a>
                                 <!-- Venda Modal -->
-                                <div class="modal fade" id="ModalVisualizarVenda{{ t.id }}" tabindex="-1" aria-labelledby="ModalVisualizarVenda{{ t.id }}Label" aria-hidden="true">
+                                <div class="modal fade" id="ModalVisualizarVenda{{ t.receita.venda.id }}" tabindex="-1" aria-labelledby="ModalVisualizarVenda{{ t.receita.venda.id }}Label" aria-hidden="true">
                                     <div class="modal-dialog modal-lg">
                                         <div class="modal-content">
                                             <div class="modal-header">
-                                                <h1 class="modal-title display-6" id="ModalVisualizarVenda{{ t.id }}Label">
+                                                <h1 class="modal-title display-6" id="ModalVisualizarVenda{{ t.receita.venda.id }}Label">
                                                     <strong>Venda #{{ t.receita.venda.id }}</strong>
                                                 </h1>
                                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -186,7 +186,7 @@ var myChart = new Chart(ctx, {
                                         </div>
                                     </div>
                                 </div>
-                            {% elif t.categoria == 'Entrada de Material' %}
+                            {% elif t.categoria == 'Entrada de material' %}
                                 <!-- Despesa Trigger -->
                                 <a href="#ModalVisualizarMaterial{{ t.id }}" data-bs-toggle="modal">
                                     <i class="far fa-eye link-dark"></i>
@@ -263,6 +263,70 @@ var myChart = new Chart(ctx, {
                                                         <div class="row g-0 px-0">
                                                             <div class="col-auto">
                                                                 <a href="{% url 'materiais:editar_material' t.id %}" class="btn btn-primary">Editar</a>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-auto">
+                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% elif t.categoria == 'Serviço contratado' %}
+                                <!-- Serviço Trigger -->
+                                <a href="#ModalVisualizarServico{{ t.id }}" data-bs-toggle="modal">
+                                    <i class="far fa-eye link-dark"></i>
+                                </a>
+                                <div class="modal fade" id="ModalVisualizarServico{{ t.id }}" tabindex="-1" aria-labelledby="ModalVisualizarServico{{ t.id }}Label" aria-hidden="true">
+                                    <div class="modal-dialog modal-lg">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h1 class="modal-title display-6" id="ModalVisualizarServico{{ t.id }}Label">
+                                                    <strong>Serviço #{{ t.servico.id }}</strong>
+                                                </h1>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <table class="table">
+                                                    <tr>
+                                                        <th scope="col">Código</th>
+                                                        <td scope='col'>{{ t.servico.id }}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th scope="col">Fornecedor</th>
+                                                        <td>{{ t.servico.fornecedor }}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th scope="col">Data</th>
+                                                        <td>{{ t.servico.data }}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th scope="col">Serviço</th>
+                                                        <td>{{ t.servico.nome }}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th scope="col">Qualidade</th>
+                                                        <td>{{ t.servico.qualidade }}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th scope="col">Valor</th>
+                                                        <td>{{ t.servico.valor }}</td>
+                                                    </tr>
+                                                </table>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <div class="row w-100 d-flex justify-content-between">
+                                                    <div class="col-auto">
+                                                        <div class="row g-0 px-0">
+                                                            <div class="col-6">
+                                                                <a href="{% url 'fornecedores:editar_servico' t.servico.id %}"  class="btn btn-primary">Editar</a>
+                                                            </div>
+                                                            <div class="col-6">
+                                                                <form action="{% url 'fornecedores:deletar_servico' t.servico.id %}">
+                                                                    <button type="submit"  class="btn btn-danger">Deletar</button>
+                                                                </form>
                                                             </div>
                                                         </div>
                                                     </div>

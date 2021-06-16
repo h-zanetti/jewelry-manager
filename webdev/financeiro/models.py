@@ -56,7 +56,7 @@ class Despesa(models.Model):
         ('m', 'Mensalmente'),
         ('a', 'Anualmente'),
     )
-    repetir = models.CharField(_("Repetir"), max_length=1, choices=REPETIR_CHOICES, default='')
+    repetir = models.CharField(_("Repetir"), max_length=1, choices=REPETIR_CHOICES, default='', blank=True)
     is_active = models.BooleanField(_("Despesa ativa"), default=True, help_text='Variável usada para interromper despesas com repetição.')
     data_de_encerramento = models.DateField(_("Data de Encerramento"), null=True, blank=True, help_text='Data de encerramento da cobrança de uma despesa repetitiva.')
 

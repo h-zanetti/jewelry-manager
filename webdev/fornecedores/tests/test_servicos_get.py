@@ -33,7 +33,7 @@ def servico(fornecedor):
         data='2021-04-05',
         fornecedor=fornecedor,
         qualidade=5,
-        total_pago=100.5
+        valor=100.5
     )
 
 @pytest.fixture

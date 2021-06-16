@@ -1,3 +1,4 @@
+from webdev.fornecedores.models import Fornecedor, Servico
 from django.db.models.functions import TruncMonth
 from dateutil.relativedelta import relativedelta
 from django.db.models.aggregates import Sum
@@ -68,9 +69,23 @@ def lista_de_materiais(db):
         Material.objects.create(nome='Ouro', entrada=timezone.localdate(), categoria='Metal', qualidade=7, estoque=1, unidades_compradas=3, valor=1000,),
     ]
 
+@pytest.fixture
+def fornecedor(db):
+    return Fornecedor.objects.create(nome='Zé Comédia')
+
+@pytest.fixture
+def servico(fornecedor):
+    return Servico.objects.create(
+        nome='Fotografia',
+        data=timezone.localdate(),
+        fornecedor=fornecedor,
+        qualidade=5,
+        valor=100.5
+    )
+
 # Visualizar Fluxo de Caixa
 @pytest.fixture
-def resposta_fluxo_de_caixa(client, lista_de_despesas, venda, lista_de_materiais):
+def resposta_fluxo_de_caixa(client, lista_de_despesas, venda, lista_de_materiais, servico):
     User.objects.create_user(username='TestUser', password='MinhaSenha123')
     client.login(username='TestUser', password='MinhaSenha123')
     resp = client.get(
@@ -98,6 +113,9 @@ def test_vendas_presente(resposta_fluxo_de_caixa, venda):
 def test_materiais_presente(resposta_fluxo_de_caixa, lista_de_materiais):
     for material in lista_de_materiais:
         assertContains(resposta_fluxo_de_caixa, material.nome)
+
+def test_servico_presente(resposta_fluxo_de_caixa, servico):
+    assertContains(resposta_fluxo_de_caixa, servico.nome)
 
 def test_saldo_presente(resposta_fluxo_de_caixa):
     receitas = Parcela.objects.filter(
@@ -179,6 +197,11 @@ def test_btn_visualizar_material_presente(resposta_fluxo_de_caixa, lista_de_mate
             resposta_fluxo_de_caixa, f'<a href="#ModalVisualizarMaterial{material.despesa.id}'
         )
 
+def test_btn_visualizar_servico_presente(resposta_fluxo_de_caixa, servico):
+    assertContains(
+        resposta_fluxo_de_caixa, f'<a href="#ModalVisualizarServico{servico.despesa.id}'
+    )
+
 def test_btn_editar_despesa_presente(resposta_fluxo_de_caixa, lista_de_despesas):
     for despesa in lista_de_despesas:
         assertContains(
@@ -199,4 +222,14 @@ def test_btn_editar_venda_presente(resposta_fluxo_de_caixa, venda):
 def test_btn_deletar_venda_presente(resposta_fluxo_de_caixa, venda):
     assertContains(
         resposta_fluxo_de_caixa, f'<form action="{reverse("vendas:deletar_venda", kwargs={"venda_id": venda.id})}'
+    )
+
+def test_btn_editar_servico_presente(resposta_fluxo_de_caixa, servico):
+    assertContains(
+        resposta_fluxo_de_caixa, f'<a href="{reverse("fornecedores:editar_servico", kwargs={"servico_id": servico.id})}'
+    )
+
+def test_btn_deletar_servico_presente(resposta_fluxo_de_caixa, servico):
+    assertContains(
+        resposta_fluxo_de_caixa, f'<form action="{reverse("fornecedores:deletar_servico", kwargs={"servico_id": servico.id})}'
     )
