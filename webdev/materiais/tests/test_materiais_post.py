@@ -23,7 +23,7 @@ def resposta_nova_entrada(client, fornecedor):
             'nome': 'Diamante',
             'categoria': 'Pedra',
             'qualidade': 9,
-            'total_pago': 1000,
+            'valor': 1000,
             'estoque': 3
         }
     )
@@ -44,7 +44,7 @@ def test_despesa_criada(resposta_nova_entrada):
 def material(db):
     return Material.objects.create(
         unidades_compradas=3,
-        total_pago=1000,
+        valor=1000,
         nome='Esmeralda',
         categoria='Pedra',
         qualidade=5,
@@ -64,7 +64,7 @@ def resposta_editar_material(client, material, fornecedor):
             'nome': 'Diamante',
             'categoria': 'Pedra',
             'qualidade': 9,
-            'total_pago': 2000,
+            'valor': 2000,
             'estoque': 3,
             'despesa': material.despesa.id
         }

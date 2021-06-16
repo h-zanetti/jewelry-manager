@@ -11,7 +11,7 @@ from webdev.materiais.admin import MaterialResource
 def material(db):
     return Material.objects.create(
         unidades_compradas=3,
-        total_pago=1000,
+        valor=1000,
         nome='Esmeralda',
         categoria='Pedra',
         qualidade=5,
