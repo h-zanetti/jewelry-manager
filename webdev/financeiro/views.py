@@ -141,7 +141,7 @@ def deletar_despesa(request, despesa_id):
 # Fluxo de Caixa
 @login_required
 def fluxo_de_caixa(request, ano, mes):
-    # Dados do gráfico
+    # Dados do gráfico - Fluxo de caixa anual
     parcelas_do_ano = Parcela.objects.filter(data__year=ano).annotate(month=TruncMonth('data')).values('month').annotate(valor=Sum('valor'))
     despesas_variaveis_do_ano = Despesa.objects.filter(repetir='', data__year=ano)
     despesas_fixas_do_ano = Despesa.objects.exclude(repetir='').filter(
@@ -171,7 +171,7 @@ def fluxo_de_caixa(request, ano, mes):
         despesas_fixas_anuais = 0 if despesas_fixas_anuais == None else float(despesas_fixas_anuais)
         despesas_mes = despesas_variaveis_mes + despesas_fixas_mensais + despesas_fixas_anuais
         dados.append(receita_mes - despesas_mes)
-    # Fluxo de caixa mensal - Dados da tabela
+    # Dados da tabela - Fluxo de caixa mensal
     parcelas = Parcela.objects.filter(data__year=ano, data__month=mes)
     despesas_variaveis = Despesa.objects.filter(repetir='', data__year=ano, data__month=mes)
     despesas_mensais = Despesa.objects.filter(repetir='m', is_active=True, data__lte=f'{ano}-{mes}-{monthrange(ano, mes)[1]}')

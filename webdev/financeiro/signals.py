@@ -42,7 +42,7 @@ def criar_despesa(sender, instance, created, **kwargs):
         despesa = Despesa.objects.create(
             data=instance.entrada,
             categoria='Entrada de Material',
-            valor=instance.total_pago
+            valor=instance.valor
         )
         instance.despesa = despesa
         instance.save()
@@ -50,7 +50,7 @@ def criar_despesa(sender, instance, created, **kwargs):
         if instance.despesa != None:
             despesa = instance.despesa
             despesa.data = instance.entrada
-            despesa.valor = instance.total_pago
+            despesa.valor = instance.valor
             despesa.save()
 
 @receiver(pre_delete, sender=Material)
