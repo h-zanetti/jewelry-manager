@@ -8,7 +8,7 @@ class Material(models.Model):
     entrada = models.DateField(_("Data de Entrada"), default=timezone.now , blank=True, null=True)
     fornecedor = models.ForeignKey(Fornecedor, on_delete=models.SET_NULL, blank=True, null=True, verbose_name=_("Fornecedor"))
     unidades_compradas = models.IntegerField(_("Unidades Compradas"), default=1)
-    total_pago = models.DecimalField(_("Total Pago"), max_digits=8, decimal_places=2)
+    valor = models.DecimalField(_("Total Pago"), max_digits=8, decimal_places=2)
     foto = models.ImageField(_("Foto do Material"), upload_to='materiais', default='default.jpg', blank=True, null=True)
     nome = models.CharField(_("Material"), max_length=150)
     categoria = models.CharField(_("Categoria"), max_length=150)
@@ -44,13 +44,13 @@ class Material(models.Model):
             return "Indisponível"
     
     def get_preco_unitario(self):
-        return round(self.total_pago / self.unidades_compradas, 2)
+        return round(self.valor / self.unidades_compradas, 2)
     
     def get_preco_por_peso(self):
         if not self.peso:
-            return round(self.total_pago, 2)
+            return round(self.valor, 2)
         else:
-            return round(self.total_pago / self.peso, 2)
+            return round(self.valor / self.peso, 2)
 
     def get_categoria_fluxo_de_caixa(self):
         return 'Entrada de Material'

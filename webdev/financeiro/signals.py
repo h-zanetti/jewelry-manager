@@ -4,7 +4,9 @@ from django.db.models.signals import post_save, pre_delete
 from django.dispatch import receiver
 from webdev.vendas.models import Venda
 from webdev.materiais.models import Material
+from webdev.fornecedores.models import Servico
 
+# Vendas
 @receiver(post_save, sender=Venda)
 def criar_receita(sender, instance, created, **kwargs):
     if created:
@@ -36,13 +38,14 @@ def deletar_receita(sender, instance, **kwargs):
     if instance.receita != None:
         instance.receita.delete()
 
+# Material
 @receiver(post_save, sender=Material)
-def criar_despesa(sender, instance, created, **kwargs):
+def criar_despesa_de_material(sender, instance, created, **kwargs):
     if created and instance.entrada != None:
         despesa = Despesa.objects.create(
             data=instance.entrada,
-            categoria='Entrada de Material',
-            valor=instance.total_pago
+            categoria='Entrada de material',
+            valor=instance.valor
         )
         instance.despesa = despesa
         instance.save()
@@ -50,10 +53,33 @@ def criar_despesa(sender, instance, created, **kwargs):
         if instance.despesa != None:
             despesa = instance.despesa
             despesa.data = instance.entrada
-            despesa.valor = instance.total_pago
+            despesa.valor = instance.valor
             despesa.save()
 
 @receiver(pre_delete, sender=Material)
-def deletar_despesa(sender, instance, **kwargs):
+def deletar_despesa_de_material(sender, instance, **kwargs):
+    if instance.despesa != None:
+        instance.despesa.delete()
+
+# Serviços
+@receiver(post_save, sender=Servico)
+def criar_despesa_de_servico(sender, instance, created, **kwargs):
+    if created:
+        despesa = Despesa.objects.create(
+            data=instance.data,
+            categoria='Serviço contratado',
+            valor=instance.valor
+        )
+        instance.despesa = despesa
+        instance.save()
+    else:
+        if instance.despesa != None:
+            despesa = instance.despesa
+            despesa.data = instance.data
+            despesa.valor = instance.valor
+            despesa.save()
+
+@receiver(pre_delete, sender=Servico)
+def deletar_despesa_de_servico(sender, instance, **kwargs):
     if instance.despesa != None:
         instance.despesa.delete()
