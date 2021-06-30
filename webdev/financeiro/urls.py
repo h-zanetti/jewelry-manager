@@ -15,4 +15,6 @@ urlpatterns = [
     path('nova_despesa/', views.nova_despesa, name='nova_despesa'),
     path('editar_despesa/<int:despesa_id>', views.editar_despesa, name='editar_despesa'),
     path('deletar_despesa/<int:despesa_id>', views.deletar_despesa, name='deletar_despesa'),
+    path('exportar_despesas/', views.exportar_despesas, name='exportar_despesas'),
+    path('importar_despesas/', views.importar_despesas, name='importar_despesas'),
 ]

@@ -8,8 +8,8 @@
     {% endif %}
     <div class="btn-toolbar mb-2 mb-md-0">
         <div class="btn-group me-2">
-            <button type="button" class="btn btn-sm btn-outline-secondary">Importar</button>
-            <button type="button" class="btn btn-sm btn-outline-secondary">Exportar</button>
+            <a href="{% url 'financeiro:importar_despesas' %}" class="btn btn-sm btn-outline-secondary">Importar</a>
+            <a href="{% url 'financeiro:exportar_despesas' %}" class="btn btn-sm btn-outline-secondary">Exportar</a>
         </div>
         <a href="{% url 'financeiro:nova_despesa' %}" class="btn btn-sm btn-outline-secondary">
             Nova Despesa

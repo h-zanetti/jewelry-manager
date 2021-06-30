@@ -2,10 +2,7 @@ import pytest
 from django.urls import reverse
 from django.contrib.auth.models import User
 from pytest_django.asserts import assertContains
-from tablib import Dataset
-from import_export import resources
 from webdev.materiais.models import Material
-from webdev.materiais.admin import MaterialResource
 
 @pytest.fixture
 def material(db):

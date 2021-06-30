@@ -1,3 +1,6 @@
+from django.http.response import HttpResponse
+from tablib.core import Dataset
+from .admin import DespesaResource
 from calendar import monthrange
 import datetime as dt
 from itertools import chain
@@ -137,6 +140,24 @@ def deletar_despesa(request, despesa_id):
         Despesa.objects.get(id=despesa_id).delete()
     return HttpResponseRedirect(reverse('financeiro:despesas'))
 
+@login_required
+def exportar_despesas(request):
+    dados = DespesaResource().export()
+    resposta = HttpResponse(dados.xls, content_type='application/vnd.ms-excel')
+    resposta['Content-Disposition'] = 'attachment; filename=despesas.xls'
+    return resposta
+
+@login_required
+def importar_despesas(request):
+    if request.method == 'POST':
+        resource = DespesaResource()
+        dataset = Dataset()
+        novas_despesas = request.FILES['myfile']
+        dataset.load(novas_despesas.read(), 'xls')
+        resource.import_data(dataset)
+        return redirect('financeiro:despesas')
+        
+    return render(request, 'base_form_file.html', {'title': "Importação de despesas"})
 
 # Fluxo de Caixa
 @login_required
