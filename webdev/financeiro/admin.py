@@ -5,4 +5,4 @@ from .models import Despesa
 class DespesaResource(resources.ModelResource):
     class Meta:
         model = Despesa
-        fields = '__all__'
+        fields = ('id', 'data', 'categoria', 'valor', 'repetir', 'is_active', 'data_de_encerramento')
