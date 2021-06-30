@@ -2,7 +2,6 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.urls import reverse
-from import_export import resources
 from webdev.materiais.models import Material
 from webdev.materiais.forms import MaterialForm
 from .admin import MaterialResource
