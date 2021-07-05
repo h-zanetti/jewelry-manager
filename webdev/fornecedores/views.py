@@ -507,7 +507,7 @@ def editar_servico(request, servico_id):
         'novo_obj': False
     }
 
-    return render(request, 'base_form_sm.html', context)
+    return render(request, 'fornecedores/servico_form.html', context)
 
 @login_required
 def deletar_servico(request, servico_id):
