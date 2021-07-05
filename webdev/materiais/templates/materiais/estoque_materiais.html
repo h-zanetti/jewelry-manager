@@ -58,7 +58,8 @@
                                     <div class="modal-content">
                                         <div class="modal-header">
                                             <h1 class="modal-title display-6" id="modelMaterial{{ material.id }}Label">
-                                                {{ material.nome }} <strong>#{{ material.id }}</strong>
+                                                {{ material.nome }} <strong>#{{ material.id }}
+                                                {% if material.codigo_do_fornecedor %} - {{ material.codigo_do_fornecedor }}{% endif %}</strong>
                                             </h1>
                                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                         </div>
