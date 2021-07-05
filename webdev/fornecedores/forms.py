@@ -78,4 +78,4 @@ class ServicoForm(forms.ModelForm):
     )
     class Meta:
         model = Servico
-        fields = '__all__'
+        exclude = ('despesa',)
