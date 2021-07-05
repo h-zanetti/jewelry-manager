@@ -7,6 +7,7 @@ from webdev.fornecedores.models import Fornecedor
 class Material(models.Model):
     entrada = models.DateField(_("Data de Entrada"), default=timezone.now , blank=True, null=True)
     fornecedor = models.ForeignKey(Fornecedor, on_delete=models.SET_NULL, blank=True, null=True, verbose_name=_("Fornecedor"))
+    codigo_do_fornecedor = models.CharField(_("Código do Fornecedor"), max_length=50, null=True, blank=True, help_text="Código do produto utilizado pelo fornecedor.")
     unidades_compradas = models.IntegerField(_("Unidades Compradas"), default=1)
     valor = models.DecimalField(_("Total Pago"), max_digits=8, decimal_places=2)
     foto = models.ImageField(_("Foto do Material"), upload_to='materiais', default='default.jpg', blank=True, null=True)
