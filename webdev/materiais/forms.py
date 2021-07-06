@@ -20,19 +20,19 @@ class MaterialForm(forms.ModelForm):
             attrs={'class': 'rounded-0 rounded-start'}
         )
     )
-    altura = forms.IntegerField(
+    altura = forms.DecimalField(
         widget=forms.widgets.NumberInput(
             attrs={'class': 'rounded-0 rounded-start'}
         ),
         required=False
     )
-    largura = forms.IntegerField(
+    largura = forms.DecimalField(
         widget=forms.widgets.NumberInput(
             attrs={'class': 'rounded-0'}
         ),
         required=False
     )
-    comprimento = forms.IntegerField(
+    comprimento = forms.DecimalField(
         widget=forms.widgets.NumberInput(
             attrs={'class': 'rounded-0 rounded-end'}
         ),
