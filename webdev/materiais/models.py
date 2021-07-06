@@ -32,8 +32,8 @@ class Material(models.Model):
     def __str__(self):
         return f"{self.nome}"
 
-    def get_dimenssoes(self):
-        if self.altura and self.largura and self.comprimento:
+    def get_dimensoes(self):
+        if self.altura or self.largura or self.comprimento:
             return f"{self.altura}x{self.largura}x{self.comprimento}"
         else:
             return "Indisponível"
