@@ -287,8 +287,15 @@
                                         </div>
 
                                         <div class="row mb-2 mx-0 gy-0">
-                                            <div class="col-12 px-0">
-                                                <h1 class="display-6">Serviços Prestados</h1>
+                                            <div class="row">
+                                                <div class="col-auto">
+                                                    <h1 class="display-6">Serviços Prestados</h1>
+                                                </div>
+                                                <div class="col-auto align-self-center pt-1">
+                                                    <a href="{% url 'fornecedores:novo_servico' %}" class="link-dark align-top">
+                                                        <i class="fas fa-plus fa-lg"></i>
+                                                    </a>    
+                                                </div>
                                             </div>
                                             <div class="col-12 px-0">
                                                 <table class="table">
