@@ -172,8 +172,12 @@ def test_grafico_correto(resposta_fluxo_de_caixa):
         for despesa in qs:
             index = despesa.data.month - 1
             if despesa.repetir == 'm':
-                for i in range(index, 12):
-                    dados[i] -= float(despesa.valor)
+                if despesa.data.year < ano:
+                    for i in range(12):
+                        dados[i] -= float(despesa.valor)
+                else:
+                    for i in range(index, 12):
+                        dados[i] -= float(despesa.valor)
             else:
                 dados[index] -= float(despesa.valor)
     assert resposta_fluxo_de_caixa.context['dados'] == dados
