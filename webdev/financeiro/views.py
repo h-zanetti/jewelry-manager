@@ -181,8 +181,12 @@ def fluxo_de_caixa(request, ano, mes):
         for despesa in qs:
             index = despesa.data.month - 1
             if despesa.repetir == 'm':
-                for i in range(index, 12):
-                    dados[i] -= float(despesa.valor)
+                if despesa.data.year < ano:
+                    for i in range(12):
+                        dados[i] -= float(despesa.valor)
+                else:
+                    for i in range(index, 12):
+                        dados[i] -= float(despesa.valor)
             else:
                 dados[index] -= float(despesa.valor)
 
@@ -191,7 +195,7 @@ def fluxo_de_caixa(request, ano, mes):
     despesas_variaveis = Despesa.objects.filter(repetir='', data__year=ano, data__month=mes)
     despesas_mensais = Despesa.objects.filter(
         Q(encerrada=False) | Q(data_de_encerramento__gte=f'{ano}-{mes}-01'),
-        repetir='m', data__month__lte=mes, data__year__lte=ano)
+        repetir='m', data__lte=f'{ano}-{mes}-{monthrange(ano, mes)[1]}')
     despesas_anuais = Despesa.objects.filter(
         Q(encerrada=False) | Q(data_de_encerramento__gte=f'{ano}-{mes}-01'),
         repetir='a', data__month=mes, data__year__lte=ano)
@@ -199,18 +203,6 @@ def fluxo_de_caixa(request, ano, mes):
         chain(parcelas, despesas_variaveis, despesas_mensais, despesas_anuais),
         key=lambda instance: instance.data
     )
-
-    # Saldo
-    receitas_sum = parcelas.aggregate(Sum('valor'))['valor__sum']
-    receitas_sum = 0 if receitas_sum == None else float(receitas_sum)
-    despesas_variaveis_sum = despesas_variaveis.aggregate(Sum('valor'))['valor__sum']
-    despesas_variaveis_sum = 0 if despesas_variaveis_sum == None else float(despesas_variaveis_sum)
-    despesas_mensais_sum = despesas_mensais.aggregate(Sum('valor'))['valor__sum']
-    despesas_mensais_sum = 0 if despesas_mensais_sum == None else float(despesas_mensais_sum)
-    despesas_anuais_sum = despesas_anuais.aggregate(Sum('valor'))['valor__sum']
-    despesas_anuais_sum = 0 if despesas_anuais_sum == None else float(despesas_anuais_sum)
-    despesas_totais = sum([despesas_mensais_sum, despesas_anuais_sum, despesas_variaveis_sum])
-    saldo = receitas_sum - despesas_totais
 
     context = {
         # Data da requisição
@@ -220,7 +212,7 @@ def fluxo_de_caixa(request, ano, mes):
         # # Gráfico
         'dados': dados,
         # Tabela
-        'saldo': saldo,
+        'saldo': dados[mes-1],
         'transacoes': transacoes,
     }
 
