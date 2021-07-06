@@ -47,8 +47,6 @@ def resposta_editar_despesa(client, despesa):
             'categoria': 'Manutenção',
             'valor': 75,
             'repetir': 'm',
-            'is_active': True,
-            'data_de_encerramento': ''
         }
     )
     return resp
@@ -71,8 +69,7 @@ def resposta_encerrar_despesa(client, despesa):
             'categoria': 'MEI',
             'valor': 75,
             'repetir': 'm',
-            'is_active': False,
-            'data_de_encerramento': ''
+            'encerrada': True,
         }
     )
     return resp
@@ -81,7 +78,7 @@ def test_editar_despesa_status_code(resposta_encerrar_despesa):
     assert resposta_encerrar_despesa.status_code == 302
 
 def test_despesa_desativada(resposta_encerrar_despesa):
-    assert Despesa.objects.first().is_active == False
+    assert Despesa.objects.first().encerrada == True
 
 def test_data_de_encerramento_alterada(resposta_encerrar_despesa):
     assert Despesa.objects.first().data_de_encerramento == timezone.localdate()
