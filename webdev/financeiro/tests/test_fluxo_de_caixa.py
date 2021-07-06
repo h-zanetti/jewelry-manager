@@ -1,3 +1,5 @@
+from calendar import monthrange
+from django.db.models.query_utils import Q
 from webdev.fornecedores.models import Fornecedor, Servico
 from django.db.models.functions import TruncMonth
 from dateutil.relativedelta import relativedelta
@@ -5,7 +7,7 @@ from django.db.models.aggregates import Sum
 import pytest
 from django.urls import reverse
 from django.utils import timezone
-from pytest_django.asserts import assertContains
+from pytest_django.asserts import assertContains, assertNotContains
 from django.contrib.auth.models import User
 from webdev.financeiro.models import Despesa, Parcela
 from webdev.vendas.models import Cliente, Venda
@@ -47,18 +49,25 @@ def venda(cliente, lista_de_produtos):
         venda.produtos.add(produto)
     return venda
 
-# Gerar despesas
+''' Gerar despesas:
+1. Despesa variável
+2. Despesa fixa (mensal) sem encerramento
+3. Despesa fixa (anual) com encerramento
+4. Despesa fixa (mensal) com encerramento
+'''
 @pytest.fixture
 def lista_de_despesas(db):
     return [
-        Despesa.objects.create(data=timezone.localdate(), categoria='Motoboy', valor=150, repetir=''),
+        Despesa.objects.create(data=timezone.localdate(), categoria='Motoboy', valor=150),
         Despesa.objects.create(data=timezone.localdate(), categoria='MEI', valor=50, repetir='m'),
         Despesa.objects.create(
-            data=timezone.localdate() - relativedelta(years=1), # Despesa criada para testar repetições anuais
-            categoria='Domínio', valor=95, repetir='a'),
+            data=timezone.localdate() - relativedelta(years=1),
+            data_de_encerramento=timezone.localdate() + relativedelta(months=1),
+            categoria='Domínio', valor=95, repetir='a', encerrada=True),
         Despesa.objects.create(
-            data=timezone.localdate() - relativedelta(months=1), # Despesa criada para testar repetições mensais
-            categoria='Conta de Luz', valor=200, repetir='m'),
+            data=timezone.localdate() - relativedelta(years=1, months=3),
+            data_de_encerramento=timezone.localdate() + relativedelta(months=3),
+            categoria='Conta de Luz', valor=200, repetir='m', encerrada=True),
     ]
     
 @pytest.fixture
@@ -118,22 +127,22 @@ def test_servico_presente(resposta_fluxo_de_caixa, servico):
     assertContains(resposta_fluxo_de_caixa, servico.nome)
 
 def test_saldo_presente(resposta_fluxo_de_caixa):
+    ld = timezone.localdate()
     receitas = Parcela.objects.filter(
-        data__year=timezone.localdate().year,
-        data__month=timezone.localdate().month).aggregate(valor=Sum('valor'))
-    despesas_anuais = Despesa.objects.filter(
-        data__month=timezone.localdate().month,
-        data__year__lte=timezone.localdate().year,
-        repetir='a').aggregate(valor=Sum('valor'))
-    despesas_mensais = Despesa.objects.filter(
-        data__lte=timezone.localdate(),
-        repetir='m').aggregate(valor=Sum('valor'))
+        data__month=ld.month, data__year=ld.year).aggregate(Sum('valor'))['valor__sum']
     despesas_variaveis = Despesa.objects.filter(
-        data__month=timezone.localdate().month,
-        data__year=timezone.localdate().year,
-        repetir='').aggregate(valor=Sum('valor'))
-    despesas = float(despesas_anuais['valor']) + float(despesas_mensais['valor']) + float(despesas_variaveis['valor'])
-    saldo = float(receitas['valor']) - despesas
+        repetir='', data__month=ld.month, data__year=ld.year
+        ).aggregate(Sum('valor'))['valor__sum']
+    despesas_mensais = Despesa.objects.filter(
+        Q(encerrada=False) | Q(data_de_encerramento__gte=f'{ld.year}-{ld.month}-{monthrange(ld.year, ld.month)[1]}'),
+        data__month__lte=ld.month, data__year__lte=ld.year, repetir='m',
+        ).aggregate(Sum('valor'))['valor__sum']
+    despesas_anuais = Despesa.objects.filter(
+        Q(encerrada=False) | Q(data_de_encerramento__gte=f'{ld.year}-{ld.month}-{monthrange(ld.year, ld.month)[1]}'),
+        data__month=ld.month, data__year__lte=ld.year, repetir='a',
+        ).aggregate(Sum('valor'))['valor__sum']
+    despesas = float(sum([despesas_variaveis, despesas_mensais, despesas_anuais]))
+    saldo = float(receitas) - despesas
     # Formatação -> 1,010.00
     saldo_split = f"{saldo:,.1f}".split('.')
     saldo_int = saldo_split[0].replace(',','.')
@@ -142,30 +151,56 @@ def test_saldo_presente(resposta_fluxo_de_caixa):
 
 # Gráfico
 def test_grafico_correto(resposta_fluxo_de_caixa):
-    dados = [0,0,0,0,0,0,0,0,0,0,0,0]
+    dados = [0 for i in range(12)]
+    ano = timezone.localdate().year
     # Receitas
-    receitas = Parcela.objects.filter(data__year=timezone.localdate().year).annotate(
+    receitas = Parcela.objects.filter(data__year=ano).annotate(
         mes=TruncMonth('data')).values('mes').annotate(valor=Sum('valor'))
     for receita in receitas:
         index = receita['mes'].month - 1
         dados[index] += float(receita['valor'])
     # Despesas
-    tipo_de_despesas = ['', 'm', 'a']
-    for tipo in tipo_de_despesas:
-        despesas = Despesa.objects.filter(
-            data__lte=timezone.localdate(),
-            repetir=tipo).annotate(
-                mes=TruncMonth('data')).values('mes').annotate(valor=Sum('valor'))
-        for despesa in despesas:
-            index = despesa['mes'].month - 1
-            if tipo == 'm':
+    despesas_variaveis = Despesa.objects.filter(repetir='', data__year=ano)
+    despesas_mensais = Despesa.objects.filter(
+        Q(encerrada=False) | Q(data_de_encerramento__year__gte=ano),
+        repetir='m', data__year__lte=ano)
+    despesas_anuais = Despesa.objects.filter(
+        Q(encerrada=False) | Q(data_de_encerramento__year__gte=ano),
+        repetir='a', data__year__lte=ano)
+    despesas = [despesas_anuais, despesas_mensais, despesas_variaveis]
+    for qs in despesas:
+        for despesa in qs:
+            index = despesa.data.month - 1
+            if despesa.repetir == 'm':
                 for i in range(index, 12):
-                    dados[i] -= float(despesa['valor'])
+                    dados[i] -= float(despesa.valor)
             else:
-                dados[index] -= float(despesa['valor'])
-    print(dados)
-    print(resposta_fluxo_de_caixa.context['dados'])
+                dados[index] -= float(despesa.valor)
     assert resposta_fluxo_de_caixa.context['dados'] == dados
+
+def test_repeticao_mensal_encerrada(client, lista_de_despesas):
+    User.objects.create_user(username='TestUser', password='MinhaSenha123')
+    client.login(username='TestUser', password='MinhaSenha123')
+    resp = client.get(
+        reverse('financeiro:fluxo_de_caixa',
+        kwargs={
+            'ano': timezone.localdate().year,
+            'mes': timezone.localdate().month + 4
+        }
+    ))
+    assertNotContains(resp, Despesa.objects.get(categoria='Conta de Luz'))
+
+def test_repeticao_anual_encerrada(client, lista_de_despesas):
+    User.objects.create_user(username='TestUser', password='MinhaSenha123')
+    client.login(username='TestUser', password='MinhaSenha123')
+    resp = client.get(
+        reverse('financeiro:fluxo_de_caixa',
+        kwargs={
+            'ano': timezone.localdate().year,
+            'mes': timezone.localdate().month + 2
+        }
+    ))
+    assertNotContains(resp, Despesa.objects.get(categoria='Domínio'))
 
 # Botões
 def test_btn_nova_despesa_presente(resposta_fluxo_de_caixa):
