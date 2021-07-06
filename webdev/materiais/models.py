@@ -41,9 +41,9 @@ class Material(models.Model):
                 dimensoes[d] = float(dimensoes[d])
         if sum(dimensoes):
             if dimensoes[0] == 0:
-                return f"{dimensoes[1]}x{dimensoes[2]}"
+                return f"{dimensoes[1]} x {dimensoes[2]}"
             else:
-                return f"{dimensoes[0]}x{dimensoes[1]}x{dimensoes[2]}"
+                return f"{dimensoes[0]} x {dimensoes[1]} x {dimensoes[2]}"
         else:
             return "Indisponível"
 
