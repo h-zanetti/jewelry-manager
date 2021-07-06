@@ -188,7 +188,7 @@ def test_repeticao_mensal_encerrada(client, lista_de_despesas):
             'mes': timezone.localdate().month + 4
         }
     ))
-    assertNotContains(resp, Despesa.objects.get(categoria='Conta de Luz'))
+    assertNotContains(resp, 'Conta de Luz')
 
 def test_repeticao_anual_encerrada(client, lista_de_despesas):
     User.objects.create_user(username='TestUser', password='MinhaSenha123')
@@ -200,7 +200,7 @@ def test_repeticao_anual_encerrada(client, lista_de_despesas):
             'mes': timezone.localdate().month + 2
         }
     ))
-    assertNotContains(resp, Despesa.objects.get(categoria='Domínio'))
+    assertNotContains(resp, 'Domínio')
 
 # Botões
 def test_btn_nova_despesa_presente(resposta_fluxo_de_caixa):
