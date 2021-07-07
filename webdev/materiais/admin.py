@@ -5,4 +5,4 @@ from .models import Material
 class MaterialResource(resources.ModelResource):
     class Meta:
         model = Material
-        exclude = ('foto',)
+        exclude = ('foto', 'despesa')
