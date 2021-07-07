@@ -213,6 +213,18 @@ def test_btn_nova_despesa_presente(resposta_fluxo_de_caixa):
         f'href="{reverse("financeiro:nova_despesa")}'
     )
 
+def test_btn_nova_entrada_de_material_presente(resposta_fluxo_de_caixa):
+    assertContains(
+        resposta_fluxo_de_caixa,
+        f'href="{reverse("materiais:nova_entrada")}'
+    )
+
+def test_btn_novo_servico_presente(resposta_fluxo_de_caixa):
+    assertContains(
+        resposta_fluxo_de_caixa,
+        f'href="{reverse("fornecedores:novo_servico")}'
+    )
+
 def test_btn_nova_venda_presente(resposta_fluxo_de_caixa):
     assertContains(
         resposta_fluxo_de_caixa,

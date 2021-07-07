@@ -34,9 +34,19 @@
                 {% endfor %}
             </ul>
         </div>
+        <div class="dropdown me-2">
+            <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                Nova Despesa
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                <li><a href="{% url 'financeiro:nova_despesa' %}?next={{ request.path|urlencode }}" class="dropdown-item">Despesas fixas</a></li>
+                <li><a href="{% url 'materiais:nova_entrada' %}" class="dropdown-item">Entrada de material</a></li>
+                <li><a href="{% url 'fornecedores:novo_servico' %}" class="dropdown-item">Serviços contratados</a></li>
+            </ul>
+        </div>
         <div class="btn-group" role="group">
             <a href="{% url 'vendas:nova_venda' %}?next={{ request.path|urlencode }}" class="btn btn-sm btn-outline-secondary">Nova Venda</a>
-            <a href="{% url 'financeiro:nova_despesa' %}?next={{ request.path|urlencode }}" class="btn btn-sm btn-outline-secondary">Nova Despesa</a>
+            
         </div>
     </div>
 </div>
