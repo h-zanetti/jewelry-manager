@@ -212,7 +212,7 @@ def fluxo_de_caixa(request, ano, mes):
         # # Gráfico
         'dados': dados,
         # Tabela
-        'saldo': dados[mes-1],
+        'saldo': round(dados[mes-1], 2),
         'transacoes': transacoes,
     }
 
