@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load bootstrap5 %}
+{% load humanize %}
 
 {% block content %}
 
@@ -26,7 +27,7 @@
                 <th>Entrada</th>
                 <th>Nome</th>
                 <th>Categoria (Subcategoria)</th>
-                <th>Qualidade</th>
+                <th>Dimensões (mm)</th>
                 <th>Peso</th>
                 <th>Estoque</th>
                 <th>Ações</th>
@@ -44,7 +45,7 @@
                         ({{ material.subcategoria|default:"Nenhuma" }})
                     {% endif %}
                 </td>
-                <td>{{ material.qualidade }}</td>
+                <td>{{ material.get_dimensoes }}</td>
                 <td>{{ material.get_peso }}</td>
                 <td>{{ material.estoque }}</td>
                 <td>
@@ -102,6 +103,9 @@
                                                                             {% endif %}
                                                                             R$ {{ material.get_preco_por_peso }}
                                                                         </td>
+                                                                    <tr>
+                                                                        <td><strong>Total pago:</strong> R${{ material.valor|intcomma }}</td>
+                                                                        <td></td>
                                                                     </tr>
                                                                 </tbody>
                                                             </table>

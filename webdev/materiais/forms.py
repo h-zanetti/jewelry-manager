@@ -38,7 +38,7 @@ class MaterialForm(forms.ModelForm):
         ),
         required=False
     )
-    peso = forms.IntegerField(
+    peso = forms.DecimalField(
         widget=forms.widgets.NumberInput(
             attrs={'class': 'rounded-0 rounded-start'}
         ),

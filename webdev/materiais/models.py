@@ -33,8 +33,17 @@ class Material(models.Model):
         return f"{self.nome}"
 
     def get_dimensoes(self):
-        if self.altura or self.largura or self.comprimento:
-            return f"{self.altura}x{self.largura}x{self.comprimento}"
+        dimensoes = [self.altura, self.largura, self.comprimento]
+        for d in range(len(dimensoes)):
+            if dimensoes[d] == None:
+                dimensoes[d] = 0
+            else:
+                dimensoes[d] = float(dimensoes[d])
+        if sum(dimensoes):
+            if dimensoes[0] == 0:
+                return f"{dimensoes[1]} x {dimensoes[2]}"
+            else:
+                return f"{dimensoes[0]} x {dimensoes[1]} x {dimensoes[2]}"
         else:
             return "Indisponível"
 
