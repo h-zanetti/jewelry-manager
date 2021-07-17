@@ -14,4 +14,6 @@ urlpatterns = [
     path('adicionar_material/<int:produto_id>', views.adicionar_material, name='adicionar_material'),
     path('editar_material_dp/<int:material_dp_id>', views.editar_material_dp, name='editar_material_dp'),
     path('remover_material_dp/<int:material_dp_id>', views.remover_material_dp, name='remover_material_dp'),
+    path('exportar/', views.exportar_produtos, name='exportar_produtos'),
+    path('importar/', views.importar_produtos, name='importar_produtos'),
 ]
