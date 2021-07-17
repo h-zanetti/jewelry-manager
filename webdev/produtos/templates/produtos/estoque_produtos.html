@@ -9,8 +9,8 @@
     {% endif %}
     <div class="btn-toolbar mb-2 mb-md-0">
         <div class="btn-group me-2">
-            <button type="button" class="btn btn-sm btn-outline-secondary">Share</button>
-            <button type="button" class="btn btn-sm btn-outline-secondary">Export</button>
+          <a href="{% url 'produtos:importar_produtos' %}" class="btn btn-sm btn-outline-secondary">Importar</a>
+          <a href="{% url 'produtos:exportar_produtos' %}" class="btn btn-sm btn-outline-secondary">Exportar</a>
         </div>
         <a href="{% url 'produtos:novo_produto' %}" class="btn btn-sm btn-outline-secondary">
             Novo Produto

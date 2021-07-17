@@ -1,3 +1,6 @@
+from django.http.response import HttpResponse
+from tablib.core import Dataset
+from webdev.produtos.admin import ProdutoResource
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.http import HttpResponseRedirect, Http404
@@ -11,9 +14,7 @@ from webdev.fornecedores.forms import ServicoForm
 def categorias(request):
     CategoriaFormSet = modelformset_factory(Categoria, fields='__all__', can_delete=True, form=CategoriaForm)
     if request.method == 'POST':
-        formset = CategoriaFormSet(request.POST, error_messages={
-            'nome': 'Categoria com este nome já existe.'
-        })
+        formset = CategoriaFormSet(request.POST)
         if formset.is_valid():
             formset.save()
             next_url = request.POST.get('next')
@@ -213,3 +214,25 @@ def remover_material_dp(request, material_dp_id):
     if request.method == 'POST':
         MaterialDoProduto.objects.get(id=material_dp_id).delete()
     return HttpResponseRedirect(reverse('produtos:estoque_produtos'))
+
+# Importação e exportação
+
+@login_required
+def exportar_produtos(request):
+    dados = ProdutoResource().export()
+    resposta = HttpResponse(dados.xls, content_type='application/vnd.ms-excel')
+    resposta['Content-Disposition'] = 'attachment; filename=produtos.xls'
+    return resposta
+
+@login_required
+def importar_produtos(request):
+    if request.method == 'POST':
+        resource = ProdutoResource()
+        dataset = Dataset()
+        novos_produtos = request.FILES['myfile']
+        dataset.load(novos_produtos.read(), 'xls')
+        resource.import_data(dataset)
+        return redirect('produtos:estoque_produtos')
+        
+    return render(request, 'base_form_file.html', {'title': "Importação de despesas"})
+
