@@ -28,6 +28,24 @@ def test_despesas_presente(resposta_despesas, despesas):
     for despesa in despesas:
         assertContains(resposta_despesas, despesa.categoria)
 
+def test_btn_nova_despesa_presente(resposta_despesas):
+    assertContains(
+        resposta_despesas,
+        f'<a href="{reverse("financeiro:nova_despesa")}'
+    )
+
+def test_btn_entrada_de_material_presente(resposta_despesas):
+    assertContains(
+        resposta_despesas,
+        f'<a href="{reverse("materiais:nova_entrada")}'
+    )
+
+def test_btn_novo_servico_presente(resposta_despesas):
+    assertContains(
+        resposta_despesas,
+        f'<a href="{reverse("fornecedores:novo_servico")}'
+    )
+
 def test_btn_editar_despesa_presente(resposta_despesas, despesas):
     for despesa in despesas:
         assertContains(resposta_despesas, f'<a href="{reverse("financeiro:editar_despesa", kwargs={"despesa_id": despesa.id})}')
