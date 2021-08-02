@@ -46,6 +46,12 @@ def test_btn_editar_entrada_presente(resposta_entradas, entrada):
 def test_btn_deletar_entrada_presente(resposta_entradas, entrada):
     assertContains(resposta_entradas, f'<form action="{reverse("materiais:deletar_entrada", kwargs={"entrada_id": entrada.id})}"')
 
+def test_btn_importar_entrada_presente(resposta_entradas, entrada):
+    assertContains(resposta_entradas, f'<a href="{reverse("materiais:importar_entradas")}"')
+
+def test_btn_exportar_entrada_presente(resposta_entradas, entrada):
+    assertContains(resposta_entradas, f'<a href="{reverse("materiais:exportar_entradas")}"')
+
 
 # Entrada de materiais form (GET)
 @pytest.fixture

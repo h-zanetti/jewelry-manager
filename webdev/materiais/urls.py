@@ -16,4 +16,6 @@ urlpatterns = [
     path('entradas_de_materiais/', views.entradas_de_materiais, name='entradas_de_materiais'), # Lista de entradas de materiais
     path('editar_entrada/<int:entrada_id>/', views.editar_entrada, name='editar_entrada'),
     path('deletar_entrada/<int:entrada_id>/', views.deletar_entrada, name='deletar_entrada'),
+    path('exportar_entradas/', views.exportar_entradas, name='exportar_entradas'),
+    path('importar_entradas/', views.importar_entradas, name='importar_entradas'),
 ]

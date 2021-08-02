@@ -1,4 +1,3 @@
-from django.db.models.deletion import CASCADE, SET_NULL
 from webdev.financeiro.models import Despesa
 from django.db import models
 from django.utils.translation import gettext_lazy as _
@@ -62,12 +61,15 @@ class Material(models.Model):
                 return entrada.valor
         else:
             return 0
+    
+    def get_entradas(self):
+        return Entrada.objects.filter(material=self)
 
 
 class Entrada(models.Model):
     data = models.DateField(_("data"), default=timezone.now)
     material = models.ForeignKey(Material, on_delete=models.CASCADE, verbose_name=_("material"))
-    despesa = models.OneToOneField(Despesa, on_delete=SET_NULL, blank=True, null=True, verbose_name=_("despesa"))
+    despesa = models.OneToOneField(Despesa, on_delete=models.SET_NULL, blank=True, null=True, verbose_name=_("despesa"))
     fornecedor = models.ForeignKey(Fornecedor, on_delete=models.SET_NULL, blank=True, null=True, verbose_name=_("fornecedor"))
     codigo_do_fornecedor = models.CharField(_("código do fornecedor"), max_length=50, null=True, blank=True, help_text="Código utilizado pelo fornecedor para identificar este produto.")
     unidades = models.IntegerField(_("unidades compradas"), default=1)

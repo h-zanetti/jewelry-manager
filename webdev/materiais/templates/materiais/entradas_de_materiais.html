@@ -10,8 +10,8 @@
     {% endif %}
     <div class="btn-toolbar mb-2 mb-md-0">
         <div class="btn-group me-2">
-            <a href="#" class="btn btn-sm btn-outline-secondary">Importar</a>
-            <a href="#" class="btn btn-sm btn-outline-secondary">Exportar</a>
+            <a href="{% url 'materiais:importar_entradas' %}" class="btn btn-sm btn-outline-secondary">Importar</a>
+            <a href="{% url 'materiais:exportar_entradas' %}" class="btn btn-sm btn-outline-secondary">Exportar</a>
         </div>
         <a href="{% url 'materiais:entrada_de_material' %}" class="btn btn-sm btn-outline-secondary">
             Nova Entrada

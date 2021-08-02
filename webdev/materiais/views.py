@@ -4,7 +4,7 @@ from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.urls import reverse
 from webdev.materiais.models import Entrada, Material
 from webdev.materiais.forms import EntradaForm, MaterialForm
-from .admin import MaterialResource
+from .admin import EntradaResource, MaterialResource
 from tablib import Dataset
 
 # Estoque
@@ -153,3 +153,23 @@ def deletar_entrada(request, entrada_id):
     if request.method == 'POST':
         entrada.delete()
     return HttpResponseRedirect(reverse('materiais:entradas_de_materiais'))
+
+
+@login_required
+def exportar_entradas(request):
+    dados = EntradaResource().export()
+    resposta = HttpResponse(dados.xls, content_type='application/vnd.ms-excel')
+    resposta['Content-Disposition'] = 'attachment; filename=entradas.xls'
+    return resposta
+
+@login_required
+def importar_entradas(request):
+    if request.method == 'POST':
+        resource = EntradaResource()
+        dataset = Dataset()
+        novas_entradas = request.FILES['myfile']
+        dataset.load(novas_entradas.read(), 'xls')
+        resource.import_data(dataset)
+        return redirect('materiais:entradas_de_materiais')
+        
+    return render(request, 'base_form_file.html', {'title': "Importação de entradas de matérias primas"})
