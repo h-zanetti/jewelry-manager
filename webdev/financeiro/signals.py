@@ -38,29 +38,6 @@ def deletar_receita(sender, instance, **kwargs):
     if instance.receita != None:
         instance.receita.delete()
 
-# Material
-@receiver(post_save, sender=Material)
-def criar_despesa_de_material(sender, instance, created, **kwargs):
-    if created and instance.entrada != None:
-        despesa = Despesa.objects.create(
-            data=instance.entrada,
-            categoria='Entrada de material',
-            valor=instance.valor
-        )
-        instance.despesa = despesa
-        instance.save()
-    else:
-        if instance.despesa != None:
-            despesa = instance.despesa
-            despesa.data = instance.entrada
-            despesa.valor = instance.valor
-            despesa.save()
-
-@receiver(pre_delete, sender=Material)
-def deletar_despesa_de_material(sender, instance, **kwargs):
-    if instance.despesa != None:
-        instance.despesa.delete()
-
 # Serviços
 @receiver(post_save, sender=Servico)
 def criar_despesa_de_servico(sender, instance, created, **kwargs):

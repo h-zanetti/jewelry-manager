@@ -1,24 +1,12 @@
-from django.forms import widgets
-from webdev.fornecedores.models import Fornecedor
 from django import forms
-from .models import Material
+from .models import Entrada, Material
 from webdev.fornecedores.models import Fornecedor
+from webdev.financeiro.models import Despesa
 
 class MaterialForm(forms.ModelForm):
-    entrada = forms.DateField(
-        input_formats=['%d/%m/%Y', '%d-%m-%Y'],
-        widget=forms.DateInput(attrs={'placeholder': 'dd/mm/aaaa'}),
-        required=False
-    )
     foto = forms.ImageField(
         widget=forms.FileInput(),
         required=False
-    )
-    fornecedor = forms.ModelChoiceField(
-        queryset=Fornecedor.objects.all(),
-        widget=forms.Select(
-            attrs={'class': 'rounded-0 rounded-start'}
-        )
     )
     altura = forms.DecimalField(
         widget=forms.widgets.NumberInput(
@@ -63,3 +51,8 @@ class MaterialForm(forms.ModelForm):
     class Meta:
         model = Material
         fields = '__all__'
+
+class EntradaForm(forms.ModelForm):
+    class Meta:
+        model = Entrada
+        exclude = ('despesa',)

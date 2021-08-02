@@ -5,45 +5,35 @@ from django.utils import timezone
 from webdev.fornecedores.models import Fornecedor
 
 class Material(models.Model):
-    entrada = models.DateField(_("Data de Entrada"), default=timezone.now , blank=True, null=True)
-    fornecedor = models.ForeignKey(Fornecedor, on_delete=models.SET_NULL, blank=True, null=True, verbose_name=_("Fornecedor"))
-    codigo_do_fornecedor = models.CharField(_("Código do Fornecedor"), max_length=50, null=True, blank=True, help_text="Código do produto utilizado pelo fornecedor.")
-    unidades_compradas = models.IntegerField(_("Unidades Compradas"), default=1)
-    valor = models.DecimalField(_("Total Pago"), max_digits=8, decimal_places=2)
-    foto = models.ImageField(_("Foto do Material"), upload_to='materiais', default='default.jpg', blank=True, null=True)
-    nome = models.CharField(_("Material"), max_length=150)
-    categoria = models.CharField(_("Categoria"), max_length=150)
-    subcategoria = models.CharField(_("Subcategoria"), max_length=150, blank=True, null=True)
-    qualidade = models.IntegerField(_("Qualidade"), default=0)
-    altura = models.DecimalField(_("Altura"), max_digits=8, decimal_places=2, blank=True, null=True) 
-    largura = models.DecimalField(_("Largura"), max_digits=8, decimal_places=2, blank=True, null=True) 
-    comprimento = models.DecimalField(_("Comprimento"), max_digits=8, decimal_places=2, blank=True, null=True) 
-    peso = models.DecimalField(_("Peso Unitário"), max_digits=8, decimal_places=2, blank=True, null=True) 
+    foto = models.ImageField(_("foto do material"), upload_to='materiais', default='default.jpg', blank=True)
+    nome = models.CharField(_("nome do material"), max_length=150)
+    categoria = models.CharField(_("categoria"), max_length=150)
+    subcategoria = models.CharField(_("subcategoria"), max_length=150, blank=True, null=True)
+    qualidade = models.IntegerField(_("qualidade"), default=1, blank=True)
+    altura = models.DecimalField(_("altura"), max_digits=8, decimal_places=2, blank=True, default=0) 
+    largura = models.DecimalField(_("largura"), max_digits=8, decimal_places=2, blank=True, default=0) 
+    comprimento = models.DecimalField(_("comprimento"), max_digits=8, decimal_places=2, blank=True, default=0) 
+    peso = models.DecimalField(_("peso total"), max_digits=8, decimal_places=2, blank=True, default=0) 
     UNIDADE_DE_MEDIDA_CHOICES = (
         ('', 'Uniade de Medida'),
         ('g', 'Gramas'),
         ('ct', 'Quilates'),
     )
-    unidade_de_medida = models.CharField(_("Unidade de Medida"), max_length=2, choices=UNIDADE_DE_MEDIDA_CHOICES, blank=True, null=True)
-    estoque = models.IntegerField(_("Unidades em Estoque"), default=0)
-    observacao = models.TextField(_('Observação'), blank=True, null=True)
-    despesa = models.OneToOneField(Despesa, on_delete=models.SET_NULL, null=True, blank=True, verbose_name=_("Despesa"))
+    unidade_de_medida = models.CharField(_("unidade de medida"), max_length=2, choices=UNIDADE_DE_MEDIDA_CHOICES, blank=True, null=True)
+    estoque = models.IntegerField(_("unidades em estoque"), default=0, blank=True)
+    observacao = models.TextField(_('observação'), blank=True, null=True)
 
     def __str__(self):
-        return f"{self.nome}"
+        return f"{self.nome} #{self.id}"
 
     def get_dimensoes(self):
-        dimensoes = [self.altura, self.largura, self.comprimento]
-        for d in range(len(dimensoes)):
-            if dimensoes[d] == None:
-                dimensoes[d] = 0
-            else:
-                dimensoes[d] = float(dimensoes[d])
+        dimensoes = [
+            float(self.altura),
+            float(self.largura),
+            float(self.comprimento),
+        ]
         if sum(dimensoes):
-            if dimensoes[0] == 0:
-                return f"{dimensoes[1]} x {dimensoes[2]}"
-            else:
-                return f"{dimensoes[0]} x {dimensoes[1]} x {dimensoes[2]}"
+            return f"{dimensoes[0]} x {dimensoes[1]} x {dimensoes[2]}"
         else:
             return "Indisponível"
 
@@ -54,13 +44,46 @@ class Material(models.Model):
             return "Indisponível"
     
     def get_preco_unitario(self):
-        return round(self.valor / self.unidades_compradas, 2)
+        entrada = Entrada.objects.filter(material=self).latest()
+        if entrada:
+            valor_unitario = entrada.valor / entrada.unidades
+            return valor_unitario
+        else:
+            return 0
     
     def get_preco_por_peso(self):
-        if not self.peso:
-            return round(self.valor, 2)
+        entrada = Entrada.objects.filter(material=self).latest()
+        if entrada:
+            if self.peso:
+                valor_peso = entrada.valor / entrada.peso
+                return valor_peso
+            else:
+                return entrada.valor
         else:
-            return round(self.valor / self.peso, 2)
+            return 0
+    
+    def get_entradas(self):
+        return Entrada.objects.filter(material=self)
 
-    def get_categoria_fluxo_de_caixa(self):
-        return 'Entrada de Material'
+
+class Entrada(models.Model):
+    data = models.DateField(_("data"), default=timezone.now)
+    material = models.ForeignKey(Material, on_delete=models.CASCADE, verbose_name=_("material"))
+    despesa = models.OneToOneField(Despesa, on_delete=models.SET_NULL, blank=True, null=True, verbose_name=_("despesa"))
+    fornecedor = models.ForeignKey(Fornecedor, on_delete=models.SET_NULL, blank=True, null=True, verbose_name=_("fornecedor"))
+    codigo_do_fornecedor = models.CharField(_("código do fornecedor"), max_length=50, null=True, blank=True, help_text="Código utilizado pelo fornecedor para identificar este produto.")
+    unidades = models.IntegerField(_("unidades compradas"), default=1)
+    peso = models.DecimalField(_("peso total"), max_digits=8, decimal_places=2) 
+    UNIDADE_DE_MEDIDA_CHOICES = (
+        ('', 'Uniade de Medida'),
+        ('g', 'Gramas'),
+        ('ct', 'Quilates'),
+    )
+    unidade_de_medida = models.CharField(_("unidade de medida"), max_length=2, choices=UNIDADE_DE_MEDIDA_CHOICES)
+    valor = models.DecimalField(_("valor total"), max_digits=8, decimal_places=2)
+
+    class Meta:
+        get_latest_by ='data'
+
+    def __str__(self):
+        return f"{self.data} {self.material}"

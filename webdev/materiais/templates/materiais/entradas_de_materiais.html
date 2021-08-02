@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+{% load bootstrap5 %}
+{% load humanize %}
+
+{% block content %}
+
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    {% if title %}
+    <h1 class="h2">{{ title }}</h1>
+    {% endif %}
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <div class="btn-group me-2">
+            <a href="{% url 'materiais:importar_entradas' %}" class="btn btn-sm btn-outline-secondary">Importar</a>
+            <a href="{% url 'materiais:exportar_entradas' %}" class="btn btn-sm btn-outline-secondary">Exportar</a>
+        </div>
+        <a href="{% url 'materiais:entrada_de_material' %}" class="btn btn-sm btn-outline-secondary">
+            Nova Entrada
+        </a>
+    </div>
+</div>
+
+<div class="table-responsive">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Data</th>
+                <th>Material</th>
+                <th>Fornecedor</th>
+                <th>Código do Fornecedor</th>
+                <th>Unidades</th>
+                <th>Peso</th>
+                <th>Valor</th>
+                <th>Ver Mais</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for entrada in entradas %}
+            <tr>
+                <th scope="col">{{ entrada.id }}</th>
+                <td>{{ entrada.data|date:"d-m-Y"|default:"Indisponível" }}</td>
+                <td>{{ entrada.material }}</td>
+                <td>{{ entrada.fornecedor }}</td>
+                <td>{{ entrada.codigo_do_fornecedor }}</td>
+                <td>{{ entrada.unidades }}</td>
+                <td>{{ entrada.peso }} {{entrada.unidade_de_medida}}</td>
+                <td>R$ {{ entrada.valor }}</td>
+                <td>
+                    <!-- Ver mais trigger modal -->
+                    <a href="#" class="text-dark" data-bs-toggle="modal" data-bs-target="#VerMaisModal{{ entrada.id }}">
+                        <i class="fas fa-ellipsis-h fs-4 ms-3"></i>
+                    </a>
+                    
+                    <!-- Modal -->
+                    <div class="modal fade" id="VerMaisModal{{ entrada.id }}" tabindex="-1" aria-labelledby="VerMaisModalLabel{{ entrada.id }}" aria-hidden="true">
+                        <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                            <h5 class="modal-title" id="VerMaisModalLabel{{ entrada.id }}">Modal title</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                It works!
+                            </div>
+                            <div class="modal-footer">
+                                <div class="row d-flex justify-content-between">
+                                    <div class="col-auto">
+                                        <a href="{% url 'materiais:editar_entrada' entrada.id %}" class="btn btn-primary">Editar</a>
+                                        <form action="{% url 'materiais:deletar_entrada' entrada.id %}" method="POST">
+                                            <button type="submit" class="btn btn-danger">Deletar</button>
+                                        </form>
+                                    </div>
+                                    <div class="col-auto">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}

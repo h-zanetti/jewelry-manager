@@ -11,9 +11,7 @@ def material(db):
         nome='Esmeralda',
         categoria='Pedra',
         qualidade=5,
-        unidades_compradas=3,
         estoque=3,
-        valor=1000,
     )
 
 @pytest.fixture
