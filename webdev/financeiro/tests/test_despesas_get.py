@@ -37,7 +37,7 @@ def test_btn_nova_despesa_presente(resposta_despesas):
 def test_btn_entrada_de_material_presente(resposta_despesas):
     assertContains(
         resposta_despesas,
-        f'<a href="{reverse("materiais:nova_entrada")}'
+        f'<a href="{reverse("materiais:entrada_de_material")}'
     )
 
 def test_btn_novo_servico_presente(resposta_despesas):

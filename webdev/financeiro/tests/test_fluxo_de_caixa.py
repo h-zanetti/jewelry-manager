@@ -12,7 +12,7 @@ from django.contrib.auth.models import User
 from webdev.financeiro.models import Despesa, Parcela
 from webdev.vendas.models import Cliente, Venda
 from webdev.produtos.models import Produto
-from webdev.materiais.models import Material
+from webdev.materiais.models import Entrada, Material
 
 @pytest.fixture
 def cliente(db):
@@ -71,12 +71,27 @@ def lista_de_despesas(db):
     ]
     
 @pytest.fixture
-def lista_de_materiais(db):
+def materiais(db):
     return [
-        Material.objects.create(nome='Esmeralda', entrada=timezone.localdate(), categoria='Pedra', qualidade=5, estoque=3, unidades_compradas=3, valor=1000,),
-        Material.objects.create(nome='Diamante', entrada=timezone.localdate(), categoria='Pedra', qualidade=8, estoque=3, unidades_compradas=3, valor=75000,),
-        Material.objects.create(nome='Ouro', entrada=timezone.localdate(), categoria='Metal', qualidade=7, estoque=1, unidades_compradas=3, valor=1000,),
+        Material.objects.create(nome='Esmeralda', categoria='Pedra'),
+        Material.objects.create(nome='Diamante', categoria='Pedra'),
+        Material.objects.create(nome='Ouro', categoria='Metal')
     ]
+
+@pytest.fixture
+def entradas(materiais):
+    materials = []
+    for material in materiais:
+        m = Entrada.objects.create(
+            material=material,
+            data=timezone.localdate(),
+            unidades=3,
+            peso=0.17,
+            unidade_de_medida='ct',
+            valor=1000
+        )
+        materials.append(m)
+    return materials
 
 @pytest.fixture
 def fornecedor(db):
@@ -94,7 +109,7 @@ def servico(fornecedor):
 
 # Visualizar Fluxo de Caixa
 @pytest.fixture
-def resposta_fluxo_de_caixa(client, lista_de_despesas, venda, lista_de_materiais, servico):
+def resposta_fluxo_de_caixa(client, lista_de_despesas, venda, entradas, servico):
     User.objects.create_user(username='TestUser', password='MinhaSenha123')
     client.login(username='TestUser', password='MinhaSenha123')
     resp = client.get(
@@ -119,9 +134,9 @@ def test_parcelas_presente(resposta_fluxo_de_caixa, venda):
 def test_vendas_presente(resposta_fluxo_de_caixa, venda):
     assertContains(resposta_fluxo_de_caixa, venda.cliente.get_nome_completo())
 
-def test_materiais_presente(resposta_fluxo_de_caixa, lista_de_materiais):
-    for material in lista_de_materiais:
-        assertContains(resposta_fluxo_de_caixa, material.nome)
+def test_materiais_presente(resposta_fluxo_de_caixa, entradas):
+    for entrada in entradas:
+        assertContains(resposta_fluxo_de_caixa, entrada.material.nome)
 
 def test_servico_presente(resposta_fluxo_de_caixa, servico):
     assertContains(resposta_fluxo_de_caixa, servico.nome)
@@ -213,10 +228,10 @@ def test_btn_nova_despesa_presente(resposta_fluxo_de_caixa):
         f'href="{reverse("financeiro:nova_despesa")}'
     )
 
-def test_btn_nova_entrada_de_material_presente(resposta_fluxo_de_caixa):
+def test_btn_entrada_de_material_presente(resposta_fluxo_de_caixa):
     assertContains(
         resposta_fluxo_de_caixa,
-        f'href="{reverse("materiais:nova_entrada")}'
+        f'href="{reverse("materiais:entrada_de_material")}'
     )
 
 def test_btn_novo_servico_presente(resposta_fluxo_de_caixa):
@@ -242,8 +257,8 @@ def test_btn_visualizar_venda_presente(resposta_fluxo_de_caixa, venda):
         resposta_fluxo_de_caixa, f'<a href="#ModalVisualizarVenda{venda.id}'
     )
 
-def test_btn_visualizar_material_presente(resposta_fluxo_de_caixa, lista_de_materiais):
-    for material in lista_de_materiais:
+def test_btn_visualizar_material_presente(resposta_fluxo_de_caixa, entradas):
+    for material in entradas:
         assertContains(
             resposta_fluxo_de_caixa, f'<a href="#ModalVisualizarMaterial{material.despesa.id}'
         )

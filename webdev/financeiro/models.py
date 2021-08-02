@@ -71,3 +71,4 @@ class Despesa(models.Model):
             return 'Despesa Fixa'
         else:
             return 'Despesa Variável'
+    

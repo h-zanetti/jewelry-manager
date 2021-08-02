@@ -72,12 +72,16 @@
                                 <div class="collapse border border-top-0 shadow-sm p-2" id="collapseMaterial">
                                     <ul class="list-unstyled">
                                         <li class="list-item mt-1"><a href="{% url 'materiais:estoque_materiais' %}" class="text-decoration-none link-dark">
-                                            <i class="fas fa-dolly me-1"></i>
+                                            <i class="fas fa-list fa-sm me-2"></i>
                                             Estoque
                                         </a></li>
-                                        <li class="list-item mt-1"><a href="{% url 'materiais:nova_entrada' %}" class="text-decoration-none link-dark">
+                                        <li class="list-item mt-1"><a href="{% url 'materiais:cadastrar_material' %}" class="text-decoration-none link-dark">
                                             <i class="fas fa-plus-circle fa-sm me-2"></i>
-                                            Nova Entrada
+                                            Cadastrar produto
+                                        </a></li>
+                                        <li class="list-item mt-1"><a href="{% url 'materiais:entrada_de_material' %}" class="text-decoration-none link-dark">
+                                            <i class="fas fa-dolly me-1"></i>
+                                            Nova entrada
                                         </a></li>
                                     </ul>
                                 </div>

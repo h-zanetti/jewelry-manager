@@ -40,7 +40,7 @@
             </button>
             <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
                 <li><a href="{% url 'financeiro:nova_despesa' %}?next={{ request.path|urlencode }}" class="dropdown-item">Despesas simples</a></li>
-                <li><a href="{% url 'materiais:nova_entrada' %}" class="dropdown-item">Entrada de material</a></li>
+                <li><a href="{% url 'materiais:entrada_de_material' %}" class="dropdown-item">Entrada de material</a></li>
                 <li><a href="{% url 'fornecedores:novo_servico' %}" class="dropdown-item">Serviços contratados</a></li>
             </ul>
         </div>
@@ -197,17 +197,17 @@ var myChart = new Chart(ctx, {
                                     </div>
                                 </div>
                             {% elif t.categoria == 'Entrada de material' %}
-                                <!-- Despesa Trigger -->
+                                <!-- Material Trigger -->
                                 <a href="#ModalVisualizarMaterial{{ t.id }}" data-bs-toggle="modal">
                                     <i class="far fa-eye link-dark"></i>
                                 </a>
-                                <!-- Despesa Modal -->
+                                <!-- Material Modal -->
                                 <div class="modal fade" id="ModalVisualizarMaterial{{ t.id }}" tabindex="-1" aria-labelledby="ModalVisualizarMaterial{{ t.id }}Label" aria-hidden="true">
                                     <div class="modal-dialog modal-lg">
                                         <div class="modal-content">
                                             <div class="modal-header">
                                                 <h1 class="modal-title display-6" id="ModalVisualizarMaterial{{ t.id }}Label">
-                                                    <strong>Material #{{ t.material.id }} - {{t.material.nome}}</strong>
+                                                    <strong>Material #{{ t.entrada.material.id }} - {{t.entrada.material.nome}}</strong>
                                                 </h1>
                                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                             </div>
@@ -217,7 +217,7 @@ var myChart = new Chart(ctx, {
                                                         <!-- Informações Gerais -->
                                                         <div class="card" style="flex-direction: row">
                                                             <div class="card-img-top" style="width: 33%">
-                                                                <img src="{{ t.material.foto.url }}" class="card-img-top" alt="...">
+                                                                <img src="{{ t.entrada.material.foto.url }}" class="card-img-top" alt="...">
                                                             </div>
                                                             <div class="card-body">
                                                                 <table class="table">
@@ -229,26 +229,26 @@ var myChart = new Chart(ctx, {
                                                                     </thead>
                                                                     <tbody>
                                                                         <tr>
-                                                                            <td><strong>Entrada:</strong> {{ t.material.entrada|date:"d-m-Y"|default:"Indisponível" }}</td>
-                                                                            <td><strong>Qualidade:</strong> {{ t.material.qualidade }}</td>
+                                                                            <td><strong>Nome:</strong> {{ t.entrada.material.nome }}</td>
+                                                                            <td><strong>Qualidade:</strong> {{ t.entrada.material.qualidade }}</td>
                                                                         </tr>
                                                                         <tr>
-                                                                            <td><strong>Categoria:</strong> {{ t.material.categoria }}</td>
-                                                                            <td><strong>Subcategoria:</strong> {{ t.material.subcategoria|default:"Nenhuma" }}</td>
+                                                                            <td><strong>Categoria:</strong> {{ t.entrada.material.categoria }}</td>
+                                                                            <td><strong>Subcategoria:</strong> {{ t.entrada.material.subcategoria|default:"Nenhuma" }}</td>
                                                                         </tr>
                                                                         <tr>
-                                                                            <td><strong>Dimenssões:</strong> {{ t.material.get_dimenssoes }}</td>
-                                                                            <td><strong>Peso:</strong> {{ t.material.get_peso }}</td>
+                                                                            <td><strong>Dimenssões:</strong> {{ t.entrada.material.get_dimenssoes }}</td>
+                                                                            <td><strong>Peso:</strong> {{ t.entrada.material.get_peso }}</td>
                                                                         </tr>
                                                                         <tr>
-                                                                            <td><strong>Preço Unitário:</strong> R$ {{ t.material.get_preco_unitario|intcomma }}</td>
+                                                                            <td><strong>Preço Unitário:</strong> R$ {{ t.entrada.material.get_preco_unitario|intcomma }}</td>
                                                                             <td>
-                                                                                {% if t.material.unidade_de_medida == 'g' %}
+                                                                                {% if t.entrada.material.unidade_de_medida == 'g' %}
                                                                                     <strong>Preço da Grama :</strong>
                                                                                 {% else %}
                                                                                     <strong>Preço do Quilate :</strong>
                                                                                 {% endif %}
-                                                                                R$ {{ t.material.get_preco_por_peso|intcomma }}
+                                                                                R$ {{ t.entrada.material.get_preco_por_peso|intcomma }}
                                                                             </td>
                                                                         </tr>
                                                                     </tbody>
