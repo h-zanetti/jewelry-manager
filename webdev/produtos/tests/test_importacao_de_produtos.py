@@ -7,7 +7,7 @@ from webdev.produtos.models import Produto
 
 # Botões presentes (GET)
 @pytest.fixture
-def resposta_produtos(client):
+def resposta_produtos(client, db):
     User.objects.create_user(username='TestUser', password='MinhaSenha123')
     client.login(username='TestUser', password='MinhaSenha123')
     resp = client.get(reverse('produtos:estoque_produtos'))
