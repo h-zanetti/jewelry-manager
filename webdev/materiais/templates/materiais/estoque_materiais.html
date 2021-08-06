@@ -24,7 +24,6 @@
         <thead>
             <tr>
                 <th>#</th>
-                <th>Entrada</th>
                 <th>Nome</th>
                 <th>Categoria (Subcategoria)</th>
                 <th>Dimensões (mm)</th>
@@ -37,7 +36,6 @@
             {% for material in materiais %}
             <tr>
                 <th scope="col">{{ material.id }}</th>
-                <td>{{ material.entrada|date:"d-m-Y"|default:"Indisponível" }}</td>
                 <td>{{ material.nome }}</td>
                 <td>
                     {{ material.categoria }}
