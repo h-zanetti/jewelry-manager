@@ -36,9 +36,3 @@ def test_btn_editar_material_presente(resposta_estoque, material):
 
 def test_btn_deletar_material_presente(resposta_estoque, material):
     assertContains(resposta_estoque, f'<form action="{reverse("materiais:deletar_material", kwargs={"material_id": material.id})}"')
-
-def test_btn_exportar_materiais_presente(resposta_estoque):
-    assertContains(resposta_estoque, f'href="{reverse("materiais:exportar_materiais")}')
-
-def test_btn_importar_materiais_presente(resposta_estoque):
-    assertContains(resposta_estoque, f'href="{reverse("materiais:importar_materiais")}')
