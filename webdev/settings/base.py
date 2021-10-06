@@ -14,12 +14,12 @@ from pathlib import Path
 import os
 from dotenv import load_dotenv
 
-# Load environmental variables
-load_dotenv()
-
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Load environmental variables
+dotenv_path = os.path.join(BASE_DIR.parent, '.env')
+load_dotenv()
 
 # Application definition
 
