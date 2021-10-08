@@ -5,7 +5,6 @@ name = "pypi"
 
 [packages]
 django = "*"
-pytest-django = "*"
 python-dotenv = "*"
 pillow = "*"
 django-bootstrap-v5 = "*"
@@ -13,6 +12,7 @@ python-dateutil = "*"
 django-import-export = "*"
 
 [dev-packages]
+pytest-django = "*"
 
 [requires]
-python_version = "3.7"
+python_version = "3.9"
