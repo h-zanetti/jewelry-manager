@@ -8,30 +8,30 @@ class MaterialForm(forms.ModelForm):
         widget=forms.FileInput(),
         required=False
     )
-    altura = forms.DecimalField(
-        widget=forms.widgets.NumberInput(
-            attrs={'class': 'rounded-0 rounded-start'}
-        ),
-        required=False
-    )
-    largura = forms.DecimalField(
-        widget=forms.widgets.NumberInput(
-            attrs={'class': 'rounded-0'}
-        ),
-        required=False
-    )
-    comprimento = forms.DecimalField(
-        widget=forms.widgets.NumberInput(
-            attrs={'class': 'rounded-0 rounded-end'}
-        ),
-        required=False
-    )
-    peso = forms.DecimalField(
-        widget=forms.widgets.NumberInput(
-            attrs={'class': 'rounded-0 rounded-start'}
-        ),
-        required=False
-    )
+    # altura = forms.DecimalField(
+    #     widget=forms.widgets.NumberInput(
+    #         attrs={'class': 'rounded-0 rounded-start'}
+    #     ),
+    #     required=False
+    # )
+    # largura = forms.DecimalField(
+    #     widget=forms.widgets.NumberInput(
+    #         attrs={'class': 'rounded-0'}
+    #     ),
+    #     required=False
+    # )
+    # comprimento = forms.DecimalField(
+    #     widget=forms.widgets.NumberInput(
+    #         attrs={'class': 'rounded-0 rounded-end'}
+    #     ),
+    #     required=False
+    # )
+    # peso = forms.DecimalField(
+    #     widget=forms.widgets.NumberInput(
+    #         attrs={'class': 'rounded-0 rounded-start'}
+    #     ),
+    #     required=False
+    # )
     unidade_de_medida = forms.ChoiceField(
         choices=Material.UNIDADE_DE_MEDIDA_CHOICES,
         widget=forms.Select(
