@@ -56,7 +56,7 @@ class Material(models.Model):
         entrada = Entrada.objects.filter(material=self)
         if entrada:
             entrada = entrada.latest()
-            if self.peso:
+            if entrada.peso:
                 valor_peso = entrada.valor / entrada.peso
                 return valor_peso
             else:
