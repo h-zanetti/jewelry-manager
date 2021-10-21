@@ -24,7 +24,7 @@ def cadastrar_material(request):
             form.save()
             next_url = request.POST.get('next')
             if 'submit-stay' in request.POST:
-                return redirect('materiais:cadastrar_material', args=[f'?next={next_url}'])
+                return redirect('materiais:cadastrar_material')
             elif next_url:
                 return redirect(f'{next_url}')
             else:
