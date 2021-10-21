@@ -22,7 +22,7 @@ def resposta_form_editar_material(client, material):
         kwargs={'material_id': material.id})
     )
 
-def test_editar_material_status_code(resposta_form_editar_material):
+def test_get_editar_material_status_code(resposta_form_editar_material):
     assert resposta_form_editar_material.status_code == 200
 
 @pytest.fixture
