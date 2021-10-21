@@ -1,5 +1,5 @@
 on: push
-name: 🚀 Test deploy dev app on push
+name: 🚀 Deploy dev app on push
 jobs:
   web-deploy:
     name: 🎉 Deploy
@@ -15,4 +15,4 @@ jobs:
         username: ${{ secrets.ftp_user }}
         password: ${{ secrets.ftp_password }}
         port: 22
-        server-dir: public_html/dev-navaz/
+        server-dir: /home/agah/repositories/dev-navaz/
