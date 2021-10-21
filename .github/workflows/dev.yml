@@ -1,5 +1,5 @@
 on: push
-name: 🚀 Deploy dev app on push
+name: 🚀 Test deploy dev app on push
 jobs:
   web-deploy:
     name: 🎉 Deploy
