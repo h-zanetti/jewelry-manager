@@ -35,7 +35,7 @@ def test_entradas_de_materiais_status_code(resposta_entradas):
     assert resposta_entradas.status_code == 200
 
 def test_entrada_presente(resposta_entradas, entrada):
-    assertContains(resposta_entradas, f'data-bs-target="#VerMaisModal{entrada.id}"')
+    assertContains(resposta_entradas, str(entrada))
 
 def test_material_presente(resposta_entradas, material):
     assertContains(resposta_entradas, material.nome)
