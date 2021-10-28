@@ -6,10 +6,9 @@ from django.utils import timezone
 
 class Fornecimento(models.Model):
     nome = models.CharField(_("Fornecimento"), max_length=150, help_text="Serviços ou produtos fornecidos.")
-    qualidade = models.IntegerField(_("Qualidade"), null=True)
 
     def __str__(self):
-        return f"{self.nome} ({self.qualidade})"
+        return f"{self.nome}"
 
 class Fornecedor(models.Model):
     nome = models.CharField(_('Nome Completo'), max_length=150)

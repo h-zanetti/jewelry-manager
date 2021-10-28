@@ -8,6 +8,16 @@ from webdev.fornecedores.models import Fornecedor, Servico
 def fornecedor(db):
     return Fornecedor.objects.create(nome='Zé Comédia')
 
+@pytest.fixture
+def resposta_fornecedores(client, fornecedor):
+    User.objects.create_user(username='TestUser', password='MinhaSenha123')
+    client.login(username='TestUser', password='MinhaSenha123')
+    resp = client.get(reverse('fornecedores:meus_fornecedores'))
+    return resp
+
+def test_btn_novo_servico(resposta_fornecedores):
+    assertContains(resposta_fornecedores, f'href="{reverse("fornecedores:novo_servico")}"')
+
 # Novo Serviço
 @pytest.fixture
 def resposta_novo_servico(client, fornecedor):
