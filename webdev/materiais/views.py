@@ -33,7 +33,7 @@ def cadastrar_material(request):
         form = MaterialForm()
 
     context = {
-        'title': 'Entrada de matéria prima',
+        'title': 'Cadastrar matéria prima',
         'form': form,
         'novo_obj': True
     }
@@ -119,7 +119,7 @@ def entrada_de_material(request):
         'novo_obj': True
     }
 
-    return render(request, 'materiais/entrada_de_material.html', context)
+    return render(request, 'materiais/entrada_form.html', context)
 
 @login_required
 def editar_entrada(request, entrada_id):
