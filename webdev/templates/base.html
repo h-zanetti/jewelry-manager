@@ -33,41 +33,17 @@
                         <i class="fas fa-tag"></i>
                         <span class="ms-1 d-none d-sm-inline">Produtos</span>
                     </a>
-                    <a class="nav-link link-dark" href="{% url 'produtos:novo_produto' %}">
-                        <i class="fas fa-hammer"></i>
-                        <span class="ms-1 d-none d-sm-inline">Novo Produto</span>
-                    </a>
-                    <a class="nav-link link-dark" href="{% url 'produtos:categorias' %}">
-                        <i class="fas fa-shapes"></i>
-                        <span class="ms-1 d-none d-sm-inline">Categorias</span>
-                    </a>
                     <a class="nav-link link-dark" href="{% url 'materiais:estoque_materiais' %}">
                         <i class="far fa-gem"></i>
                         <span class="ms-1 d-none d-sm-inline">Matérias Primas</span>
-                    </a>
-                    <a class="nav-link link-dark" href="{% url 'materiais:cadastrar_material' %}">
-                        <i class="fas fa-plus-square"></i>
-                        <span class="ms-1 d-none d-sm-inline">Cadastrar Material</span>
                     </a>
                     <a class="nav-link link-dark" href="{% url 'materiais:entradas_de_materiais' %}">
                         <i class="fas fa-history"></i>
                         <span class="ms-1 d-none d-sm-inline">Minhas Compras</span>
                     </a>
-                    <a class="nav-link link-dark" href="{% url 'materiais:entrada_de_material' %}">
-                        <i class="fas fa-dolly"></i>
-                        <span class="ms-1 d-none d-sm-inline">Nova Compra</span>
-                    </a>
                     <a class="nav-link link-dark" href="{% url 'fornecedores:meus_fornecedores' %}">
                         <i class="fas fa-user-friends"></i>
                         <span class="ms-1 d-none d-sm-inline">Fornecedores</span>
-                    </a>
-                    <a class="nav-link link-dark" href="{% url 'fornecedores:novo_fornecedor' %}">
-                        <i class="fas fa-user-plus"></i>
-                        <span class="ms-1 d-none d-sm-inline">Novo Fornecedor</span>
-                    </a>
-                    <a class="nav-link link-dark" href="{% url 'fornecedores:fornecimentos' %}">
-                        <i class="fas fa-hammer"></i>
-                        <span class="ms-1 d-none d-sm-inline">Fornecimentos</span>
                     </a>
                     {% now "n" as mes_atual %}{% now "Y" as ano_atual %}
                     <a class="nav-link link-dark" href="{% url 'financeiro:fluxo_de_caixa' ano_atual mes_atual%}">
@@ -77,6 +53,31 @@
                     <a class="nav-link link-dark" href="{% url 'vendas:clientes' %}">
                         <i class="fas fa-user-friends"></i>
                         <span class="ms-1 d-none d-sm-inline">Clientes</span>
+                    </a>
+                    <hr class="my-1">
+                    <a class="nav-link link-dark" href="{% url 'produtos:novo_produto' %}">
+                        <i class="fas fa-hammer"></i>
+                        <span class="ms-1 d-none d-sm-inline">Novo Produto</span>
+                    </a>
+                    <a class="nav-link link-dark" href="{% url 'produtos:categorias' %}">
+                        <i class="fas fa-shapes"></i>
+                        <span class="ms-1 d-none d-sm-inline">Categorias</span>
+                    </a>
+                    <a class="nav-link link-dark" href="{% url 'materiais:cadastrar_material' %}">
+                        <i class="fas fa-plus-square"></i>
+                        <span class="ms-1 d-none d-sm-inline">Cadastrar Material</span>
+                    </a>
+                    <a class="nav-link link-dark" href="{% url 'materiais:entrada_de_material' %}">
+                        <i class="fas fa-dolly"></i>
+                        <span class="ms-1 d-none d-sm-inline">Nova Compra</span>
+                    </a>
+                    <a class="nav-link link-dark" href="{% url 'fornecedores:novo_fornecedor' %}">
+                        <i class="fas fa-user-plus"></i>
+                        <span class="ms-1 d-none d-sm-inline">Novo Fornecedor</span>
+                    </a>
+                    <a class="nav-link link-dark" href="{% url 'fornecedores:fornecimentos' %}">
+                        <i class="fas fa-hammer"></i>
+                        <span class="ms-1 d-none d-sm-inline">Fornecimentos</span>
                     </a>
                 </nav>
             </div>
