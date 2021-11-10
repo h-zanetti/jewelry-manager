@@ -4,31 +4,6 @@ from django.urls import reverse
 from django.contrib.auth.models import User
 from webdev.fornecedores.models import Fornecedor, Fornecimento, Email, Telefone, Local, DadosBancarios
 
-# Editar Fornecimento
-@pytest.fixture
-def criar_fornecimento(db):
-    return Fornecimento.objects.create(nome='Diretor de Arte', qualidade=5)
-
-@pytest.fixture
-def resposta_editar_fornecimento(client, criar_fornecimento):
-    User.objects.create_user(username='TestUser', password='MinhaSenha123')
-    client.login(username='TestUser', password='MinhaSenha123')
-    resp = client.post(
-        reverse('fornecedores:editar_fornecimento', kwargs={'fornecimento_id': criar_fornecimento.id}),
-        data={'nome': 'Fundição', 'qualidade': 2}
-    )
-    return resp
-
-def test_editar_fornecimento_status_code(resposta_editar_fornecimento):
-    assert resposta_editar_fornecimento.status_code == 302
-
-def test_fornecimento_nome_editado(resposta_editar_fornecimento):
-    assert Fornecimento.objects.first().nome == 'Fundição'
-
-def test_fornecimento_qualidade_editada(resposta_editar_fornecimento):
-    assert Fornecimento.objects.first().qualidade == 2
-
-
 # Editar Email
 @pytest.fixture
 def criar_fornecedor(db):

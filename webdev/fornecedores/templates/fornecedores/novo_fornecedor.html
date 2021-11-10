@@ -25,21 +25,14 @@
                                 {% bootstrap_field form.fornecimento %}
                             </div>
                             <div class="col-1 align-self-center">
-                                <a href="{% url 'fornecedores:adicionar_fornecimento' %}?next={{ request.path|urlencode }}" class="btn btn-outline-secondary mt-3">
+                                <a href="{% url 'fornecedores:fornecimentos' %}?next={{ request.path|urlencode }}" class="btn btn-outline-secondary mt-3">
                                     <i class="fas fa-plus"></i>
                                 </a>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="row g-2 d-flex justify-content-between">
-                    <div class="col-md-6">
-                        <button type="submit" name="submit-stay" class="btn btn-primary w-100">Enviar e Continuar</button>
-                    </div>
-                    <div class="col-md-6">
-                        <button type="submit" name="submit-leave" class="btn btn-primary w-100">Enviar e Sair</button>
-                    </div>
-                </div>
+                <button type="submit" class="btn btn-primary w-100">Enviar</button>
             </form>
         </div>
     </div>

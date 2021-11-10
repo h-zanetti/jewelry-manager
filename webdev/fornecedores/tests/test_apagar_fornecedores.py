@@ -32,20 +32,6 @@ def test_apagar_fornecedor_nao_autenticado(client, fornecedor):
 def fornecimento(db):
     return Fornecimento.objects.create(nome='fornecimento', qualidade=5)
 
-@pytest.fixture
-def resposta_com_fornecimento(client, fornecimento):
-    usr = User.objects.create_user(username='TestUser', password='MinhaSenha123')
-    client.login(username='TestUser', password='MinhaSenha123')
-    resp = client.post(reverse('fornecedores:deletar_fornecimento', kwargs={'fornecimento_id': fornecimento.id}))
-    return resp
-
-def test_apagar_fornecimento_status_code(resposta_com_fornecimento):
-    assert resposta_com_fornecimento.status_code == 302
-
-def test_apagar_fornecimento(resposta_com_fornecimento):
-    assert not Fornecimento.objects.exists()
-
-
 # Emails
 @pytest.fixture
 def email(fornecedor):

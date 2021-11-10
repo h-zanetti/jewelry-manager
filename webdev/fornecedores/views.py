@@ -19,14 +19,12 @@ def novo_fornecedor(request):
     if request.method == 'POST':
         form = FornecedorForm(request.POST)
         if form.is_valid():
-            form.save()
+            fornecedor = form.save()
             next_url = request.POST.get('next')
-            if 'submit-stay' in request.POST:
-                return redirect('fornecedores:novo_fornecedor')
-            elif next_url:
+            if next_url:
                 return redirect(f'{next_url}')
             else:
-                return redirect('fornecedores:meus_fornecedores')
+                return redirect('fornecedores:editar_fornecedor', fornecedor.id)
     else:
         form = FornecedorForm()
 
@@ -134,61 +132,6 @@ def fornecimentos(request):
     return render(request, 'fornecedores/fornecimentos.html', context)
 
 @login_required
-def adicionar_fornecimento(request):
-    if request.method == 'POST':
-        form = FornecimentoForm(request.POST)
-        if form.is_valid():
-            form.save()
-            next_url = request.POST.get('next')
-            if 'submit-stay' in request.POST:
-                return redirect('fornecedores:adicionar_fornecimento')
-            elif next_url:
-                return redirect(f'{next_url}')
-            else:
-                return redirect('fornecedores:meus_fornecedores')
-    else:
-        form = FornecimentoForm()
-
-    context = {
-        'title': f'Adicionar novo fornecimento',
-        'form': form,
-        'novo_obj': True
-    }
-
-    return render(request, 'base_form_sm.html', context)
-
-
-@login_required
-def novo_fornecimento(request, fornecedor_id):
-    try:
-        fornecedor = Fornecedor.objects.get(id=fornecedor_id)
-    except:
-        raise Http404('Fornecedor não encontrado')
-
-    if request.method == 'POST':
-        form = FornecimentoForm(request.POST)
-        if form.is_valid():
-            f = form.save()
-            fornecedor.fornecimento.add(f)
-            next_url = request.POST.get('next')
-            if 'submit-stay' in request.POST:
-                return redirect('fornecedores:novo_fornecimento', kwargs={'fornecedor_id': fornecedor_id})
-            elif next_url:
-                return redirect(f'{next_url}')
-            else:
-                return redirect('fornecedores:meus_fornecedores')
-    else:
-        form = FornecimentoForm()
-
-    context = {
-        'title': f'Adicionar novo fornecimento',
-        'form': form,
-        'novo_obj': True
-    }
-
-    return render(request, 'base_form_sm.html', context)
-
-@login_required
 def editar_fornecimento(request, fornecimento_id):
     try:
         fornecimento = Fornecimento.objects.get(id=fornecimento_id)
@@ -210,12 +153,6 @@ def editar_fornecimento(request, fornecimento_id):
     }
 
     return render(request, 'base_form_sm.html', context)
-
-@login_required
-def deletar_fornecimento(request, fornecimento_id):
-    if request.method == 'POST':
-        Fornecimento.objects.get(id=fornecimento_id).delete()
-    return HttpResponseRedirect(reverse('fornecedores:meus_fornecedores'))
 
 @login_required
 def remover_fornecimento(request, fornecimento_id, fornecedor_id):

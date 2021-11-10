@@ -1,3 +1,4 @@
+from pytest_django.asserts import assertRedirects
 from webdev.financeiro.models import Despesa
 import pytest
 from django.contrib.auth.models import User
@@ -16,17 +17,20 @@ def resposta_novo_servico(client, fornecedor):
     resp = client.post(
         reverse('fornecedores:novo_servico'),
         data={
+            'fornecedor': fornecedor.id,
             'nome': 'Fotografia',
             'data': '04-05-2021',
-            'fornecedor': fornecedor.id,
+            'valor': 100.5,
             'qualidade': 5,
-            'valor': 100.5
         }
     )
     return resp
 
-def test_novo_servico_status_code(resposta_novo_servico):
-    assert resposta_novo_servico.status_code == 302
+# def test_form_is_valid(resposta_novo_servico):
+#     assert not resposta_novo_servico.context['form'].errors
+
+def test_novo_servico_redirect(resposta_novo_servico):
+    assertRedirects(resposta_novo_servico, reverse('fornecedores:meus_fornecedores'))
 
 def test_novo_servico_criado(resposta_novo_servico):
     assert Servico.objects.exists()
