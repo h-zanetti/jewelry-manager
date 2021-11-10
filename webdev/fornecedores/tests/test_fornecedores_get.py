@@ -58,13 +58,6 @@ def test_btn_deletar_fornecedor_presente(resposta_com_fornecedores, lista_de_for
             f'''<form action="{reverse('fornecedores:deletar_fornecedor', kwargs={'fornecedor_id': fornecedor.id})}"'''
         )
 
-def test_btn_novo_fornecimento_presente(resposta_com_fornecedores, lista_de_fornecedores):
-    for fornecedor in lista_de_fornecedores:
-        assertContains(
-            resposta_com_fornecedores,
-            f'''<a href="{reverse('fornecedores:novo_fornecimento', kwargs={'fornecedor_id': fornecedor.id})}"'''
-        )
-
 def test_btn_remover_fornecimento_presente(resposta_com_fornecimentos, lista_de_fornecedores):
     for fornecedor in lista_de_fornecedores:
         for fornecimento in fornecedor.fornecimento.all():
@@ -106,7 +99,7 @@ def test_btn_novos_dados_bancarios_presente(resposta_com_fornecedores, lista_de_
 def lista_de_fornecimentos(lista_de_fornecedores):
     fornecimentos = []
     for fornecedor in lista_de_fornecedores:
-        novo_fornecimento = Fornecimento.objects.create(nome=f'fornecimento{fornecedor.id}', qualidade=fornecedor.id)
+        novo_fornecimento = Fornecimento.objects.create(nome=f'fornecimento{fornecedor.id}')
         fornecedor.fornecimento.add(novo_fornecimento)
         fornecimentos.append(novo_fornecimento)
 
@@ -120,11 +113,10 @@ def resposta_com_fornecimentos(client, lista_de_fornecedores, lista_de_fornecime
     return resp
 
 def test_btn_editar_fornecimento_presente(resposta_com_fornecimentos, lista_de_fornecimentos):
-    for fornecimento in lista_de_fornecimentos:
-        assertContains(
-            resposta_com_fornecimentos,
-            f'''<a href="{reverse('fornecedores:editar_fornecimento', kwargs={'fornecimento_id': fornecimento.id})}"'''
-        )
+    assertContains(
+        resposta_com_fornecimentos,
+        f'<a href="{reverse("fornecedores:fornecimentos")}"'
+    )
 
 # Emails
 @pytest.fixture
@@ -272,34 +264,13 @@ def resposta_novo_fornecedor(client, db):
 def test_novo_fornecedor_status_code(resposta_novo_fornecedor):
     assert resposta_novo_fornecedor.status_code == 200
 
-def test_btn_submit_stay_presente(resposta_novo_fornecedor):
-    assertContains(resposta_novo_fornecedor, '<button type="submit" name="submit-stay"')
-
-def test_btn_submit_leave_presente(resposta_novo_fornecedor):
-    assertContains(resposta_novo_fornecedor, '<button type="submit" name="submit-leave"')
-
+def test_btn_submit(resposta_novo_fornecedor):
+    assertContains(resposta_novo_fornecedor, '<button type="submit"')
 
 # Novo Fornecimento
 @pytest.fixture
 def criar_fornecedor(db):
     return Fornecedor.objects.create(nome='Zé Comédia')
-
-@pytest.fixture
-def resposta_novo_fornecimento(client, criar_fornecedor):
-    User.objects.create_user(username='TestUser', password='MinhaSenha123')
-    client.login(username='TestUser', password='MinhaSenha123')
-    resp = client.get(reverse('fornecedores:novo_fornecimento', kwargs={'fornecedor_id':criar_fornecedor.id}))
-    return resp
-
-def test_novo_fornecimento_status_code(resposta_novo_fornecimento):
-    assert resposta_novo_fornecimento.status_code == 200
-
-def test_btn_submit_stay_presente(resposta_novo_fornecimento):
-    assertContains(resposta_novo_fornecimento, '<button type="submit" name="submit-stay"')
-
-def test_btn_submit_leave_presente(resposta_novo_fornecimento):
-    assertContains(resposta_novo_fornecimento, '<button type="submit" name="submit-leave"')
-
 
 # Novo Email
 @pytest.fixture

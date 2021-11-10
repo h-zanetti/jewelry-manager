@@ -4,7 +4,7 @@ from .models import Fornecedor, Email, Telefone, Local, Fornecimento, DadosBanca
 
 class FornecedorForm(forms.ModelForm):
     fornecimento = forms.ModelMultipleChoiceField(
-        queryset=Fornecimento.objects.all().order_by('nome').order_by('qualidade'),
+        queryset=Fornecimento.objects.all().order_by('nome'),
         widget=forms.SelectMultiple(
             attrs={'class': 'rounded-0 rounded-start'}
         )

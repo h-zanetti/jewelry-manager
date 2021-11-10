@@ -4,7 +4,7 @@
 
 {% block content %}
 
-<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
     {% if title %}
     <h1 class="h2">{{ title }}</h1>
     {% endif %}
@@ -13,13 +13,16 @@
             <a href="{% url 'materiais:importar_materiais' %}" class="btn btn-sm btn-outline-secondary">Importar</a>
             <a href="{% url 'materiais:exportar_materiais' %}" class="btn btn-sm btn-outline-secondary">Exportar</a>
         </div>
-        <a href="{% url 'materiais:cadastrar_material' %}" class="btn btn-sm btn-outline-secondary">
-            Cadastrar material
+        <a href="{% url 'materiais:entrada_de_material' %}" class="btn btn-sm btn-primary me-2">
+            <i class="fas fa-plus"></i> Entrada
+        </a>
+        <a href="{% url 'materiais:cadastrar_material' %}" class="btn btn-sm btn-primary">
+            <i class="fas fa-plus"></i> Material
         </a>
     </div>
 </div>
 
-<div class="table-responsive">
+<div class="table">
     <table class="table">
         <thead>
             <tr>
@@ -29,7 +32,7 @@
                 <th>Dimensões (mm)</th>
                 <th>Peso</th>
                 <th>Estoque</th>
-                <th>Ações</th>
+                <th>Ver Mais</th>
             </tr>
         </thead>
         <tbody>
@@ -47,122 +50,141 @@
                 <td>{{ material.get_peso }}</td>
                 <td>{{ material.estoque }}</td>
                 <td>
-                    <ul class="list-inline m-0">
-                        <li class="list-inline-item me-3">
-                            <!-- Material Modal Trigger -->
-                            <a href="#modelMaterial{{ material.id }}" data-bs-toggle="modal"><i class="far fa-gem link-dark"></i></a>
-                            <!-- Material Modal -->
-                            <div class="modal fade" id="modelMaterial{{ material.id }}" tabindex="-1" aria-labelledby="modelMaterial{{ material.id }}Label" aria-hidden="true">
-                                <div class="modal-dialog modal-lg">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <h1 class="modal-title display-6" id="modelMaterial{{ material.id }}Label">
-                                                {{ material.nome }} <strong>#{{ material.id }}
-                                                {% if material.codigo_do_fornecedor %} - {{ material.codigo_do_fornecedor }}{% endif %}</strong>
-                                            </h1>
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                        </div>
-                                        <div class="modal-body">
-                                            <div class="row">
-                                                <div class="col-12">
-                                                    <!-- Informações Gerais -->
-                                                    <div class="card" style="flex-direction: row">
-                                                        <div class="card-img-top" style="width: 33%">
-                                                            <img src="{{ material.foto.url }}" class="card-img-top" alt="...">
-                                                        </div>
-                                                        <div class="card-body">
-                                                            <table class="table">
-                                                                <thead>
-                                                                    <tr>
-                                                                        <th class="fs-5">Informações Gerais</th>
-                                                                        <th></th>
-                                                                    </tr>
-                                                                </thead>
-                                                                <tbody>
-                                                                    <tr>
-                                                                        <td><strong>Entrada:</strong> {{ material.entrada|date:"d-m-Y"|default:"Indisponível" }}</td>
-                                                                        <td><strong>Qualidade:</strong> {{ material.qualidade }}</td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td><strong>Categoria:</strong> {{ material.categoria }}</td>
-                                                                        <td><strong>Subcategoria:</strong> {{ material.subcategoria|default:"Nenhuma" }}</td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td><strong>Dimenssões:</strong> {{ material.get_dimensoes }}</td>
-                                                                        <td><strong>Peso:</strong> {{ material.get_peso }}</td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td><strong>Preço Unitário:</strong> R$ {{ material.get_preco_unitario }}</td>
-                                                                        <td>
-                                                                            {% if material.unidade_de_medida == 'g' %}
-                                                                                <strong>Preço da Grama :</strong>
-                                                                            {% else %}
-                                                                                <strong>Preço do Quilate :</strong>
-                                                                            {% endif %}
-                                                                            R$ {{ material.get_preco_por_peso }}
-                                                                        </td>
-                                                                    <tr>
-                                                                        <td><strong>Total pago:</strong> R${{ material.valor|intcomma }}</td>
-                                                                        <td></td>
-                                                                    </tr>
-                                                                </tbody>
-                                                            </table>
-                                                        </div>
-                                                    </div>
+                    <!-- VER MAIS -->
+                    <div class="dropdown">
+                        <a class="text-dark" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-ellipsis-h fs-4 ms-3"></i>
+                        </a>
+                        <ul class="dropdown-menu overflow-visible" aria-labelledby="dropdownMenuLink">
+                            <li>
+                                <!-- Material modal trigger -->
+                                <a href="#materialModal{{ material.id }}" data-bs-toggle="modal" class="dropdown-item">
+                                    <i class="far fa-eye"></i> <span class="ms-1">Visualizar</span>
+                                </a>
+                            </li>
+                            <!-- TODO: Adicionar btn duplicar -->
+                            <li>
+                                <a class="dropdown-item" href="{% url 'materiais:editar_material' material.id %}">
+                                    <i class="fas fa-edit"></i> <span class="ms-1">Editar</span>
+                                </a>
+                            </li>
+                            <li>
+                                <!-- Delete Modal Trigger -->
+                                <a href="#deletarMaterialModal{{ material.id }}" data-bs-toggle="modal" class="dropdown-item">
+                                    <i class="fas fa-trash link-dark"></i> <span class="ms-1">Deletar</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                    <!-- Material Modal -->
+                    <div class="modal fade" id="materialModal{{ material.id }}" tabindex="-1" aria-labelledby="materialModal{{ material.id }}Label" aria-hidden="true">
+                        <div class="modal-dialog modal-lg">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h1 class="modal-title display-6" id="materialModal{{ material.id }}Label">
+                                        {{ material.nome }} <strong>#{{ material.id }}
+                                        {% if material.codigo_do_fornecedor %} - {{ material.codigo_do_fornecedor }}{% endif %}</strong>
+                                    </h1>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <!-- Informações Gerais -->
+                                            <div class="card" style="flex-direction: row">
+                                                <div class="card-img-top" style="width: 33%">
+                                                    <img src="{{ material.foto.url }}" class="card-img-top" alt="...">
                                                 </div>
-                                                <!-- Observação -->
-                                                {% if material.observacao %}
-                                                <div class="col-12">
-                                                    <h1 class="display-6">Observação</h1>
-                                                    <p class="px-3">
-                                                        {{ material.observacao }}
-                                                    </p>
+                                                <div class="card-body">
+                                                    <table class="table">
+                                                        <thead>
+                                                            <tr>
+                                                                <th class="fs-5">Informações Gerais</th>
+                                                                <th></th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <tr>
+                                                                <td><strong>Entrada:</strong> {{ material.entrada|date:"d-m-Y"|default:"Indisponível" }}</td>
+                                                                <td><strong>Qualidade:</strong> {{ material.qualidade }}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td><strong>Categoria:</strong> {{ material.categoria }}</td>
+                                                                <td><strong>Subcategoria:</strong> {{ material.subcategoria|default:"Nenhuma" }}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td><strong>Dimenssões:</strong> {{ material.get_dimensoes }}</td>
+                                                                <td><strong>Peso Total:</strong> 
+                                                                    {% if material.peso and material.unidade_de_medida %}
+                                                                        {{ material.peso }} {{ material.unidade_de_medida }}
+                                                                    {% else %}
+                                                                        Indisponível
+                                                                    {% endif %}
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td><strong>Preço Unitário:</strong> R$ {{ material.get_preco_unitario }}</td>
+                                                                <td>
+                                                                    <strong>Preço por Peso:</strong>
+                                                                    R$ {{ material.get_preco_por_peso }} {% if material.unidade_de_medida == 'g' %}/ g{% else%}/ ct{% endif %}
+                                                                </td>
+                                                            <tr>
+                                                                <td><strong>Custo de Oportunidade:</strong> R$ {{ material.get_opportunity_cost }}</td>
+                                                                <td></td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
                                                 </div>
-                                                {% endif %}
                                             </div>
                                         </div>
-                                        <div class="modal-footer">
-                                                <a href="{% url 'materiais:editar_material' material.id %}" class="btn btn-primary">Editar</a>
-                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
-                                            </div>
+                                        <!-- Observação -->
+                                        {% if material.observacao %}
+                                        <div class="col-12">
+                                            <h1 class="display-6">Observação</h1>
+                                            <p class="px-3">
+                                                {{ material.observacao }}
+                                            </p>
                                         </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                        <a href="{% url 'materiais:editar_material' material.id %}" class="btn btn-primary">Editar</a>
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
                                     </div>
                                 </div>
                             </div>
-                        </li>
-                        <li class="list-inline-item me-3">
-                            <a href="{% url 'materiais:editar_material' material.id %}"><i class="fas fa-wrench link-dark"></i></a>
-                        </li>
-                        <li class="list-inline-item">
-                            <form action="{% url 'materiais:deletar_material' material.id %}" method="POST">
-                                {% csrf_token %}
-                                <!-- Delete modal Trigger -->
-                                <a href="#modelDeletarMaterial{{ material.id }}" data-bs-toggle="modal"><i class="fas fa-trash link-dark"></i></a>
-                                <!-- Delete modal -->
-                                <div class="modal fade" id="modelDeletarMaterial{{ material.id }}" tabindex="-1" aria-labelledby="modelDeletarMaterial{{ material.id }}Label" aria-hidden="true">
-                                    <div class="modal-dialog">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h1 class="modal-title display-6" id="modelDeletarMaterial{{ material.id }}Label">
-                                                    <strong>{{ material.nome }} #{{ material.id }}</strong>
-                                                </h1>
-                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                            </div>
-                                            <div class="modal-body">
-                                                <p>Você tem certeza que deseja deletar este material?</p>
-                                                <p><strong>Ele será deletado para sempre!</strong></p>
-                                                </label>
-                                            </div>
-                                            <div class="modal-footer">
-                                                <button type="submit" class="btn btn-danger">Deletar</button>
-                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
-                                            </div>
-                                        </div>
+                        </div>
+                    </div>
+
+                    <!-- Delete modal -->
+                    <form action="{% url 'materiais:deletar_material' material.id %}" method="POST">
+                        {% csrf_token %}
+                        <div class="modal fade" id="deletarMaterialModal{{ material.id }}" tabindex="-1" aria-labelledby="deletarMaterialModal{{ material.id }}Label" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h1 class="modal-title display-6" id="deletarMaterialModal{{ material.id }}Label">
+                                            <strong>{{ material.nome }} #{{ material.id }}</strong>
+                                        </h1>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p>
+                                            Você tem certeza que deseja deletar este material?<br>
+                                            Todas as entradas deste material também serão excluidas.
+                                        </p>
+                                        <p><strong>Ele será deletado para sempre!</strong></p>
+                                        </label>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="submit" class="btn btn-danger">Deletar</button>
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
                                     </div>
                                 </div>
-                            </form>
-                        </li>
-                    </ul>
+                            </div>
+                        </div>
+                    </form>
                 </td>
             </tr>
             {% endfor %}

@@ -218,7 +218,7 @@ def test_repeticao_anual_encerrada(client, lista_de_despesas):
         reverse('financeiro:fluxo_de_caixa',
         kwargs={
             'ano': timezone.localdate().year,
-            'mes': timezone.localdate().month + 2
+            'mes': (timezone.localdate() + dt.timedelta(60)).month
         }
     ))
     assertNotContains(resp, 'Domínio')

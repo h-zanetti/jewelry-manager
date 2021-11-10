@@ -26,10 +26,10 @@ def test_materiais_presente(resposta_estoque, material):
     assertContains(resposta_estoque, f'{material.nome}')
 
 def test_btn_estoque_materiais_presente(resposta_estoque):
-    assertContains(resposta_estoque, f'<a href="{reverse("materiais:estoque_materiais")}"')
+    assertContains(resposta_estoque, f'href="{reverse("materiais:estoque_materiais")}"')
 
 def test_btn_nova_entrada_presente(resposta_estoque):
-    assertContains(resposta_estoque, f'<a href="{reverse("materiais:entrada_de_material")}"')
+    assertContains(resposta_estoque, f'href="{reverse("materiais:entrada_de_material")}"')
 
 def test_btn_editar_material_presente(resposta_estoque, material):
     assertContains(resposta_estoque, f'<a href="{reverse("materiais:editar_material", kwargs={"material_id": material.id})}"')

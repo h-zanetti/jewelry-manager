@@ -3,22 +3,22 @@
 {% load humanize %}
 
 {% block content %}
-<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
     {% if title %}
     <h1 class="h2">{{ title }}</h1>
     {% endif %}
-    <div class="btn-toolbar mb-2 mb-md-0">
-        <div class="btn-group me-2">
+    <div class="btn-toolbar" role="toolbar">
+        <div class="btn-group btn-group-sm me-2">
           <a href="{% url 'produtos:importar_produtos' %}" class="btn btn-sm btn-outline-secondary">Importar</a>
           <a href="{% url 'produtos:exportar_produtos' %}" class="btn btn-sm btn-outline-secondary">Exportar</a>
         </div>
-        <a href="{% url 'produtos:novo_produto' %}" class="btn btn-sm btn-outline-secondary">
-            Novo Produto
+        <a href="{% url 'produtos:novo_produto' %}" class="btn btn-sm btn-primary">
+          <i class="fas fa-plus"></i> Novo Produto
         </a>
     </div>
 </div>
 
-<div class="table-responsive">
+<div class="table">
 <table class="table">
   <thead>
     <tr>
@@ -45,10 +45,38 @@
             <td>{{ produto.unidades }}</td>
             <td>{{ produto.tamanho|default:"Indisponível" }}</td>
             <td>
-              <ul class="list-inline m-0">
-                <li class="list-inline-item me-3">
-                  <a href="#ModelProduto{{ produto.id }}" data-bs-toggle="modal"><i class="far fa-gem link-dark"></i></a>
-                  <div class="modal fade" id="ModelProduto{{ produto.id }}" tabindex="-1" aria-labelledby="ModelProduto{{ produto.id }}Label" aria-hidden="true">
+                <!-- VER MAIS -->
+                <div class="dropdown">
+                  <a class="text-dark" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+                      <i class="fas fa-ellipsis-h fs-4 ms-3"></i>
+                  </a>
+                  <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                      <li>
+                          <!-- Visualizar produto modal trigger -->
+                          <a href="#ModelProduto{{ produto.id }}" data-bs-toggle="modal" class="dropdown-item">
+                              <i class="far fa-eye"></i> <span class="ms-1">Visualizar</span>
+                          </a>
+                      </li>
+                      <li>
+                        <a class="dropdown-item" href="{% url 'produtos:duplicar_produto' produto.id %}">
+                            <i class="fas fa-copy"></i> <span class="ms-1">Duplicar</span>
+                        </a>
+                      </li>
+                      <li>
+                          <a class="dropdown-item" href="{% url 'produtos:editar_produto' produto.id %}">
+                              <i class="fas fa-edit"></i> <span class="ms-1">Editar</span>
+                          </a>
+                      </li>
+                      <li>
+                          <!-- Trigger Modal Remover Produto -->
+                          <a href="#modalDeletarProduto{{ produto.id }}" data-bs-toggle="modal" class="dropdown-item">
+                              <i class="fas fa-trash link-dark"></i> <span class="ms-1">Deletar</span>
+                          </a>
+                      </li>
+                  </ul>
+                </div>
+                <!-- Modal Visualizar Produto -->
+                <div class="modal fade" id="ModelProduto{{ produto.id }}" tabindex="-1" aria-labelledby="ModelProduto{{ produto.id }}Label" aria-hidden="true">
                     <div class="modal-dialog modal-lg">
                       <div class="modal-content">
                           <div class="modal-header">
@@ -256,42 +284,31 @@
                               </div>
                           </div>
                         </div>
+                      </div>
                     </div>
-                  </div>
-                </li>
-                <li class="list-inline-item me-3">
-                  <a href="{% url 'produtos:editar_produto' produto.id %}"><i class="fas fa-wrench link-dark"></i></a>
-                </li>
-                <li class="list-inline-item me-3">
-                  <a href="{% url 'produtos:duplicar_produto' produto.id %}"><i class="fas fa-copy link-dark"></i></a>
-                </li>
-                <li class="list-inline-item">
-                  <form action="{% url 'produtos:deletar_produto' produto.id %}" method="POST">
-                    {% csrf_token %}
-                    <!-- Trigger Modal Remover Produto -->
-                    <a href="#modalDeletarProduto{{ produto.id }}" data-bs-toggle="modal"><i class="fas fa-trash link-dark"></i></a>
-                    <!-- Modal Remover Produto -->
-                    <div class="modal fade" id="modalDeletarProduto{{ produto.id }}" tabindex="-1" aria-labelledby="modalDeletarProduto{{ produto.id }}Label" aria-hidden="true">
-                      <div class="modal-dialog">
-                        <div class="modal-content">
-                          <div class="modal-header">
-                            <h1 class="modal-title display-6" id="modalDeletarProduto{{ produto.id }}Label"><strong>{{ produto.nome }} #{{ produto.id }}</strong></h1>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                          </div>
-                          <div class="modal-body">
-                            <p>Você tem certeza que deseja deletar este produto?</p>
-                            <p><strong>Ele será deletado para sempre!</strong></p>
-                          </div>
-                          <div class="modal-footer">
-                            <button type="submit" class="btn btn-danger">Deletar</button>
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
-                          </div>
+                </div>
+                <!-- Modal Remover Produto -->
+                <form action="{% url 'produtos:deletar_produto' produto.id %}" method="POST">
+                  {% csrf_token %}
+                  <div class="modal fade" id="modalDeletarProduto{{ produto.id }}" tabindex="-1" aria-labelledby="modalDeletarProduto{{ produto.id }}Label" aria-hidden="true">
+                    <div class="modal-dialog">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h1 class="modal-title display-6" id="modalDeletarProduto{{ produto.id }}Label"><strong>{{ produto.nome }} #{{ produto.id }}</strong></h1>
+                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                          <p>Você tem certeza que deseja deletar este produto?</p>
+                          <p><strong>Ele será deletado para sempre!</strong></p>
+                        </div>
+                        <div class="modal-footer">
+                          <button type="submit" class="btn btn-danger">Deletar</button>
+                          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
                         </div>
                       </div>
                     </div>
-                  </form>
-                </li>
-              </ul>
+                  </div>
+                </form>
             </td>
         </tr>
     {% endfor %}

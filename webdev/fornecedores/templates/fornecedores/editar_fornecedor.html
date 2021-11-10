@@ -3,7 +3,7 @@
 
 {% block content %}
 {% if title %}
-<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
     <h1 class="h2">{{ title }}</h1>
 </div>
 {% endif %}
@@ -26,7 +26,7 @@
                                 {% bootstrap_field fornecedor_form.fornecimento %}
                             </div>
                             <div class="col-1">
-                                <a href="{% url 'fornecedores:novo_fornecimento' fornecedor.id %}?next={{ request.path|urlencode }}" class="btn btn-outline-secondary rounded-0 rounded-end" style="padding: 39px 9px 38px 9px; margin-top: 32px;">
+                                <a href="{% url 'fornecedores:fornecimentos' %}?next={{ request.path|urlencode }}" class="btn btn-outline-secondary rounded-0 rounded-end" style="padding: 39px 9px 38px 9px; margin-top: 32px;">
                                     <i class="fas fa-plus"></i>
                                 </a>
                             </div>
