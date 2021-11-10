@@ -1,3 +1,4 @@
+from django.contrib import messages
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseRedirect, Http404
@@ -106,10 +107,11 @@ def entrada_de_material(request):
     if request.method == 'POST':
         form = EntradaForm(request.POST)
         if form.is_valid():
-            entrada = form.save()
-            entrada.material.estoque += entrada.unidades
-            entrada.material.save()
-            return redirect('materiais:estoque_materiais')
+            form.save()
+            if 'submit-stay' in request.POST:
+                return redirect('materiais:entrada_de_material')
+            else:
+                return redirect('materiais:estoque_materiais')
     else:
         form = EntradaForm()
     
@@ -165,11 +167,30 @@ def exportar_entradas(request):
 @login_required
 def importar_entradas(request):
     if request.method == 'POST':
-        resource = EntradaResource()
         dataset = Dataset()
         novas_entradas = request.FILES['myfile']
         dataset.load(novas_entradas.read(), 'xls')
-        resource.import_data(dataset)
-        return redirect('materiais:entradas_de_materiais')
+        # Validar dados
+        is_valid = True
+        for row in dataset:
+            material_id = int(row[2])
+            try:
+                material = Material.objects.get(id=material_id)
+                if material.unidade_de_medida and material.unidade_de_medida != row[7]:
+                    is_valid = False
+                    error_msg = f'Unidade de medida inconsistente na entrada #{int(row[0])}'
+                    break
+            except Material.DoesNotExist:
+                is_valid = False
+                error_msg = f'Código de identificação #{material_id} inválido, nenhum material encontrado'
+                break
+        # Import data
+        if is_valid:
+            resource = EntradaResource()
+            resource.import_data(dataset)
+            return redirect('materiais:entradas_de_materiais')
+        else:
+            messages.error(request, error_msg)
+            return redirect('materiais:importar_entradas')
         
     return render(request, 'base_form_file.html', {'title': "Importação de entradas de matérias primas"})

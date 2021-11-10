@@ -82,7 +82,16 @@
                 </nav>
             </div>
             <div class="col py-3">
-                {% block content %}{% endblock %}
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }} mb-0" role="alert">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+                <div class="mt-2">
+                    {% block content %}{% endblock %}
+                </div>
             </div>
         </div>
     </div>
