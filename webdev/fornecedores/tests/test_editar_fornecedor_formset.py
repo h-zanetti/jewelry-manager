@@ -8,7 +8,6 @@ from webdev.fornecedores.models import Fornecedor, Fornecimento, Email, Telefone
 def fornecimento(db):
     return Fornecimento.objects.create(
         nome='Acabamento',
-        qualidade=7
     )
 
 @pytest.fixture

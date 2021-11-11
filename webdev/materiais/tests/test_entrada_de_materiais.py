@@ -1,7 +1,7 @@
 from webdev.financeiro.models import Despesa
 from webdev.materiais.models import Entrada, Material
 import pytest
-from pytest_django.asserts import assertContains
+from pytest_django.asserts import assertContains, assertRedirects
 from django.urls import reverse
 from django.contrib.auth.models import User
 
@@ -35,7 +35,7 @@ def test_entradas_de_materiais_status_code(resposta_entradas):
     assert resposta_entradas.status_code == 200
 
 def test_entrada_presente(resposta_entradas, entrada):
-    assertContains(resposta_entradas, f'data-bs-target="#VerMaisModal{entrada.id}"')
+    assertContains(resposta_entradas, str(entrada))
 
 def test_material_presente(resposta_entradas, material):
     assertContains(resposta_entradas, material.nome)
@@ -78,13 +78,6 @@ def test_btn_submit_leave_presente(resposta_form_de_entrada):
 
 # Entrada de materiais (POST)
 @pytest.fixture
-def material(db):
-    return Material.objects.create(
-        nome='Esmeralda',
-        categoria='Pedra',
-    )
-
-@pytest.fixture
 def resposta_entrada_de_material(client, material):
     User.objects.create_user(username='TestUser', password='MinhaSenha123')
     client.login(username='TestUser', password='MinhaSenha123')
@@ -101,12 +94,44 @@ def resposta_entrada_de_material(client, material):
 # def test_form_sem_erros(resposta_entrada_de_material):
 #     assert not resposta_entrada_de_material.context['form'].errors
 
-def test_entrada_de_material_status_code(resposta_entrada_de_material):
-    assert resposta_entrada_de_material.status_code == 302
+def test_entrada_de_material_redirect(resposta_entrada_de_material):
+    assertRedirects(resposta_entrada_de_material, reverse('materiais:estoque_materiais'))
 
 def teste_despesa_criada(resposta_entrada_de_material):
     assert Despesa.objects.exists()
 
-def test_estoque_de_material_alterado(resposta_entrada_de_material):
+def test_estoque_de_material_alterado_unidades(resposta_entrada_de_material):
     assert Material.objects.first().estoque == 5
 
+def test_estoque_de_material_alterado_peso(resposta_entrada_de_material):
+    assert Material.objects.first().peso == 5
+
+# Testar validação de unidade de medida
+@pytest.fixture
+def material(db):
+    return Material.objects.create(
+        nome='Esmeralda',
+        categoria='Pedra',
+        peso=0,
+        unidade_de_medida='g'
+    )
+
+@pytest.fixture
+def resposta_entrada_de_material_invalid(client, material):
+    User.objects.create_user(username='TestUser', password='MinhaSenha123')
+    client.login(username='TestUser', password='MinhaSenha123')
+    resp = client.post(reverse('materiais:entrada_de_material'), data={
+        'data': '2021-04-26',
+        'material': material.id,
+        'unidades': 5,
+        'peso': 5,
+        'unidade_de_medida': 'ct',
+        'valor': 3000
+    })
+    return resp
+
+def test_invalid_form(resposta_entrada_de_material_invalid):
+    assert resposta_entrada_de_material_invalid.status_code == 200
+
+def test_unidade_de_medida_error(resposta_entrada_de_material_invalid):
+    assert 'unidade_de_medida' in resposta_entrada_de_material_invalid.context['form'].errors

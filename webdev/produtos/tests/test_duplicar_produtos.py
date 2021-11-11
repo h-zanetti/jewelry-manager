@@ -59,7 +59,7 @@ def resposta_estoque(client, produto):
     return resp
 
 def test_btn_clonar_produto_presente(resposta_estoque, produto):
-    assertContains(resposta_estoque, f'<a href="{reverse("produtos:duplicar_produto", kwargs={"produto_id": produto.id})}"')
+    assertContains(resposta_estoque, f'href="{reverse("produtos:duplicar_produto", kwargs={"produto_id": produto.id})}"')
 
 # Redirecionamento
 # Submit and stay

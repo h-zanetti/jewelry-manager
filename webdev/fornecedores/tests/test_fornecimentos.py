@@ -2,13 +2,13 @@ import pytest
 from django.urls import reverse
 from pytest_django.asserts import assertContains
 from django.contrib.auth.models import User
-from webdev.fornecedores.models import Fornecimento
+from webdev.fornecedores.models import Fornecimento, Servico
 
 @pytest.fixture
 def fornecimentos(db):
     return [
-        Fornecimento.objects.create(nome='Programador', qualidade=10),
-        Fornecimento.objects.create(nome='Diretor de Arte', qualidade=6),
+        Fornecimento.objects.create(nome='Programador'),
+        Fornecimento.objects.create(nome='Diretor de Arte'),
     ]
 
 # GET
@@ -23,7 +23,7 @@ def test_resposta_status_code_get(resposta_fornecimentos, fornecimentos):
     assert resposta_fornecimentos.status_code == 200
 
 def test_btn_fornecimentos_presente(resposta_fornecimentos):
-    assertContains(resposta_fornecimentos, f'<a href="{reverse("fornecedores:fornecimentos")}"')
+    assertContains(resposta_fornecimentos, f'href="{reverse("fornecedores:fornecimentos")}"')
 
 def test_fornecimentos_existentes_presente(resposta_fornecimentos, fornecimentos):
     for fornecimento in fornecimentos:
@@ -52,11 +52,9 @@ def resposta_fornecimentos_post(client, fornecimentos):
             'form-MAX_NUM_FORMS': 1000,
             'form-0-id': 1,
             'form-0-nome': 'Programador',
-            'form-0-qualidade': 9, # Alterar qualidade
             'form-0-DELETE': False,
             'form-1-id': 2,
             'form-1-nome': 'Diretor de Arte',
-            'form-1-qualidade': 6,
             'form-1-DELETE': True, # Remover Diretor de Arte
             'form-2-nome': 'Designer', # Adicionar Designer
             'form-2-qualidade': 6,
@@ -66,9 +64,6 @@ def resposta_fornecimentos_post(client, fornecimentos):
 
 def test_resposta_status_code_post(resposta_fornecimentos_post):
     assert resposta_fornecimentos_post.status_code == 302
-
-def test_primeiro_fornecimento_alterado(resposta_fornecimentos_post):
-    assert Fornecimento.objects.first().qualidade == 9
 
 def test_segundo_fornecimento_deletado(resposta_fornecimentos_post):
     assert not Fornecimento.objects.filter(nome='Diretor de Arte')

@@ -1,3 +1,4 @@
+import datetime as dt
 from calendar import monthrange
 from django.db.models.query_utils import Q
 from webdev.fornecedores.models import Fornecedor, Servico
@@ -200,11 +201,12 @@ def test_grafico_correto(resposta_fluxo_de_caixa):
 def test_repeticao_mensal_encerrada(client, lista_de_despesas):
     User.objects.create_user(username='TestUser', password='MinhaSenha123')
     client.login(username='TestUser', password='MinhaSenha123')
+    date = timezone.localdate() + dt.timedelta(120)
     resp = client.get(
         reverse('financeiro:fluxo_de_caixa',
         kwargs={
-            'ano': timezone.localdate().year,
-            'mes': timezone.localdate().month + 4
+            'ano': date.year,
+            'mes': date.month
         }
     ))
     assertNotContains(resp, 'Conta de Luz')
@@ -216,7 +218,7 @@ def test_repeticao_anual_encerrada(client, lista_de_despesas):
         reverse('financeiro:fluxo_de_caixa',
         kwargs={
             'ano': timezone.localdate().year,
-            'mes': timezone.localdate().month + 2
+            'mes': (timezone.localdate() + dt.timedelta(60)).month
         }
     ))
     assertNotContains(resp, 'Domínio')

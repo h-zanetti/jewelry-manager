@@ -5,7 +5,6 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6" crossorigin="anonymous">
-    <script src="https://kit.fontawesome.com/2f543ddc08.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <title>
         {% if title %}
@@ -15,169 +14,97 @@
         {% endif %}
     </title>
 </head>
-<body class="d-flex flex-column h-100 bg-dark">
-
-    <header class="navbar navbar-dark sticky-top bg-dark p-0 shadow">
-        <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3" href="#">Z Atelier</a>
-        <ul class="navbar-nav px-3">
-            <li class="nav-item text-nowrap">
-                <a class="nav-link" href="{% url 'logout' %}">Sign out</a>
-            </li>
-        </ul>
-    </header>
-
-    <!-- <div class="flex-shrink-0 h-100"> -->
-        <div class="container-fluid">
-            <div class="row">
-                <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar">
-                    <div class="position-sticky pt-3">
-                        <ul class="nav flex-column">
-                            {% if filters %}
-                            <li class="nav-item">
-                                <a class="nav-link px-2" href="#">
-                                    <i class="fas fa-filter me-2"></i>
-                                    Filtros
-                                </a>
-                            </li>
-                            {% endif %}
-                            <!-- Produtos -->
-                            <li class="nav-item">
-                                <a class="nav-link px-2 link-dark" data-bs-toggle="collapse" href="#collapseProdutos" role="button" aria-expanded="false" aria-controls="collapseProdutos">
-                                    <i class="fas fa-tag me-2"></i>
-                                    Produtos
-                                </a>
-                                <div class="collapse border border-top-0 shadow-sm p-2" id="collapseProdutos">
-                                    <ul class="list-unstyled">
-                                        <li class="list-item"><a class="text-decoration-none link-dark" href="{% url 'produtos:estoque_produtos' %}">
-                                            <i class="fas fa-list-ul fa-sm me-2"></i>
-                                            Meus Produtos
-                                        </a></li>
-                                        <li class="list-item mt-1"><a class="text-decoration-none link-dark" href="{% url 'produtos:novo_produto' %}">
-                                            <i class="fas fa-plus-circle fa-sm me-2"></i>
-                                            Novo Produto
-                                        </a></li>
-                                        <li class="list-item mt-1"><a class="text-decoration-none link-dark" href="{% url 'produtos:categorias' %}">
-                                            <i class="fas fa-shapes me-2"></i>
-                                            Categorias
-                                        </a></li>
-                                    </ul>
-                                </div>
-                            </li>
-                            <!-- Matéria Prima -->
-                            <li class="nav-item">
-                                <a class="nav-link px-2 link-dark" href="#collapseMaterial" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="collapseMaterial">
-                                    <i class="far fa-gem me-2"></i>
-                                    Matéria Prima
-                                </a>
-                                <div class="collapse border border-top-0 shadow-sm p-2" id="collapseMaterial">
-                                    <ul class="list-unstyled">
-                                        <li class="list-item mt-1"><a href="{% url 'materiais:cadastrar_material' %}" class="text-decoration-none link-dark">
-                                            <i class="fas fa-plus-circle fa-sm me-2"></i>
-                                            Cadastrar produto
-                                        </a></li>
-                                        <li class="list-item mt-1"><a href="{% url 'materiais:entrada_de_material' %}" class="text-decoration-none link-dark">
-                                            <i class="fas fa-dolly me-1"></i>
-                                            Nova entrada
-                                        </a></li>
-                                        <li class="list-item mt-1"><a href="{% url 'materiais:estoque_materiais' %}" class="text-decoration-none link-dark">
-                                            <i class="fas fa-list fa-sm me-2"></i>
-                                            Estoque
-                                        </a></li>
-                                        <li class="list-item mt-1"><a href="{% url 'materiais:entradas_de_materiais' %}" class="text-decoration-none link-dark">
-                                            <i class="fas fa-history me-1"></i>
-                                            Histórico de entradas
-                                        </a></li>
-                                    </ul>
-                                </div>
-                            </li>
-                            <!-- Fornecedores -->
-                            <li class="nav-item">
-                                <a class="nav-link px-2 link-dark" href="#collapseFornecedores" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="collapseFornecedores">
-                                    <i class="fas fa-shopping-cart me-2"></i>
-                                    Fornecedores
-                                </a>
-                                <div class="collapse border border-top-0 shadow-sm p-2" id="collapseFornecedores">
-                                    <ul class="list-unstyled">
-                                        <li class="list-item"><a class="text-decoration-none link-dark" href="{% url 'fornecedores:meus_fornecedores' %}">
-                                            <i class="fas fa-list-ul fa-sm me-2"></i>
-                                            Fornecedores
-                                        </a></li>
-                                        <li class="list-item mt-1"><a class="text-decoration-none link-dark" href="{% url 'fornecedores:novo_fornecedor' %}">
-                                            <i class="fas fa-plus-circle fa-sm me-2"></i>
-                                            Novo Fornecedor
-                                        </a></li>
-                                        <li class="list-item mt-1"><a href="{% url 'fornecedores:fornecimentos' %}" class="text-decoration-none link-dark">
-                                            <i class="fas fa-hammer fa-sm me-2"></i>
-                                            Fornecimentos
-                                        </a></li>
-                                    </ul>
-                                </div>
-                            </li>
-                            <!-- Financeiro -->
-                            <li class="nav-item">
-                                <a class="nav-link px-2 link-dark" href="#collapseFinanceiro" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="collapseFinanceiro">
-                                    <i class="fas fa-chart-bar me-2"></i>
-                                    Financeiro
-                                </a>
-                                <div class="collapse border border-top-0 shadow-sm p-2 pt-1" id="collapseFinanceiro">
-                                    <ul class="list-unstyled">
-                                        {% now "n" as mes_atual %}{% now "Y" as ano_atual %}
-                                        <li class="list-item mt-1"><a class="text-decoration-none link-dark" href="{% url 'financeiro:fluxo_de_caixa' ano_atual mes_atual %}">
-                                            <i class="fas fa-hand-holding-usd fa-sm me-2"></i>
-                                            Fluxo de Caixa
-                                        </a></li>
-                                        <li class="list-item mt-1"><a class="text-decoration-none link-dark" href="{% url 'vendas:minhas_vendas' %}">
-                                            <i class="fas fa-receipt" style="margin-right: 12px;"></i>
-                                            Vendas
-                                        </a></li>
-                                        <li class="list-item mt-1"><a class="text-decoration-none link-dark" href="{% url 'financeiro:despesas' %}">
-                                            <i class="fas fa-dollar-sign" style="margin: 0 12px 0 2px;"></i>
-                                            Despesas
-                                        </a></li>
-                                    </ul>
-                                </div>
-                            </li>
-                            <!-- Clientes -->
-                            <li class="nav-item mb-2">
-                                <a class="nav-link px-2 link-dark" href="#collapseClientes" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="collapseClientes">
-                                    <i class="fas fa-users me-2"></i>
-                                    Clientes
-                                </a>
-                                <div class="collapse border border-top-0 shadow-sm p-2 pt-1" id="collapseClientes">
-                                    <ul class="list-unstyled">
-                                        <li class="list-item mt-1"><a class="text-decoration-none link-dark" href="{% url 'vendas:clientes' %}">
-                                            <i class="fas fa-user-friends me-2"></i>
-                                            Meus Clientes
-                                        </a></li>
-                                        <li class="list-item mt-1"><a class="text-decoration-none link-dark" href="{% url 'vendas:novo_cliente' %}">
-                                            <i class="fas fa-user-plus me-2"></i>
-                                            Novo Cliente
-                                        </a></li>
-                                    </ul>
-                                </div>
-                            </li>
-                        </ul>
-                    </div>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <header class="navbar navbar-dark fixed-top bg-dark p-0 shadow">
+                <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3" href="#">Navaz</a>
+                <ul class="navbar-nav px-3">
+                    <li class="nav-item text-nowrap">
+                        <a class="nav-link" href="{% url 'logout' %}">Sign out</a>
+                    </li>
+                </ul>
+            </header>
+        </div>
+        <div class="row flex-nowrap mt-4 pt-2">
+            <div class="col-auto col-md-3 col-xl-2 px-sm-2 py-3 px-0 bg-light text-dark min-vh-100">
+                <nav class="nav flex-column position-fixed">
+                    <a class="nav-link link-dark" href="{% url 'produtos:estoque_produtos' %}">
+                        <i class="fas fa-tag"></i>
+                        <span class="ms-1 d-none d-sm-inline">Produtos</span>
+                    </a>
+                    <a class="nav-link link-dark" href="{% url 'materiais:estoque_materiais' %}">
+                        <i class="far fa-gem"></i>
+                        <span class="ms-1 d-none d-sm-inline">Matérias Primas</span>
+                    </a>
+                    <a class="nav-link link-dark" href="{% url 'materiais:entradas_de_materiais' %}">
+                        <i class="fas fa-history"></i>
+                        <span class="ms-1 d-none d-sm-inline">Minhas Compras</span>
+                    </a>
+                    <a class="nav-link link-dark" href="{% url 'fornecedores:meus_fornecedores' %}">
+                        <i class="fas fa-user-friends"></i>
+                        <span class="ms-1 d-none d-sm-inline">Fornecedores</span>
+                    </a>
+                    {% now "n" as mes_atual %}{% now "Y" as ano_atual %}
+                    <a class="nav-link link-dark" href="{% url 'financeiro:fluxo_de_caixa' ano_atual mes_atual%}">
+                        <i class="fas fa-hand-holding-usd"></i>
+                        <span class="ms-1 d-none d-sm-inline">Fluxo de Caixa</span>
+                    </a>
+                    <a class="nav-link link-dark" href="{% url 'vendas:clientes' %}">
+                        <i class="fas fa-user-friends"></i>
+                        <span class="ms-1 d-none d-sm-inline">Clientes</span>
+                    </a>
+                    <hr class="my-1">
+                    <a class="nav-link link-dark" href="{% url 'produtos:novo_produto' %}">
+                        <i class="fas fa-hammer"></i>
+                        <span class="ms-1 d-none d-sm-inline">Novo Produto</span>
+                    </a>
+                    <a class="nav-link link-dark" href="{% url 'produtos:categorias' %}">
+                        <i class="fas fa-shapes"></i>
+                        <span class="ms-1 d-none d-sm-inline">Categorias</span>
+                    </a>
+                    <a class="nav-link link-dark" href="{% url 'materiais:cadastrar_material' %}">
+                        <i class="fas fa-plus-square"></i>
+                        <span class="ms-1 d-none d-sm-inline">Cadastrar Material</span>
+                    </a>
+                    <a class="nav-link link-dark" href="{% url 'materiais:entrada_de_material' %}">
+                        <i class="fas fa-dolly"></i>
+                        <span class="ms-1 d-none d-sm-inline">Nova Compra</span>
+                    </a>
+                    <a class="nav-link link-dark" href="{% url 'fornecedores:novo_fornecedor' %}">
+                        <i class="fas fa-user-plus"></i>
+                        <span class="ms-1 d-none d-sm-inline">Novo Fornecedor</span>
+                    </a>
+                    <a class="nav-link link-dark" href="{% url 'fornecedores:fornecimentos' %}">
+                        <i class="fas fa-hammer"></i>
+                        <span class="ms-1 d-none d-sm-inline">Fornecimentos</span>
+                    </a>
                 </nav>
-    
-                <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 bg-white">
-                    {% block content %}
-                    {% endblock %}
-                </main>
+            </div>
+            <div class="col py-3">
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }} mb-0" role="alert">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+                <div class="mt-2">
+                    {% block content %}{% endblock %}
+                </div>
             </div>
         </div>
-    <!-- </div> -->
-
-    <footer class="footer mt-auto py-3 bg-dark text-light text-center">
-        <div class="container">
-          <p>Z Atelier &copy 2021 | Made with <i class="fas fa-heart"></i> and <i class="fas fa-coffee"></i> by
-            <a href="https://agahsolutions.com" class="link-light" target="_blank">AGAH Solutions</a>
-          </p>
-        </div>
-    </footer>
-
+    </div>
+    <script src="https://kit.fontawesome.com/2f543ddc08.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js" integrity="sha384-q2kxQ16AaE6UbzuKqyBE9/u/KzioAlnx2maXQHiDX9d4/zp8Ok3f+M7DPm+Ib6IU" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.min.js" integrity="sha384-pQQkAEnwaBkjpqZ8RU1fF1AKtTcHJwFl3pblpTlHXybJjHpMYo79HY3hIi4NKxyj" crossorigin="anonymous"></script>
-
+    <!-- Including pop-overs -->
+    <script src="https://unpkg.com/@popperjs/core@2"></script>
+    <script>
+        var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
+        var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
+        return new bootstrap.Popover(popoverTriggerEl)
+        })
+    </script>
 </body>
 </html>

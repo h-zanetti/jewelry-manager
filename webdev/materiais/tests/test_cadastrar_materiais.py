@@ -1,5 +1,5 @@
 import pytest
-from pytest_django.asserts import assertContains
+from pytest_django.asserts import assertContains, assertRedirects
 from django.urls import reverse
 from django.contrib.auth.models import User
 from webdev.materiais.models import Material
@@ -40,7 +40,7 @@ def resposta_cadastrar_material(client, db):
 #     assert not resposta_cadastrar_material.context['form'].errors
 
 def test_cadastrar_material_status_code(resposta_cadastrar_material):
-    assert resposta_cadastrar_material.status_code == 302
+    assertRedirects(resposta_cadastrar_material, reverse('materiais:estoque_materiais'))
 
 def test_material_no_bd(resposta_cadastrar_material):
     assert Material.objects.exists()

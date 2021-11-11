@@ -13,13 +13,14 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 from pathlib import Path
 import os
 from dotenv import load_dotenv
-
-# Load environmental variables
-load_dotenv()
-
+from django.contrib import messages
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Load environmental variables
+dotenv_path = os.path.join(BASE_DIR.parent, '.env')
+load_dotenv(dotenv_path)
 
 # Application definition
 
@@ -97,13 +98,13 @@ LOGOUT_REDIRECT_URL = '/users/login'
 LOGIN_URL = '/users/login'
 
 # Email backend
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'mail.agahsolutions.com'
-EMAIL_PORT = 465
-EMAIL_USE_SSL = True
-EMAIL_HOST_USER = os.environ.get('EMAIL_USER')
-EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_PASSWORD')
-DEFAULT_FROM_EMAIL = os.environ.get('EMAIL_USER')
+#EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+#EMAIL_HOST = 'mail.agahsolutions.com'
+#EMAIL_PORT = 465
+#EMAIL_USE_SSL = True
+#EMAIL_HOST_USER = os.environ.get('EMAIL_USER')
+#EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_PASSWORD')
+#DEFAULT_FROM_EMAIL = os.environ.get('EMAIL_USER')
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
@@ -122,8 +123,8 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-STATIC_URL = '/jewelry/staticfiles/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATIC_URL = '/jewelry/static/'
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/jewelry/media/'
@@ -136,3 +137,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Django Import Export setup
 
 IMPORT_EXPORT_USE_TRANSACTIONS = False
+
+# Custom message tags
+MESSAGE_TAGS = {
+    messages.ERROR: 'danger',
+}

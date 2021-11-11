@@ -9,7 +9,6 @@ from webdev.fornecedores.models import Fornecedor, Fornecimento, Email, Telefone
 def fornecimento(db):
     return Fornecimento.objects.create(
         nome="Programador",
-        qualidade=10
     )
 
 @pytest.fixture
@@ -22,6 +21,10 @@ def resposta_autenticada(client, fornecimento):
     })
     return resp
 
+def test_redireciona_editar_fornecedor(resposta_autenticada):
+    assertRedirects(resposta_autenticada, reverse(
+        'fornecedores:editar_fornecedor', kwargs={'fornecedor_id': 1}))
+
 def test_fornecedor_existe_no_bd(resposta_autenticada):
     assert Fornecedor.objects.exists()
 
@@ -29,27 +32,6 @@ def test_fornecedor_existe_no_bd(resposta_autenticada):
 @pytest.fixture
 def criar_fornecedor(db):
     return Fornecedor.objects.create(nome='Zé Comédia')
-
-@pytest.fixture
-def resposta_fornecimento(client, criar_fornecedor):
-    usr = User.objects.create_user(username='TestUser', password='MinhaSenha123')
-    client.login(username='TestUser', password='MinhaSenha123')
-    resp = client.post(reverse('fornecedores:novo_fornecimento', kwargs={'fornecedor_id':criar_fornecedor.id}), data={
-        'nome': 'Fotografia',
-        'qualidade': 5
-    })
-    return resp
-
-def test_fornecimento_existe_no_bd(resposta_fornecimento):
-    assert Fornecimento.objects.exists()
-
-def test_fornecimento_nao_autenticado_status_code(client, criar_fornecedor):
-    resp = client.post(reverse('fornecedores:novo_fornecimento', kwargs={'fornecedor_id':criar_fornecedor.id}), data={
-        'nome': 'Fotografia',
-        'qualidade': 5
-    })
-    assert resp.status_code == 302
-
 
 # Novo Email
 @pytest.fixture

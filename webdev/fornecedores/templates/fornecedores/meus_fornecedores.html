@@ -2,22 +2,29 @@
 {% load bootstrap5 %}
 
 {% block content %}
-<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
     {% if title %}
     <h1 class="h2">{{ title }}</h1>
     {% endif %}
-    <div class="btn-toolbar mb-2 mb-md-0">
-        <div class="btn-group me-2">
-            <button type="button" class="btn btn-sm btn-outline-secondary">Share</button>
-            <button type="button" class="btn btn-sm btn-outline-secondary">Export</button>
+    <div class="btn-toolbar" role="toolbar">
+        <div class="btn-group btn-group-sm me-2" role="group">
+            <button type="button" class="btn btn-outline-secondary">Importar</button>
+            <button type="button" class="btn btn-outline-secondary">Exportar</button>
         </div>
-        <a href="{% url 'fornecedores:novo_fornecedor' %}" class="btn btn-sm btn-outline-secondary">
-            Novo Fornecedor
-        </a>
+        <div class="btn-group btn-group-sm me-2">
+            <a href="{% url 'fornecedores:novo_servico' %}" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Serviço
+            </a>
+        </div>
+        <div class="btn-group btn-group-sm">
+            <a href="{% url 'fornecedores:novo_fornecedor' %}" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Fornecedor
+            </a>
+        </div>
     </div>
 </div>
 
-<div class="table-responsive">
+<div class="table">
 <table class="table">
   <thead>
     <tr>
@@ -42,339 +49,352 @@
             <td>{{ fornecedor.get_localizacoes.first|default:"Nenhuma" }}</td>
             <td>{{ fornecedor.fornecimento.all|slice:":2"|join:", "|default:"Nenhum" }}</td>
             <td>
-                <ul class="list-inline m-0">
-                    <li class="list-inline-item me-3">
-                        <a href="#fornecedor{{ fornecedor.id }}" data-bs-toggle="modal"><i class="fas fa-user link-dark"></i></a>
-                        <div class="modal fade" id="fornecedor{{ fornecedor.id }}" tabindex="-1" aria-labelledby="fornecedor{{ fornecedor.id }}Label" aria-hidden="true">
-                            <div class="modal-dialog modal-lg">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h1 class="modal-title display-6" id="fornecedor{{ fornecedor.id }}Label">{{ fornecedor.nome }}{% if fornecedor.get_documentos %} - {{ fornecedor.get_documentos.first}}{% endif %}</h1>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <!-- VER MAIS -->
+                <div class="dropdown">
+                    <a class="text-dark" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-ellipsis-h fs-4 ms-3"></i>
+                    </a>
+                    <ul class="dropdown-menu overflow-visible" aria-labelledby="dropdownMenuLink">
+                        <li>
+                            <!-- Visualizar fornecedor modal trigger -->
+                            <a href="#fornecedor{{ fornecedor.id }}" data-bs-toggle="modal" class="dropdown-item">
+                                <i class="far fa-eye"></i> <span class="ms-1">Visualizar</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="{% url 'fornecedores:editar_fornecedor' fornecedor.id %}">
+                                <i class="fas fa-edit"></i> <span class="ms-1">Editar</span>
+                            </a>
+                        </li>
+                        <li>
+                            <!-- Trigger Modal Remover Fornecedor -->
+                            <a href="#modalDeletarFornecedor{{ fornecedor.id }}" data-bs-toggle="modal" class="dropdown-item">
+                                <i class="fas fa-trash link-dark"></i> <span class="ms-1">Deletar</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="modal fade" id="fornecedor{{ fornecedor.id }}" tabindex="-1" aria-labelledby="fornecedor{{ fornecedor.id }}Label" aria-hidden="true">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h1 class="modal-title display-6" id="fornecedor{{ fornecedor.id }}Label">{{ fornecedor.nome }}{% if fornecedor.get_documentos %} - {{ fornecedor.get_documentos.first}}{% endif %}</h1>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="row mb-2 mx-0 gy-0">
+                                    <div class="col-12 px-0">
+                                        <div class="row">
+                                            <div class="col-auto">
+                                                <h1 class="display-6">Produtos e serviços oferecidos</h1>
+                                            </div>
+                                            <div class="col-auto align-self-center pt-1">
+                                                <a href="{% url 'fornecedores:editar_fornecedor' fornecedor.id %}" class="link-dark align-top">
+                                                    <i class="fas fa-plus fa-lg"></i>
+                                                </a>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div class="modal-body">
-                                        <div class="row mb-2 mx-0 gy-0">
-                                            <div class="col-12 px-0">
-                                                <div class="row">
-                                                    <div class="col-auto">
-                                                        <h1 class="display-6">Produtos e serviços oferecidos</h1>
-                                                    </div>
-                                                    <div class="col-auto align-self-center pt-1">
-                                                        <a href="{% url 'fornecedores:novo_fornecimento' fornecedor.id %}" class="link-dark align-top">
-                                                            <i class="fas fa-plus fa-lg"></i>
-                                                        </a>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-12 px-0">
-                                                <table class="table">
-                                                    <thead>
-                                                        <tr>
-                                                            <th scope="col">Fornecimento</th>
-                                                            <th scope="col">Qualidade</th>
-                                                            <th scope="col">Ações</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        {% for fornecimento in fornecedor.fornecimento.all %}
-                                                        <tr>
-                                                            <td>{{ fornecimento.nome }}</td>
-                                                            <td>{{ fornecimento.qualidade }}</td>
-                                                            <td>
-                                                                <ul class="list-inline">
-                                                                    <li class="list-inline-item me-2">
-                                                                        <a href="{% url 'fornecedores:editar_fornecimento' fornecimento.id %}"><i class="fas fa-wrench link-dark"></i></a>
-                                                                    </li>
-                                                                    <li class="list-inline-item ms-2">
-                                                                        <form action="{% url 'fornecedores:remover_fornecimento' fornecimento.id fornecedor.id %}" method="POST">
-                                                                            {% csrf_token %}
-                                                                            <button type="submit" class="btn p-0 pb-1"><i class="fas fa-trash link-dark"></i></button>
-                                                                        </form>
-                                                                    </li>                                            
-                                                                </ul>
-                                                            </td>
-                                                        </tr>
-                                                        {% endfor %}
-                                                    </tbody>
-                                                </table>
-                                            </div>
-                                        </div>
-    
-                                        <div class="row mb-2 mx-0 gy-0">
-                                            <div class="col-12 px-0">
-                                                <div class="row">
-                                                    <div class="col-auto">
-                                                        <h1 class="display-6">Dados Bancários</h1>
-                                                    </div>
-                                                    <div class="col-auto align-self-center pt-1">
-                                                        <a href="{% url 'fornecedores:novos_dados_bancarios' fornecedor.id %}" class="link-dark align-top">
-                                                            <i class="fas fa-plus fa-lg"></i>
-                                                        </a>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-12 px-0">
-                                                <table class="table">
-                                                    <thead>
-                                                        <tr>
-                                                            <th scope="col">Tipo de Transação</th>
-                                                            <th scope="col">Banco</th>
-                                                            <th scope="col">Agência</th>
-                                                            <th scope="col">Número da Conta</th>
-                                                            <th scope="col">Ações</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        {% for dados_bancarios in fornecedor.get_dados_bancarios %}
-                                                        <tr>
-                                                            <td>{{ dados_bancarios.get_tipo_de_transacao_display }}</td>
-                                                            <td>{{ dados_bancarios.banco|default:"Indisponível" }}</td>
-                                                            <td>{{ dados_bancarios.agencia|default:"Indisponível" }}</td>
-                                                            <td>{{ dados_bancarios.numero }}</td>
-                                                            <td>
-                                                                <ul class="list-inline">
-                                                                    <li class="list-inline-item me-2">
-                                                                        <a href="{% url 'fornecedores:editar_dados_bancarios' dados_bancarios.id %}"><i class="fas fa-wrench link-dark"></i></a>
-                                                                    </li>
-                                                                    <li class="list-inline-item ms-2">
-                                                                        <form action="{% url 'fornecedores:deletar_dados_bancarios' dados_bancarios.id %}" method="POST">
-                                                                            {% csrf_token %}
-                                                                            <button type="submit" class="btn p-0 pb-1"><i class="fas fa-trash link-dark"></i></button>
-                                                                        </form>
-                                                                    </li>                                            
-                                                                </ul>
-                                                            </td>
-                                                        </tr>
-                                                        {% endfor %}
-                                                    </tbody>
-                                                </table>
-                                            </div>
-                                        </div>
-    
-                                        <div class="row mb-2 mx-0 gy-0">
-                                            <div class="col-12 px-0">
-                                                <div class="row">
-                                                    <div class="col-auto">
-                                                        <h1 class="display-6">Localizações</h1>
-                                                    </div>
-                                                    <div class="col-auto align-self-center pt-1">
-                                                        <a href="{% url 'fornecedores:novo_local' fornecedor.id %}" class="link-dark align-top">
-                                                            <i class="fas fa-plus fa-lg"></i>
-                                                        </a>    
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-12 px-0">
-                                                <table class="table">
-                                                    <thead>
-                                                        <tr>
-                                                            <th scope="col">País</th>
-                                                            <th scope="col">Estado</th>
-                                                            <th scope="col">Cidade</th>
-                                                            <th scope="col">Bairro</th>
-                                                            <th scope="col">Endereço</th>
-                                                            <th scope="col">CEP</th>
-                                                            <th scope="col">Ações</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        {% for local in fornecedor.get_localizacoes %}
-                                                        <tr>
-                                                            <td>{{ local.pais }}</td>
-                                                            <td>{{ local.estado }}</td>
-                                                            <td>{{ local.cidade }}</td>
-                                                            <td>{{ local.bairro }}</td>
-                                                            <td>{{ local.endereco }}</td>
-                                                            <td>{{ local.cep }}</td>
-                                                            <td>
-                                                                <ul class="list-inline">
-                                                                    <li class="list-inline-item me-2">
-                                                                        <a href="{% url 'fornecedores:editar_local' local.id %}"><i class="fas fa-wrench link-dark"></i></a>
-                                                                    </li>
-                                                                    <li class="list-inline-item ms-2">
-                                                                        <form action="{% url 'fornecedores:deletar_local' local.id %}" method="POST">
-                                                                            {% csrf_token %}
-                                                                            <button type="submit" class="btn p-0 pb-1"><i class="fas fa-trash link-dark"></i></button>
-                                                                        </form>
-                                                                    </li>                                            
-                                                                </ul>
-                                                            </td>
-                                                        </tr>
-                                                        {% endfor %}
-                                                </tbody>
-                                                </table>
-                                            </div>
-                                        </div>
-    
-                                        <div class="row mb-2 mx-0 gy-0 gx-5">
-                                            <div class="col-12 px-0">
-                                                <div class="row">
-                                                    <div class="col-auto">
-                                                        <h1 class="display-6">Contatos do Fornecedor</h1>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-lg-6 col-md-12 ps-0 pe-2">
-                                                <table class="table">
-                                                    <thead>
-                                                        <tr>
-                                                            <th scope="col">
-                                                                Lista de Telefones
-                                                                <a href="{% url 'fornecedores:novo_telefone' fornecedor.id %}" class="link-dark align-top ms-3">
-                                                                    <i class="fas fa-plus fa-md"></i>
-                                                                </a>        
-                                                            </th>
-                                                            <th scope="col">Ações</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        {% for telefone in fornecedor.get_telefones %}
-                                                            <tr>
-                                                                <td>{{ telefone.telefone }}</td>
-                                                                <td>
-                                                                    <ul class="list-inline">
-                                                                        <li class="list-inline-item me-2">
-                                                                            <a href="{% url 'fornecedores:editar_telefone' telefone.id %}"><i class="fas fa-wrench link-dark"></i></a>
-                                                                        </li>
-                                                                        <li class="list-inline-item ms-2">
-                                                                            <form action="{% url 'fornecedores:deletar_telefone' telefone.id %}" method="POST">
-                                                                                {% csrf_token %}
-                                                                                <button type="submit" class="btn p-0 pb-1"><i class="fas fa-trash link-dark"></i></button>
-                                                                            </form>
-                                                                        </li>                                            
-                                                                    </ul>    
-                                                                </td>
-                                                            </tr>
-                                                        {% endfor %}
-                                                    </tbody>
-                                                </table>
-                                            </div>
-                                            <div class="col-lg-6 col-md-12 pe-0 ps-2">
-                                                <table class="table">
-                                                    <thead>
-                                                        <tr>
-                                                            <th scope="col">
-                                                                Lista de Emails
-                                                                <a href="{% url 'fornecedores:novo_email' fornecedor.id %}" class="link-dark align-top ms-3">
-                                                                    <i class="fas fa-plus fa-md"></i>
-                                                                </a>        
-                                                            </th>
-                                                            <th scope="col">Ações</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        {% for email in fornecedor.get_emails %}
-                                                            <tr>
-                                                                <td>{{ email.email }}</td>
-                                                                <td>
-                                                                    <ul class="list-inline">
-                                                                        <li class="list-inline-item me-2">
-                                                                            <a href="{% url 'fornecedores:editar_email' email.id %}"><i class="fas fa-wrench link-dark"></i></a>
-                                                                        </li>
-                                                                        <li class="list-inline-item ms-2">
-                                                                            <form action="{% url 'fornecedores:deletar_email' email.id %}" method="POST">
-                                                                                {% csrf_token %}
-                                                                                <button type="submit" class="btn p-0 pb-1"><i class="fas fa-trash link-dark"></i></button>
-                                                                            </form>
-                                                                        </li>                                            
-                                                                    </ul>    
-                                                                </td>
-                                                            </tr>
-                                                        {% endfor %}
-                                                    </tbody>
-                                                </table>
-                                            </div>
-                                        </div>
+                                    <div class="col-12 px-0">
+                                        <table class="table">
+                                            <thead>
+                                                <tr>
+                                                    <th scope="col">Fornecimento</th>
+                                                    <th scope="col">Qualidade</th>
+                                                    <th scope="col">Ações</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for fornecimento in fornecedor.fornecimento.all %}
+                                                <tr>
+                                                    <td>{{ fornecimento.nome }}</td>
+                                                    <td>{{ fornecimento.qualidade }}</td>
+                                                    <td>
+                                                        <ul class="list-inline">
+                                                            <li class="list-inline-item me-2">
+                                                                <a href="{% url 'fornecedores:fornecimentos' %}"><i class="fas fa-wrench link-dark"></i></a>
+                                                            </li>
+                                                            <li class="list-inline-item ms-2">
+                                                                <form action="{% url 'fornecedores:remover_fornecimento' fornecimento.id fornecedor.id %}" method="POST">
+                                                                    {% csrf_token %}
+                                                                    <button type="submit" class="btn p-0 pb-1"><i class="fas fa-trash link-dark"></i></button>
+                                                                </form>
+                                                            </li>                                            
+                                                        </ul>
+                                                    </td>
+                                                </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
 
-                                        <div class="row mb-2 mx-0 gy-0">
-                                            <div class="row">
-                                                <div class="col-auto">
-                                                    <h1 class="display-6">Serviços Prestados</h1>
-                                                </div>
-                                                <div class="col-auto align-self-center pt-1">
-                                                    <a href="{% url 'fornecedores:novo_servico' %}" class="link-dark align-top">
-                                                        <i class="fas fa-plus fa-lg"></i>
-                                                    </a>    
-                                                </div>
+                                <div class="row mb-2 mx-0 gy-0">
+                                    <div class="col-12 px-0">
+                                        <div class="row">
+                                            <div class="col-auto">
+                                                <h1 class="display-6">Dados Bancários</h1>
                                             </div>
-                                            <div class="col-12 px-0">
-                                                <table class="table">
-                                                    <thead>
-                                                        <tr>
-                                                            <th scope="col">#</th>
-                                                            <th scope="col">Serviço</th>
-                                                            <th scope="col">Data</th>
-                                                            <th scope="col">Qualidade</th>
-                                                            <th scope="col">Total Pago</th>
-                                                            <th scope="col">Ações</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        {% for servico in fornecedor.get_servicos %}
-                                                        <tr>
-                                                            <th scope="col">{{ servico.id }}</th>
-                                                            <td>{{ servico.nome }}</td>
-                                                            <td>{{ servico.data }}</td>
-                                                            <td>{{ servico.qualidade }}</td>
-                                                            <td>{{ servico.valor }}</td>
-                                                            <td>
-                                                                <ul class="list-inline">
-                                                                    <li class="list-inline-item me-2">
-                                                                        <a href="{% url 'fornecedores:editar_servico' servico.id %}"><i class="fas fa-wrench link-dark"></i></a>
-                                                                    </li>
-                                                                    <li class="list-inline-item ms-2">
-                                                                        <form action="{% url 'fornecedores:deletar_servico' servico.id %}" method="POST">
-                                                                            {% csrf_token %}
-                                                                            <button type="submit" class="btn p-0 pb-1"><i class="fas fa-trash link-dark"></i></button>
-                                                                        </form>
-                                                                    </li>                                            
-                                                                </ul>
-                                                            </td>
-                                                        </tr>
-                                                        {% endfor %}
-                                                    </tbody>
-                                                </table>
+                                            <div class="col-auto align-self-center pt-1">
+                                                <a href="{% url 'fornecedores:novos_dados_bancarios' fornecedor.id %}" class="link-dark align-top">
+                                                    <i class="fas fa-plus fa-lg"></i>
+                                                </a>
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="modal-footer">
-                                        <a href="{% url 'fornecedores:editar_fornecedor' fornecedor.id %}"  class="btn btn-primary">Editar</a>
-                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                                    <div class="col-12 px-0">
+                                        <table class="table">
+                                            <thead>
+                                                <tr>
+                                                    <th scope="col">Tipo de Transação</th>
+                                                    <th scope="col">Banco</th>
+                                                    <th scope="col">Agência</th>
+                                                    <th scope="col">Número da Conta</th>
+                                                    <th scope="col">Ações</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for dados_bancarios in fornecedor.get_dados_bancarios %}
+                                                <tr>
+                                                    <td>{{ dados_bancarios.get_tipo_de_transacao_display }}</td>
+                                                    <td>{{ dados_bancarios.banco|default:"Indisponível" }}</td>
+                                                    <td>{{ dados_bancarios.agencia|default:"Indisponível" }}</td>
+                                                    <td>{{ dados_bancarios.numero }}</td>
+                                                    <td>
+                                                        <ul class="list-inline">
+                                                            <li class="list-inline-item me-2">
+                                                                <a href="{% url 'fornecedores:editar_dados_bancarios' dados_bancarios.id %}"><i class="fas fa-wrench link-dark"></i></a>
+                                                            </li>
+                                                            <li class="list-inline-item ms-2">
+                                                                <form action="{% url 'fornecedores:deletar_dados_bancarios' dados_bancarios.id %}" method="POST">
+                                                                    {% csrf_token %}
+                                                                    <button type="submit" class="btn p-0 pb-1"><i class="fas fa-trash link-dark"></i></button>
+                                                                </form>
+                                                            </li>                                            
+                                                        </ul>
+                                                    </td>
+                                                </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
                                     </div>
                                 </div>
-                            </div>            
+
+                                <div class="row mb-2 mx-0 gy-0">
+                                    <div class="col-12 px-0">
+                                        <div class="row">
+                                            <div class="col-auto">
+                                                <h1 class="display-6">Localizações</h1>
+                                            </div>
+                                            <div class="col-auto align-self-center pt-1">
+                                                <a href="{% url 'fornecedores:novo_local' fornecedor.id %}" class="link-dark align-top">
+                                                    <i class="fas fa-plus fa-lg"></i>
+                                                </a>    
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 px-0">
+                                        <table class="table">
+                                            <thead>
+                                                <tr>
+                                                    <th scope="col">País</th>
+                                                    <th scope="col">Estado</th>
+                                                    <th scope="col">Cidade</th>
+                                                    <th scope="col">Bairro</th>
+                                                    <th scope="col">Endereço</th>
+                                                    <th scope="col">CEP</th>
+                                                    <th scope="col">Ações</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for local in fornecedor.get_localizacoes %}
+                                                <tr>
+                                                    <td>{{ local.pais }}</td>
+                                                    <td>{{ local.estado }}</td>
+                                                    <td>{{ local.cidade }}</td>
+                                                    <td>{{ local.bairro }}</td>
+                                                    <td>{{ local.endereco }}</td>
+                                                    <td>{{ local.cep }}</td>
+                                                    <td>
+                                                        <ul class="list-inline">
+                                                            <li class="list-inline-item me-2">
+                                                                <a href="{% url 'fornecedores:editar_local' local.id %}"><i class="fas fa-wrench link-dark"></i></a>
+                                                            </li>
+                                                            <li class="list-inline-item ms-2">
+                                                                <form action="{% url 'fornecedores:deletar_local' local.id %}" method="POST">
+                                                                    {% csrf_token %}
+                                                                    <button type="submit" class="btn p-0 pb-1"><i class="fas fa-trash link-dark"></i></button>
+                                                                </form>
+                                                            </li>                                            
+                                                        </ul>
+                                                    </td>
+                                                </tr>
+                                                {% endfor %}
+                                        </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+
+                                <div class="row mb-2 mx-0 gy-0 gx-5">
+                                    <div class="col-12 px-0">
+                                        <div class="row">
+                                            <div class="col-auto">
+                                                <h1 class="display-6">Contatos do Fornecedor</h1>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6 col-md-12 ps-0 pe-2">
+                                        <table class="table">
+                                            <thead>
+                                                <tr>
+                                                    <th scope="col">
+                                                        Lista de Telefones
+                                                        <a href="{% url 'fornecedores:novo_telefone' fornecedor.id %}" class="link-dark align-top ms-3">
+                                                            <i class="fas fa-plus fa-md"></i>
+                                                        </a>        
+                                                    </th>
+                                                    <th scope="col">Ações</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for telefone in fornecedor.get_telefones %}
+                                                    <tr>
+                                                        <td>{{ telefone.telefone }}</td>
+                                                        <td>
+                                                            <ul class="list-inline">
+                                                                <li class="list-inline-item me-2">
+                                                                    <a href="{% url 'fornecedores:editar_telefone' telefone.id %}"><i class="fas fa-wrench link-dark"></i></a>
+                                                                </li>
+                                                                <li class="list-inline-item ms-2">
+                                                                    <form action="{% url 'fornecedores:deletar_telefone' telefone.id %}" method="POST">
+                                                                        {% csrf_token %}
+                                                                        <button type="submit" class="btn p-0 pb-1"><i class="fas fa-trash link-dark"></i></button>
+                                                                    </form>
+                                                                </li>                                            
+                                                            </ul>    
+                                                        </td>
+                                                    </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div class="col-lg-6 col-md-12 pe-0 ps-2">
+                                        <table class="table">
+                                            <thead>
+                                                <tr>
+                                                    <th scope="col">
+                                                        Lista de Emails
+                                                        <a href="{% url 'fornecedores:novo_email' fornecedor.id %}" class="link-dark align-top ms-3">
+                                                            <i class="fas fa-plus fa-md"></i>
+                                                        </a>        
+                                                    </th>
+                                                    <th scope="col">Ações</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for email in fornecedor.get_emails %}
+                                                    <tr>
+                                                        <td>{{ email.email }}</td>
+                                                        <td>
+                                                            <ul class="list-inline">
+                                                                <li class="list-inline-item me-2">
+                                                                    <a href="{% url 'fornecedores:editar_email' email.id %}"><i class="fas fa-wrench link-dark"></i></a>
+                                                                </li>
+                                                                <li class="list-inline-item ms-2">
+                                                                    <form action="{% url 'fornecedores:deletar_email' email.id %}" method="POST">
+                                                                        {% csrf_token %}
+                                                                        <button type="submit" class="btn p-0 pb-1"><i class="fas fa-trash link-dark"></i></button>
+                                                                    </form>
+                                                                </li>                                            
+                                                            </ul>    
+                                                        </td>
+                                                    </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+
+                                <div class="row mb-2 mx-0 gy-0">
+                                    <div class="row">
+                                        <div class="col-auto">
+                                            <h1 class="display-6">Serviços Prestados</h1>
+                                        </div>
+                                        <div class="col-auto align-self-center pt-1">
+                                            <a href="{% url 'fornecedores:novo_servico' %}" class="link-dark align-top">
+                                                <i class="fas fa-plus fa-lg"></i>
+                                            </a>    
+                                        </div>
+                                    </div>
+                                    <div class="col-12 px-0">
+                                        <table class="table">
+                                            <thead>
+                                                <tr>
+                                                    <th scope="col">#</th>
+                                                    <th scope="col">Serviço</th>
+                                                    <th scope="col">Data</th>
+                                                    <th scope="col">Qualidade</th>
+                                                    <th scope="col">Total Pago</th>
+                                                    <th scope="col">Ações</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for servico in fornecedor.get_servicos %}
+                                                <tr>
+                                                    <th scope="col">{{ servico.id }}</th>
+                                                    <td>{{ servico.nome }}</td>
+                                                    <td>{{ servico.data }}</td>
+                                                    <td>{{ servico.qualidade }}</td>
+                                                    <td>{{ servico.valor }}</td>
+                                                    <td>
+                                                        <ul class="list-inline">
+                                                            <li class="list-inline-item me-2">
+                                                                <a href="{% url 'fornecedores:editar_servico' servico.id %}"><i class="fas fa-wrench link-dark"></i></a>
+                                                            </li>
+                                                            <li class="list-inline-item ms-2">
+                                                                <form action="{% url 'fornecedores:deletar_servico' servico.id %}" method="POST">
+                                                                    {% csrf_token %}
+                                                                    <button type="submit" class="btn p-0 pb-1"><i class="fas fa-trash link-dark"></i></button>
+                                                                </form>
+                                                            </li>                                            
+                                                        </ul>
+                                                    </td>
+                                                </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <a href="{% url 'fornecedores:editar_fornecedor' fornecedor.id %}"  class="btn btn-primary">Editar</a>
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                            </div>
                         </div>
-                    </li>
-                    <li class="list-inline-item me-3">
-                        <a href="{% url 'fornecedores:editar_fornecedor' fornecedor.id %}"><i class="fas fa-wrench link-dark"></i></a>
-                    </li>
-                    <li class="list-inline-item">
-                        <form action="{% url 'fornecedores:deletar_fornecedor' fornecedor.id %}" method="POST">
-                            {% csrf_token %}
-                            <!-- Trigger Modal Remover Produto -->
-                            <a href="#modalDeletarFornecedor{{ fornecedor.id }}" data-bs-toggle="modal"><i class="fas fa-trash link-dark"></i></a>
-                            <!-- Modal Remover Produto -->
-                            <div class="modal fade" id="modalDeletarFornecedor{{ fornecedor.id }}" tabindex="-1" aria-labelledby="modalDeletarFornecedor{{ fornecedor.id }}Label" aria-hidden="true">
-                            <div class="modal-dialog">
-                                <div class="modal-content">
-                                <div class="modal-header">
-                                    <h1 class="modal-title display-6" id="modalDeletarFornecedor{{ fornecedor.id }}Label">{{ fornecedor.nome }} <strong>#{{ fornecedor.id }}</strong></h1>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body">
-                                    <p>Você tem certeza que deseja deletar este fornecedor?</p>
-                                    <p><strong>Ele será deletado para sempre!</strong></p>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="submit" class="btn btn-danger">Deletar</button>
-                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
-                                </div>
-                                </div>
-                            </div>
-                            </div>
-                        </form>
-                    </li>
-                </ul>
+                    </div>            
+                </div>
+                <!-- Modal Remover Produto -->
+                <form action="{% url 'fornecedores:deletar_fornecedor' fornecedor.id %}" method="POST">
+                    {% csrf_token %}
+                    <div class="modal fade" id="modalDeletarFornecedor{{ fornecedor.id }}" tabindex="-1" aria-labelledby="modalDeletarFornecedor{{ fornecedor.id }}Label" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title display-6" id="modalDeletarFornecedor{{ fornecedor.id }}Label">{{ fornecedor.nome }} <strong>#{{ fornecedor.id }}</strong></h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p>Você tem certeza que deseja deletar este fornecedor?</p>
+                            <p><strong>Ele será deletado para sempre!</strong></p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-danger">Deletar</button>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                        </div>
+                        </div>
+                    </div>
+                    </div>
+                </form>
             </td>
         </tr>
     {% endfor %}
