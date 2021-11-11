@@ -45,23 +45,24 @@ def cadastrar_material(request):
 def editar_material(request, material_id):
     try:
         material = Material.objects.get(id=material_id)
+        if request.method == 'POST':
+            form = MaterialForm(request.POST, request.FILES, instance=material)
+            if form.is_valid():
+                form.save()
+                return redirect('materiais:estoque_materiais')
+        else:
+            form = MaterialForm(instance=material)
+
+        context = {
+            'title': 'Editar matéria prima',
+            'form': form,
+            'material': material,
+        }
+
     except:
         raise Http404('Material não encontrado')
 
-    if request.method == 'POST':
-        form = MaterialForm(request.POST, request.FILES, instance=material)
-        if form.is_valid():
-            form.save()
-            return redirect('materiais:estoque_materiais')
-    else:
-        form = MaterialForm(instance=material)
-
-    context = {
-        'title': 'Editar matéria prima',
-        'form': form
-    }
-
-    return render(request, 'materiais/material_form.html', context)
+    return render(request, 'materiais/editar_material.html', context)
 
 @login_required
 def deletar_material(request, material_id):
