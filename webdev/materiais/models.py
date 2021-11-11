@@ -28,9 +28,12 @@ class Material(models.Model):
 
     def get_dimensoes(self):
         dimensoes = [self.altura, self.largura, self.comprimento]
-        has_dimensoes = True if self.altura and self.largura and self.comprimento else False
+        has_dimensoes = True if self.largura and self.comprimento else False
         if has_dimensoes:
-            return f"{dimensoes[0]} x {dimensoes[1]} x {dimensoes[2]}"
+            if dimensoes[0]:
+                return f"{dimensoes[0]} x {dimensoes[1]} x {dimensoes[2]}"
+            else:
+                return f"{dimensoes[1]} x {dimensoes[2]}"
         else:
             return "Indisponível"
 

@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load bootstrap5 %}
+{% load l10n %}
 
 {% block content %}
 {% if title %}
@@ -11,7 +12,8 @@
 <div class="container-lg mb-4">
     <div class="row d-flex justify-content-center">
         <div class="col-lg-12 border shadow py-3 px-4">
-            <form action="{% url 'materiais:cadastrar_material' %}" method="POST" enctype="multipart/form-data" class="form">
+            <form action="{% url 'materiais:editar_material' material.id %}" method="POST" enctype="multipart/form-data" class="form">
+                {% csrf_token %}
                 <input type="hidden" name="next" value="{{ request.GET.next }}">
 
                 <div class="row gx-3">
@@ -39,19 +41,23 @@
                     <div class="col-lg-4 col-sm-12">
                         <label class="form-label">Dimenssões</label>
                         <div class="input-group">
-                            <input type="number" name="altura" class="form-control" placeholder="Altura">
-                            <input type="number" name="largura" class="form-control" placeholder="Largura">
-                            <input type="number" name="comprimento" class="form-control" placeholder="Comprimento">
+                            <input type="number" name="altura" value="{{ material.altura|unlocalize }}" step="0.01" class="form-control" placeholder="Altura">
+                            <input type="number" name="largura" value="{{ material.largura|unlocalize }}" step="0.01" class="form-control" placeholder="Largura">
+                            <input type="number" name="comprimento" value="{{ material.comprimento|unlocalize }}" step="0.01" class="form-control" placeholder="Comprimento">
                         </div>
                     </div>
                     <div class="col-lg-4 col-sm-12">
                         <label class="form-label">Peso total</label>
                         <div class="input-group">
-                            <input type="number" name="peso" class="form-control" placeholder="Peso">
+                            <input type="number" name="peso" value="{{ material.peso|unlocalize }}" step="0.01" class="form-control" placeholder="Peso">
                             <select name="unidade_de_medida" class="form-select rounded-0 rounded-end" title="" id="id_unidade_de_medida">
-                                <option value="" selected>Uniade de Medida</option>
-                                <option value="g">Gramas</option>
-                                <option value="ct">Quilates</option>
+                                {% for choice, display in material.UNIDADE_DE_MEDIDA_CHOICES %}
+                                    {% if choice == material.unidade_de_medida %}
+                                        <option value="{{ choice }}" selected>{{ display }}</option>
+                                    {% else %}
+                                        <option value="{{ choice }}">{{ display }}</option>
+                                    {% endif %}
+                                {% endfor %}
                             </select>
                         </div>
                     </div>
