@@ -142,28 +142,27 @@ def test_materiais_presente(resposta_fluxo_de_caixa, entradas):
 def test_servico_presente(resposta_fluxo_de_caixa, servico):
     assertContains(resposta_fluxo_de_caixa, servico.nome)
 
-def test_saldo_presente(resposta_fluxo_de_caixa):
-    ld = timezone.localdate()
-    receitas = Parcela.objects.filter(
-        data__month=ld.month, data__year=ld.year).aggregate(Sum('valor'))['valor__sum']
-    despesas_variaveis = Despesa.objects.filter(
-        repetir='', data__month=ld.month, data__year=ld.year
-        ).aggregate(Sum('valor'))['valor__sum']
-    despesas_mensais = Despesa.objects.filter(
-        Q(encerrada=False) | Q(data_de_encerramento__gte=f'{ld.year}-{ld.month}-{monthrange(ld.year, ld.month)[1]}'),
-        data__month__lte=ld.month, data__year__lte=ld.year, repetir='m',
-        ).aggregate(Sum('valor'))['valor__sum']
-    despesas_anuais = Despesa.objects.filter(
-        Q(encerrada=False) | Q(data_de_encerramento__gte=f'{ld.year}-{ld.month}-{monthrange(ld.year, ld.month)[1]}'),
-        data__month=ld.month, data__year__lte=ld.year, repetir='a',
-        ).aggregate(Sum('valor'))['valor__sum']
-    despesas = float(sum([despesas_variaveis, despesas_mensais, despesas_anuais]))
-    saldo = float(receitas) - despesas
-    # Formatação -> 1,010.00
-    saldo_split = f"{saldo:,.1f}".split('.')
-    saldo_int = saldo_split[0].replace(',','.')
-    saldo_str = ','.join([saldo_int, saldo_split[1]])
-    assertContains(resposta_fluxo_de_caixa, saldo_str)
+def test_saldo_presente(resposta_fluxo_de_caixa, lista_de_despesas, entradas, servico, venda):
+    # ld = timezone.localdate()
+    # receitas = Parcela.objects.filter(
+    #     data__month=ld.month, data__year=ld.year).aggregate(Sum('valor'))['valor__sum']
+    # despesas_variaveis = Despesa.objects.filter(
+    #     repetir='', data__month=ld.month, data__year=ld.year
+    #     ).aggregate(Sum('valor'))['valor__sum']
+    # despesas_mensais = Despesa.objects.filter(
+    #     Q(encerrada=False) | Q(data_de_encerramento__gte=f'{ld.year}-{ld.month}-{monthrange(ld.year, ld.month)[1]}'),
+    #     data__month__lte=ld.month, data__year__lte=ld.year, repetir='m',
+    #     ).aggregate(Sum('valor'))['valor__sum']
+    # despesas_anuais = Despesa.objects.filter(
+    #     Q(encerrada=False) | Q(data_de_encerramento__gte=f'{ld.year}-{ld.month}-{monthrange(ld.year, ld.month)[1]}'),
+    #     data__month=ld.month, data__year__lte=ld.year, repetir='a',
+    #     ).aggregate(Sum('valor'))['valor__sum']
+    # despesas = float(sum([despesas_variaveis, despesas_mensais, despesas_anuais]))
+    # saldo = float(receitas) - despesas
+    despesas = sum([d.valor for d in lista_de_despesas]) + sum([e.valor for e in entradas]) + servico.valor
+    receitas = venda.get_valor_parcela()
+    saldo = receitas - despesas
+    assert saldo == resposta_fluxo_de_caixa.context['saldo']
 
 # Gráfico
 def test_grafico_correto(resposta_fluxo_de_caixa):

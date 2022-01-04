@@ -15,7 +15,7 @@ def alterar_estoque(sender, instance, **kwargs):
             material.peso -= instance.peso
     # Adicionar peso e unidades
     material.estoque += instance.unidades
-    if material.peso is None:
+    if not material.peso:
         material.peso = instance.peso
         material.unidade_de_medida = instance.unidade_de_medida
     else:
