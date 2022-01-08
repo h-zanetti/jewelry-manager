@@ -12,8 +12,11 @@
           <a href="{% url 'produtos:importar_produtos' %}" class="btn btn-sm btn-outline-secondary">Importar</a>
           <a href="{% url 'produtos:exportar_produtos' %}" class="btn btn-sm btn-outline-secondary">Exportar</a>
         </div>
+        <a href="{% url 'produtos:categorias' %}" class="btn btn-sm btn-primary me-2">
+          <i class="fas fa-plus"></i><span class="ms-2">Categorias</span>
+        </a>
         <a href="{% url 'produtos:novo_produto' %}" class="btn btn-sm btn-primary">
-          <i class="fas fa-plus"></i> Novo Produto
+          <i class="fas fa-plus"></i><span class="ms-2">Produto</span>
         </a>
     </div>
 </div>

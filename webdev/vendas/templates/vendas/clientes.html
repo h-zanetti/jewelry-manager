@@ -6,13 +6,16 @@
     {% if title %}
     <h1 class="h2">{{ title }}</h1>
     {% endif %}
-    <div class="btn-toolbar mb-2 mb-md-0">
-        <div class="btn-group me-2">
-            <button type="button" class="btn btn-sm btn-outline-secondary">Importar</button>
-            <button type="button" class="btn btn-sm btn-outline-secondary">Exportar</button>
+    <div class="btn-toolbar" role="toolbar">
+        <div class="btn-group btn-group-sm me-2">
+          <a href="#" class="btn btn-sm btn-outline-secondary">Importar</a>
+          <a href="#" class="btn btn-sm btn-outline-secondary">Exportar</a>
         </div>
-        <a href="{% url 'vendas:novo_cliente' %}" class="btn btn-sm btn-outline-secondary">
-            Novo Cliente
+        <a href="{% url 'vendas:nova_venda' %}" class="btn btn-sm btn-primary me-2">
+          <i class="fas fa-plus"></i><span class="ms-2">Venda</span>
+        </a>
+        <a href="{% url 'vendas:novo_cliente' %}" class="btn btn-sm btn-primary">
+          <i class="fas fa-plus"></i><span class="ms-2">Cliente</span>
         </a>
     </div>
 </div>
