@@ -16,6 +16,9 @@
                 <input type="hidden" name="next" value="{{ request.GET.next }}">
                 <div class="row gy-3 gx-2">
                     <h1 class="display-6 mt-2">Fornecimentos Cadastrados</h1>
+                    {% if not formset.initial_form_count %}
+                        <p>Nenhum fornecimento cadastrado...</p>
+                    {% endif %}
                     {{ formset.management_form }}
                     {% for form in formset %}
                         {% if not forloop.last %}
