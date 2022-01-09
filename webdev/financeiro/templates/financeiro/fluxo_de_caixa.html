@@ -35,18 +35,21 @@
             </ul>
         </div>
         <div class="dropdown me-2">
-            <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-                Nova Despesa
-            </button>
-            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-                <li><a href="{% url 'financeiro:nova_despesa' %}?next={{ request.path|urlencode }}" class="dropdown-item">Despesas simples</a></li>
-                <li><a href="{% url 'materiais:entrada_de_material' %}" class="dropdown-item">Entrada de material</a></li>
-                <li><a href="{% url 'fornecedores:novo_servico' %}" class="dropdown-item">Serviços contratados</a></li>
-            </ul>
+            <div class="input-group">
+                <a href="{% url 'financeiro:nova_despesa' %}" class="btn btn-sm btn-primary border-end">
+                    <i class="fas fa-plus"></i><span class="ms-2">Despesa</span>
+                </a>
+                <button class="btn btn-sm btn-primary dropdown-toggle dropdown-toggle-split" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false"></button>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton1">
+                    <li><a href="{% url 'materiais:entrada_de_material' %}" class="dropdown-item">Entrada de material</a></li>
+                    <li><a href="{% url 'fornecedores:novo_servico' %}" class="dropdown-item">Serviços contratados</a></li>
+                </ul>
+            </div>
         </div>
         <div class="btn-group" role="group">
-            <a href="{% url 'vendas:nova_venda' %}?next={{ request.path|urlencode }}" class="btn btn-sm btn-outline-secondary">Nova Venda</a>
-            
+            <a href="{% url 'vendas:nova_venda' %}?next={{ request.path|urlencode }}" class="btn btn-sm btn-primary">
+                <i class="fas fa-plus"></i><span class="ms-2">Venda</span>
+            </a>
         </div>
     </div>
 </div>
