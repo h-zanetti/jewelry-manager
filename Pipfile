@@ -10,7 +10,6 @@ pillow = "*"
 django-bootstrap-v5 = "*"
 python-dateutil = "*"
 django-import-export = "*"
-mysqlclient = "*"
 
 [dev-packages]
 pytest-django = "*"
