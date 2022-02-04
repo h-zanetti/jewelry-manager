@@ -1,5 +1,4 @@
 import datetime as dt
-from calendar import monthrange
 from django.db.models.query_utils import Q
 from webdev.fornecedores.models import Fornecedor, Servico
 from django.db.models.functions import TruncMonth
@@ -64,11 +63,11 @@ def lista_de_despesas(db):
         Despesa.objects.create(
             data=timezone.localdate() - relativedelta(years=1),
             data_de_encerramento=timezone.localdate() + relativedelta(months=1),
-            categoria='Domínio', valor=95, repetir='a', encerrada=True),
+            categoria='Domínio', valor=95, repetir='a'),
         Despesa.objects.create(
             data=timezone.localdate() - relativedelta(years=1, months=3),
             data_de_encerramento=timezone.localdate() + relativedelta(months=3),
-            categoria='Conta de Luz', valor=200, repetir='m', encerrada=True),
+            categoria='Conta de Luz', valor=200, repetir='m'),
     ]
     
 @pytest.fixture
@@ -158,11 +157,11 @@ def test_saldo_presente(resposta_fluxo_de_caixa, lista_de_despesas, entradas, se
     #     repetir='', data__month=ld.month, data__year=ld.year
     #     ).aggregate(Sum('valor'))['valor__sum']
     # despesas_mensais = Despesa.objects.filter(
-    #     Q(encerrada=False) | Q(data_de_encerramento__gte=f'{ld.year}-{ld.month}-{monthrange(ld.year, ld.month)[1]}'),
+    #     Q(data_de_encerramento=None) | Q(data_de_encerramento__gte=f'{ld.year}-{ld.month}-{monthrange(ld.year, ld.month)[1]}'),
     #     data__month__lte=ld.month, data__year__lte=ld.year, repetir='m',
     #     ).aggregate(Sum('valor'))['valor__sum']
     # despesas_anuais = Despesa.objects.filter(
-    #     Q(encerrada=False) | Q(data_de_encerramento__gte=f'{ld.year}-{ld.month}-{monthrange(ld.year, ld.month)[1]}'),
+    #     Q(data_de_encerramento=None) | Q(data_de_encerramento__gte=f'{ld.year}-{ld.month}-{monthrange(ld.year, ld.month)[1]}'),
     #     data__month=ld.month, data__year__lte=ld.year, repetir='a',
     #     ).aggregate(Sum('valor'))['valor__sum']
     # despesas = float(sum([despesas_variaveis, despesas_mensais, despesas_anuais]))
@@ -185,10 +184,10 @@ def test_grafico_correto(resposta_fluxo_de_caixa):
     # Despesas
     despesas_variaveis = Despesa.objects.filter(repetir='', data__year=ano)
     despesas_mensais = Despesa.objects.filter(
-        Q(encerrada=False) | Q(data_de_encerramento__year__gte=ano),
+        Q(data_de_encerramento=None) | Q(data_de_encerramento__year__gte=ano),
         repetir='m', data__year__lte=ano)
     despesas_anuais = Despesa.objects.filter(
-        Q(encerrada=False) | Q(data_de_encerramento__year__gte=ano),
+        Q(data_de_encerramento=None) | Q(data_de_encerramento__year__gte=ano),
         repetir='a', data__year__lte=ano)
     despesas = [despesas_anuais, despesas_mensais, despesas_variaveis]
     for qs in despesas:

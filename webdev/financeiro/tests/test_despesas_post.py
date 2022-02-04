@@ -1,5 +1,6 @@
 import pytest
 from django.urls import reverse
+from dateutil.relativedelta import relativedelta
 from django.contrib.auth.models import User
 from webdev.financeiro.models import Despesa
 from django.utils import timezone
@@ -62,23 +63,21 @@ def test_despesa_editada(resposta_editar_despesa):
 def resposta_encerrar_despesa(client, despesa):
     User.objects.create_user(username='TestUser', password='MinhaSenha123')
     client.login(username='TestUser', password='MinhaSenha123')
+    st_date = timezone.localdate() - relativedelta(years=1, months=3)
     resp = client.post(
         reverse('financeiro:editar_despesa', kwargs={'despesa_id': despesa.id}),
         data={
-            'data': timezone.localdate().strftime('%d-%m-%Y'),
+            'data': st_date.strftime('%d-%m-%Y'),
             'categoria': 'MEI',
             'valor': 75,
             'repetir': 'm',
-            'encerrada': True,
+            'data_de_encerramento': timezone.localdate().strftime('%d-%m-%Y'),
         }
     )
     return resp
 
 def test_editar_despesa_status_code(resposta_encerrar_despesa):
     assert resposta_encerrar_despesa.status_code == 302
-
-def test_despesa_desativada(resposta_encerrar_despesa):
-    assert Despesa.objects.first().encerrada == True
 
 def test_data_de_encerramento_alterada(resposta_encerrar_despesa):
     assert Despesa.objects.first().data_de_encerramento == timezone.localdate()
