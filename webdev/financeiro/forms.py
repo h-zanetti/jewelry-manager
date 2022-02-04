@@ -15,7 +15,8 @@ class CriarDespesaForm(forms.ModelForm):
     )
     class Meta:
         model = Despesa
-        exclude = ('is_active', 'data_de_encerramento')
+        fields = '__all__'
+        # exclude = ('is_active', 'data_de_encerramento')
 
 class EditarDespesaForm(forms.ModelForm):
     data = forms.DateField(
