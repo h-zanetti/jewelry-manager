@@ -3,6 +3,6 @@ from django import template
 register = template.Library()
 
 @register.simple_tag
-def get_parcela(parcela, data):
-    if parcela.get_parcela_atual(data):
-        return parcela.get_parcela_atual(data)
+def get_parcela(transaction, data):
+    if transaction.get_parcela(data):
+        return transaction.get_parcela(data)
