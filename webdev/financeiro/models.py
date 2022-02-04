@@ -37,7 +37,7 @@ class Parcela(models.Model):
     def categoria(self):
         return f'{self.receita.categoria}'
 
-    def get_parcela_atual(self, data):
+    def get_parcela(self, data):
         venda = self.receita.venda
         primeira_parcela = dt.date(venda.data.year, venda.data.month, 1)
         ultima_parcela = primeira_parcela + relativedelta(months=venda.parcelas-1)
@@ -72,3 +72,11 @@ class Despesa(models.Model):
         else:
             return 'Despesa Variável'
     
+    def get_parcela(self, date):
+        encerramento = self.data_de_encerramento
+        if encerramento:
+            parcelas = 1+(encerramento.year - self.data.year)*12 + encerramento.month - self.data.month
+            mes_diff = 1+(date.year - self.data.year)*12 + date.month - self.data.month
+        else:
+            return ''
+        return f"({mes_diff}/{parcelas})"

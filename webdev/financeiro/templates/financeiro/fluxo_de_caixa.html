@@ -107,11 +107,7 @@ var myChart = new Chart(ctx, {
                 <td>{{ t.get_tipo_de_transacao }}</td>
                 <td>{{ t.categoria }}</td>
                 <td>R$
-                    {% if t.categoria == 'Venda' %}
                         {{ t.valor|intcomma }} {% get_parcela t data %}
-                    {% else %}
-                        {{ t.valor|intcomma }} (1/1)
-                    {% endif %}
                 </td>
                 <td>
                     <ul class="list-inline m-0">

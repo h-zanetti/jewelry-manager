@@ -127,6 +127,14 @@ def test_despesas_presente(resposta_fluxo_de_caixa, lista_de_despesas):
     for despesa in lista_de_despesas:
         assertContains(resposta_fluxo_de_caixa, despesa.categoria)
 
+def test_parcela_de_despesas_presente(resposta_fluxo_de_caixa, lista_de_despesas):
+    today = timezone.localdate()
+    despesa = lista_de_despesas[3]
+    encerramento = despesa.data_de_encerramento
+    parcelas = 1+(encerramento.year - despesa.data.year)*12 + encerramento.month - despesa.data.month
+    mes_diff = 1+(today.year - despesa.data.year)*12 + today.month - despesa.data.month
+    assertContains(resposta_fluxo_de_caixa, f"{despesa.valor},00 ({mes_diff}/{parcelas})")
+
 def test_parcelas_presente(resposta_fluxo_de_caixa, venda):
     # Formatar parcela -> 1,010.10
     valor = ','.join(str(round(venda.get_valor_parcela(), 2)).split('.'))
