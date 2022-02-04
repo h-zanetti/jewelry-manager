@@ -119,10 +119,11 @@ def editar_despesa(request, despesa_id):
     if request.method == 'POST':
         form = EditarDespesaForm(request.POST, instance=despesa)
         if form.is_valid():
-            despesa_edt = form.save()
-            if despesa_edt.encerrada and not despesa_edt.data_de_encerramento:
-                despesa_edt.data_de_encerramento = timezone.localdate()
-            despesa_edt.save()
+            form.save()
+            # despesa_edt = form.save()
+            # if despesa_edt.encerrada and not despesa_edt.data_de_encerramento:
+            #     despesa_edt.data_de_encerramento = timezone.localdate()
+            # despesa_edt.save()
             return redirect('financeiro:despesas')
     else:
         form = EditarDespesaForm(instance=despesa)
@@ -171,10 +172,10 @@ def fluxo_de_caixa(request, ano, mes):
         dados[index] += float(receita['valor'])
     despesas_variaveis = Despesa.objects.filter(repetir='', data__year=ano)
     despesas_mensais = Despesa.objects.filter(
-        Q(encerrada=False) | Q(data_de_encerramento__year__gte=ano),
+        Q(data_de_encerramento=None) | Q(data_de_encerramento__year__gte=ano),
         repetir='m', data__year__lte=ano)
     despesas_anuais = Despesa.objects.filter(
-        Q(encerrada=False) | Q(data_de_encerramento__year__gte=ano),
+        Q(data_de_encerramento=None) | Q(data_de_encerramento__year__gte=ano),
         repetir='a', data__year__lte=ano)
     despesas = [despesas_anuais, despesas_mensais, despesas_variaveis]
     for qs in despesas:
@@ -194,10 +195,10 @@ def fluxo_de_caixa(request, ano, mes):
     parcelas = Parcela.objects.filter(data__year=ano, data__month=mes)
     despesas_variaveis = Despesa.objects.filter(repetir='', data__year=ano, data__month=mes)
     despesas_mensais = Despesa.objects.filter(
-        Q(encerrada=False) | Q(data_de_encerramento__gte=f'{ano}-{mes}-01'),
+        Q(data_de_encerramento=None) | Q(data_de_encerramento__gte=f'{ano}-{mes}-01'),
         repetir='m', data__lte=f'{ano}-{mes}-{monthrange(ano, mes)[1]}')
     despesas_anuais = Despesa.objects.filter(
-        Q(encerrada=False) | Q(data_de_encerramento__gte=f'{ano}-{mes}-01'),
+        Q(data_de_encerramento=None) | Q(data_de_encerramento__gte=f'{ano}-{mes}-01'),
         repetir='a', data__month=mes, data__year__lte=ano)
     transacoes = sorted(
         chain(parcelas, despesas_variaveis, despesas_mensais, despesas_anuais),

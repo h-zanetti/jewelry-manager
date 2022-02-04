@@ -9,6 +9,14 @@ class CriarDespesaForm(forms.ModelForm):
             'class': 'm-0'
         }),
     )
+    data_de_encerramento = forms.DateField(
+        input_formats=['%d/%m/%Y', '%d-%m-%Y'],
+        widget=forms.DateInput(attrs={
+            'placeholder': 'dd/mm/aaaa',
+            'class': 'm-0'
+        }),
+        required=False
+    )
     repetir = forms.ChoiceField(
         choices=Despesa.REPETIR_CHOICES,
         required=False
@@ -25,6 +33,14 @@ class EditarDespesaForm(forms.ModelForm):
             'placeholder': 'dd/mm/aaaa',
             'class': 'm-0'
         }),
+    )
+    data_de_encerramento = forms.DateField(
+        input_formats=['%d/%m/%Y', '%d-%m-%Y'],
+        widget=forms.DateInput(attrs={
+            'placeholder': 'dd/mm/aaaa',
+            'class': 'm-0'
+        }),
+        required=False
     )
     class Meta:
         model = Despesa
