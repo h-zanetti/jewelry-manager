@@ -15,6 +15,7 @@ class CriarDespesaForm(forms.ModelForm):
             'placeholder': 'dd/mm/aaaa',
             'class': 'm-0'
         }),
+        required=False
     )
     repetir = forms.ChoiceField(
         choices=Despesa.REPETIR_CHOICES,
@@ -39,6 +40,7 @@ class EditarDespesaForm(forms.ModelForm):
             'placeholder': 'dd/mm/aaaa',
             'class': 'm-0'
         }),
+        required=False
     )
     class Meta:
         model = Despesa
