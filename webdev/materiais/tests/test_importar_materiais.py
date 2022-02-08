@@ -23,7 +23,7 @@ def test_btn_importar_materiais_presente(resposta_estoque):
 def resposta_importar_materiais(client, db):
     User.objects.create_user(username='TestUser', password='MinhaSenha123')
     client.login(username='TestUser', password='MinhaSenha123')
-    with open(os.path.join(os.path.dirname(__file__), 'importacoes/materiais.xls'), 'rb') as xl_file:
+    with open(os.path.join(os.path.dirname(__file__), 'importacoes/materiais.xlsx'), 'rb') as xl_file:
         resp = client.post(
             reverse('materiais:importar_materiais'),
             data={'myfile': xl_file}
