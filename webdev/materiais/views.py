@@ -78,8 +78,8 @@ def deletar_material(request, material_id):
 @login_required
 def exportar_materiais(request):
     dados = MaterialResource().export()
-    resposta = HttpResponse(dados.xls, content_type='application/vnd.ms-excel')
-    resposta['Content-Disposition'] = 'attachment; filename=materiais.xls'
+    resposta = HttpResponse(dados.xlsx, content_type='application/vnd.ms-excel')
+    resposta['Content-Disposition'] = 'attachment; filename=materiais.xlsx'
     return resposta
 
 @login_required
@@ -88,7 +88,7 @@ def importar_materiais(request):
         resource = MaterialResource()
         dataset = Dataset()
         novos_materiais = request.FILES['myfile']
-        dataset.load(novos_materiais.read(), 'xls')
+        dataset.load(novos_materiais.read(), 'xlsx')
         resource.import_data(dataset)
         return redirect('materiais:estoque_materiais')
         
