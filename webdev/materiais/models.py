@@ -18,6 +18,7 @@ class Material(models.Model):
         ('', 'Uniade de Medida'),
         ('g', 'Gramas'),
         ('ct', 'Quilates'),
+        ('cm', 'Centímetros'),
     )
     unidade_de_medida = models.CharField(_("unidade de medida"), max_length=2, choices=UNIDADE_DE_MEDIDA_CHOICES, blank=True, null=True)
     estoque = models.IntegerField(_("unidades em estoque"), default=0, blank=True)
