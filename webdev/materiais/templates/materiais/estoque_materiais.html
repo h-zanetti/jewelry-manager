@@ -124,14 +124,18 @@
                                                             </tr>
                                                             <tr>
                                                                 <td><strong>Preço Unitário:</strong> R$ {{ material.get_preco_unitario }}</td>
-                                                                <td>
-                                                                    <strong>Preço por Peso:</strong>
-                                                                    R$ {{ material.get_preco_por_peso }} {% if material.unidade_de_medida == 'g' %}/ g{% else%}/ ct{% endif %}
+                                                                <td><strong>Custo Total:</strong> R$ {{ material.get_opportunity_cost }}
                                                                 </td>
-                                                            <tr>
-                                                                <td><strong>Custo de Oportunidade:</strong> R$ {{ material.get_opportunity_cost }}</td>
-                                                                <td></td>
                                                             </tr>
+                                                            {% if material.unidade_de_medida %}
+                                                                <tr>
+                                                                    <td>
+                                                                        <strong>Preço por {{ material.get_unidade_de_medida_display|cut:"s" }}:</strong>
+                                                                        R$ {{ material.get_preco_por_peso }} / {{ material.unidade_de_medida }}
+                                                                    </td>
+                                                                    <td></td>
+                                                                </tr>
+                                                            {% endif %}
                                                         </tbody>
                                                     </table>
                                                 </div>
