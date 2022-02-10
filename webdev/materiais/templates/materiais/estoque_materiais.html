@@ -91,49 +91,55 @@
                                     <div class="row">
                                         <div class="col-12">
                                             <!-- Informações Gerais -->
-                                            <div class="card" style="flex-direction: row">
-                                                <div class="card-img-top" style="width: 33%">
-                                                    <img src="{{ material.foto.url }}" class="card-img-top" alt="...">
-                                                </div>
-                                                <div class="card-body">
-                                                    <table class="table">
-                                                        <thead>
-                                                            <tr>
-                                                                <th class="fs-5">Informações Gerais</th>
-                                                                <th></th>
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody>
-                                                            <tr>
-                                                                <td><strong>Entrada:</strong> {{ material.entrada|date:"d-m-Y"|default:"Indisponível" }}</td>
-                                                                <td><strong>Qualidade:</strong> {{ material.qualidade }}</td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td><strong>Categoria:</strong> {{ material.categoria }}</td>
-                                                                <td><strong>Subcategoria:</strong> {{ material.subcategoria|default:"Nenhuma" }}</td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td><strong>Dimenssões:</strong> {{ material.get_dimensoes }}</td>
-                                                                <td><strong>Peso Total:</strong> 
-                                                                    {% if material.peso and material.unidade_de_medida %}
-                                                                        {{ material.peso }} {{ material.unidade_de_medida }}
-                                                                    {% else %}
-                                                                        Indisponível
-                                                                    {% endif %}
-                                                                </td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td><strong>Preço Unitário:</strong> R$ {{ material.get_preco_unitario }}</td>
-                                                                <td>
-                                                                    <strong>Preço por Peso:</strong>
-                                                                    R$ {{ material.get_preco_por_peso }} {% if material.unidade_de_medida == 'g' %}/ g{% else%}/ ct{% endif %}
-                                                                </td>
-                                                            <tr>
-                                                                <td><strong>Custo de Oportunidade:</strong> R$ {{ material.get_opportunity_cost }}</td>
-                                                                <td></td>
-                                                            </tr>
-                                                        </tbody>
-                                                    </table>
+                                            <div class="card">
+                                                <div class="row g-0">
+                                                    <div class="col-md-4">                                                
+                                                        <img src="{{ material.foto.url }}" class="card-img-top" alt="...">
+                                                    </div>
+                                                    <div class="col-md-8">
+                                                    <div class="card-body">
+                                                        <div class="container">
+                                                            <h1 class="display-6">Informações Gerais</h1>
+                                                            <div class="row">
+                                                                <div class="col-6">
+                                                                    <strong>Entrada:</strong> {{ material.get_ultima_entrada|date:"d-m-Y"|default:"Indisponível" }}
+                                                                </div>
+                                                                <div class="col-6">
+                                                                    <strong>Qualidade:</strong> {{ material.qualidade }}
+                                                                </div>
+                                                                <div class="col-6">
+                                                                    <strong>Categoria:</strong> {{ material.categoria }}
+                                                                </div>
+                                                                <div class="col-6">
+                                                                    <strong>Subcategoria:</strong> {{ material.subcategoria|default:"Nenhuma" }}
+                                                                </div>
+                                                                <div class="col-6">
+                                                                    <strong>Dimenssões:</strong> {{ material.get_dimensoes }}
+                                                                </div>
+                                                                {% if material.unidade_de_medida %}
+                                                                <div class="col-6">
+                                                                    <strong>Peso Total:</strong> 
+                                                                    {{ material.peso }} {{ material.unidade_de_medida }}
+                                                                </div>
+                                                                {% endif %}
+                                                                <hr class="my-2">
+                                                                {% if material.get_preco_unitario  %}
+                                                                <div class="col-6">
+                                                                    <strong>Preço Unitário:</strong> R$ {{ material.get_preco_unitario|intcomma }}
+                                                                </div>
+                                                                {% endif %}
+                                                                {% if material.unidade_de_medida %}
+                                                                <div class="col-6">
+                                                                    <strong>{{ material.get_unidade_de_medida_display|cut:"s" }}:</strong>
+                                                                    R$ {{ material.get_preco_por_peso|intcomma }} / {{ material.unidade_de_medida }}
+                                                                </div>
+                                                                {% endif %}
+                                                                <div class="col-6">
+                                                                    <strong>Custo Total:</strong> R$ {{ material.get_opportunity_cost|intcomma }}
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>

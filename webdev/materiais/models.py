@@ -43,32 +43,41 @@ class Material(models.Model):
         else:
             return "Indisponível"
     
+    def get_entradas(self):
+        return Entrada.objects.filter(material=self)
+
+    def get_ultima_entrada(self):
+        entradas = self.get_entradas()
+        if entradas:
+            return entradas.latest()
+        return 0
+
     def get_preco_unitario(self):
-        entradas = Entrada.objects.filter(material=self)
+        entradas = self.get_entradas()
         if entradas:
             entrada = entradas.latest()
+            if not entrada.unidades:
+                return 0
             valor_unitario = entrada.valor / entrada.unidades
             return valor_unitario
         else:
             return 0
     
     def get_preco_por_peso(self):
-        entrada = Entrada.objects.filter(material=self)
-        if entrada:
-            entrada = entrada.latest()
-            if entrada.peso:
-                valor_peso = entrada.valor / entrada.peso
-                return valor_peso
-            else:
-                return entrada.valor
+        entradas = self.get_entradas()
+        if entradas:
+            entrada = entradas.latest()
+            if not entrada.peso:
+                return 0
+            valor_peso = entrada.valor / entrada.peso
+            return valor_peso
         else:
             return 0
     
     def get_opportunity_cost(self):
+        if self.unidade_de_medida:
+            return self.get_preco_por_peso() * self.peso
         return self.get_preco_unitario() * self.estoque
-
-    def get_entradas(self):
-        return Entrada.objects.filter(material=self)
 
 
 class Entrada(models.Model):
