@@ -145,7 +145,7 @@ def editar_entrada(request, entrada_id):
         'form': form,
     }
 
-    return render(request, 'materiais/editar_entrada_de_material.html', context)
+    return render(request, 'materiais/editar_entrada.html', context)
 
 @login_required
 def deletar_entrada(request, entrada_id):
