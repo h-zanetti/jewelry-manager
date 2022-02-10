@@ -47,6 +47,8 @@ class Material(models.Model):
         entradas = Entrada.objects.filter(material=self)
         if entradas:
             entrada = entradas.latest()
+            if not entrada.unidades:
+                return entrada.valor
             valor_unitario = entrada.valor / entrada.unidades
             return valor_unitario
         else:
