@@ -141,10 +141,11 @@ def editar_entrada(request, entrada_id):
 
     context = {
         'title': 'Editar entrada de matéria prima',
-        'form': form
+        'entrada': entrada,
+        'form': form,
     }
 
-    return render(request, 'materiais/entrada_de_material.html', context)
+    return render(request, 'materiais/editar_entrada.html', context)
 
 @login_required
 def deletar_entrada(request, entrada_id):
