@@ -59,7 +59,7 @@ class Material(models.Model):
             if not entrada.unidades:
                 return 0
             valor_unitario = entrada.valor / entrada.unidades
-            return valor_unitario
+            return round(valor_unitario, 2)
         else:
             return 0
     
@@ -70,14 +70,16 @@ class Material(models.Model):
             if not entrada.peso:
                 return 0
             valor_peso = entrada.valor / entrada.peso
-            return valor_peso
+            return round(valor_peso, 2)
         else:
             return 0
     
     def get_opportunity_cost(self):
         if self.unidade_de_medida:
-            return self.get_preco_por_peso() * self.peso
-        return self.get_preco_unitario() * self.estoque
+            opp_cost = self.get_preco_por_peso() * self.peso
+            return round(opp_cost, 2)
+        opp_cost = self.get_preco_unitario() * self.estoque
+        return round(opp_cost, 2)
 
 
 class Entrada(models.Model):
