@@ -6,3 +6,5 @@ register = template.Library()
 def get_parcela(transaction, data):
     if transaction.get_parcela(data):
         return transaction.get_parcela(data)
+    else:
+        return ''
