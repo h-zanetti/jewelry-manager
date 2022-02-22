@@ -288,6 +288,7 @@ var myChart = new Chart(ctx, {
                                 <a href="#ModalVisualizarServico{{ t.id }}" data-bs-toggle="modal">
                                     <i class="far fa-eye link-dark"></i>
                                 </a>
+                                <!-- Serviço Modal -->
                                 <div class="modal fade" id="ModalVisualizarServico{{ t.id }}" tabindex="-1" aria-labelledby="ModalVisualizarServico{{ t.id }}Label" aria-hidden="true">
                                     <div class="modal-dialog modal-lg">
                                         <div class="modal-content">
@@ -333,7 +334,8 @@ var myChart = new Chart(ctx, {
                                                                 <a href="{% url 'fornecedores:editar_servico' t.servico.id %}"  class="btn btn-primary">Editar</a>
                                                             </div>
                                                             <div class="col-6">
-                                                                <form action="{% url 'fornecedores:deletar_servico' t.servico.id %}">
+                                                                <form action="{% url 'fornecedores:deletar_servico' t.servico.id %}" method="POST">
+                                                                    {% csrf_token %}
                                                                     <button type="submit"  class="btn btn-danger">Deletar</button>
                                                                 </form>
                                                             </div>
