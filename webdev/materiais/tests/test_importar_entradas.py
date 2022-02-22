@@ -31,7 +31,7 @@ def material(db):
 def resposta_importar_entradas(client, material):
     User.objects.create_user(username='TestUser', password='MinhaSenha123')
     client.login(username='TestUser', password='MinhaSenha123')
-    with open(os.path.join(os.path.dirname(__file__), 'importacoes/entradas.xls'), 'rb') as xl_file:
+    with open(os.path.join(os.path.dirname(__file__), 'importacoes/entradas.xlsx'), 'rb') as xl_file:
         resp = client.post(
             reverse('materiais:importar_entradas'),
             data={'myfile': xl_file}
@@ -53,7 +53,7 @@ def test_despesa_criada(resposta_importar_entradas):
 def resposta_importar_materiais_invalidos(client, material):
     User.objects.create_user(username='TestUser', password='MinhaSenha123')
     client.login(username='TestUser', password='MinhaSenha123')
-    with open(os.path.join(os.path.dirname(__file__), 'importacoes/entrada_material_invalido.xls'), 'rb') as xl_file:
+    with open(os.path.join(os.path.dirname(__file__), 'importacoes/entrada_material_invalido.xlsx'), 'rb') as xl_file:
         resp = client.post(
             reverse('materiais:importar_entradas'),
             data={'myfile': xl_file}
@@ -82,7 +82,7 @@ def material(db):
 def resposta_importar_um_invalida(client, material):
     User.objects.create_user(username='TestUser', password='MinhaSenha123')
     client.login(username='TestUser', password='MinhaSenha123')
-    with open(os.path.join(os.path.dirname(__file__), 'importacoes/entrada_material_invalido.xls'), 'rb') as xl_file:
+    with open(os.path.join(os.path.dirname(__file__), 'importacoes/entrada_material_invalido.xlsx'), 'rb') as xl_file:
         resp = client.post(
             reverse('materiais:importar_entradas'),
             data={'myfile': xl_file}
