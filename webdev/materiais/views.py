@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.urls import reverse
 from webdev.materiais.models import Entrada, Material
-from webdev.materiais.forms import EntradaForm, MaterialForm
+from webdev.materiais.forms import EntradaForm, CadastrarMaterialForm
 from .admin import EntradaResource, MaterialResource
 from tablib import Dataset
 
@@ -20,9 +20,16 @@ def estoque_materiais(request):
 @login_required
 def cadastrar_material(request):
     if request.method == 'POST':
-        form = MaterialForm(request.POST, request.FILES)
+        form = CadastrarMaterialForm(request.POST, request.FILES)
         if form.is_valid():
-            form.save()
+            material = form.save()
+            messages.success(request, 'Material cadastrado com sucesso.')
+            if form.cleaned_data.get('realizar_compra'):
+                entrada_form = EntradaForm(request.POST, prefix='entrada')
+                if entrada_form.is_valid():
+                    entrada_form.save()
+                    messages.success(request, 'Entrada efetuada com sucesso.')
+            # Redirection
             next_url = request.POST.get('next')
             if 'submit-stay' in request.POST:
                 return redirect('materiais:cadastrar_material')
@@ -31,11 +38,13 @@ def cadastrar_material(request):
             else:
                 return redirect('materiais:estoque_materiais')
     else:
-        form = MaterialForm()
+        form = CadastrarMaterialForm()
+        entrada_form = EntradaForm(prefix='entrada')
 
     context = {
         'title': 'Cadastrar matéria prima',
         'form': form,
+        'entrada_form': entrada_form,
         'novo_obj': True
     }
 
@@ -46,12 +55,12 @@ def editar_material(request, material_id):
     try:
         material = Material.objects.get(id=material_id)
         if request.method == 'POST':
-            form = MaterialForm(request.POST, request.FILES, instance=material)
+            form = CadastrarMaterialForm(request.POST, request.FILES, instance=material)
             if form.is_valid():
                 form.save()
                 return redirect('materiais:estoque_materiais')
         else:
-            form = MaterialForm(instance=material)
+            form = CadastrarMaterialForm(instance=material)
 
         context = {
             'title': 'Editar matéria prima',

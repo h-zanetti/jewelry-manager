@@ -2,13 +2,17 @@ import pytest
 from pytest_django.asserts import assertContains, assertRedirects
 from django.urls import reverse
 from django.contrib.auth.models import User
-from webdev.materiais.models import Material
+from webdev.materiais.models import Entrada, Material
+
+# Fixtures
+@pytest.fixture
+def user(db):
+    return User.objects.create_user(username='TestUser', password='MinhaSenha123')
 
 # Cadastro de materiais (GET)
 @pytest.fixture
-def resposta_form_de_cadastro(client, db):
-    User.objects.create_user(username='TestUser', password='MinhaSenha123')
-    client.login(username='TestUser', password='MinhaSenha123')
+def resposta_form_de_cadastro(client, user):
+    client.force_login(user)
     resp = client.get(reverse('materiais:cadastrar_material'))
     return resp
 
@@ -24,12 +28,10 @@ def test_btn_submit_stay_presente(resposta_form_de_cadastro):
 def test_btn_submit_leave_presente(resposta_form_de_cadastro):
     assertContains(resposta_form_de_cadastro, '<button type="submit" name="submit-leave"')
 
-
 # Cadastro de materiais (POST)
 @pytest.fixture
-def resposta_cadastrar_material(client, db):
-    User.objects.create_user(username='TestUser', password='MinhaSenha123')
-    client.login(username='TestUser', password='MinhaSenha123')
+def resposta_cadastrar_material(client, user):
+    client.force_login(user)
     resp = client.post(reverse('materiais:cadastrar_material'), data={
         'nome': 'Esmeralda',
         'categoria': 'Pedra',
@@ -45,24 +47,26 @@ def test_cadastrar_material_status_code(resposta_cadastrar_material):
 def test_material_no_bd(resposta_cadastrar_material):
     assert Material.objects.exists()
 
-# Estoque de matéria prima (GET)
+# Cadastro de materiais com entradas
 @pytest.fixture
-def material(db):
-    return Material.objects.create(
-        nome='Esmeralda',
-        categoria='Pedra',
-    )
-
-@pytest.fixture
-def resposta_estoque(client, material):
-    User.objects.create_user(username='TestUser', password='MinhaSenha123')
-    client.login(username='TestUser', password='MinhaSenha123')
-    resp = client.get(reverse('materiais:estoque_materiais'))
+def resposta_material_com_entrada(client, user):
+    client.force_login(user)
+    resp = client.post(reverse('materiais:cadastrar_material'), data={
+        'nome': 'Esmeralda',
+        'categoria': 'Pedra',
+        'valor': 250,
+        'realizar_compra': True,
+    })
     return resp
 
+# def test_form_sem_erros(resposta_material_com_entrada):
+#     assert not resposta_material_com_entrada.context['form'].errors
 
-def test_estoque_de_materiais_status_code(resposta_estoque):
-    assert resposta_estoque.status_code == 200
+def test_material_com_entrada_redirection(resposta_material_com_entrada):
+    assertRedirects(resposta_material_com_entrada, reverse('materiais:estoque_materiais'))
 
-def test_material_presente(resposta_estoque, material):
-    assertContains(resposta_estoque, material.nome)
+def test_material_cadastrado(resposta_material_com_entrada):
+    assert Material.objects.exists()
+
+def test_entrada_registrada(resposta_material_com_entrada):
+    assert Entrada.objects.exists()
