@@ -89,3 +89,6 @@ def test_deletar_servico_status_code(resposta_deletar_servico):
 def test_servico_deletado(resposta_deletar_servico):
     assert not Servico.objects.exists()
 
+def test_despesa_deletada(resposta_deletar_servico):
+    assert not Despesa.objects.exists()
+
