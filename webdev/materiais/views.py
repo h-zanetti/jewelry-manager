@@ -162,8 +162,8 @@ def deletar_entrada(request, entrada_id):
 @login_required
 def exportar_entradas(request):
     dados = EntradaResource().export()
-    resposta = HttpResponse(dados.xls, content_type='application/vnd.ms-excel')
-    resposta['Content-Disposition'] = 'attachment; filename=entradas.xls'
+    resposta = HttpResponse(dados.xlsx, content_type='application/vnd.ms-excel')
+    resposta['Content-Disposition'] = 'attachment; filename=entradas.xlsx'
     return resposta
 
 @login_required
@@ -171,7 +171,7 @@ def importar_entradas(request):
     if request.method == 'POST':
         dataset = Dataset()
         novas_entradas = request.FILES['myfile']
-        dataset.load(novas_entradas.read(), 'xls')
+        dataset.load(novas_entradas.read(), 'xlsx')
         # Validar dados
         is_valid = True
         for row in dataset:
