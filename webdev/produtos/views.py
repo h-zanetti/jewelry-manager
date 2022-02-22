@@ -220,8 +220,8 @@ def remover_material_dp(request, material_dp_id):
 @login_required
 def exportar_produtos(request):
     dados = ProdutoResource().export()
-    resposta = HttpResponse(dados.xls, content_type='application/vnd.ms-excel')
-    resposta['Content-Disposition'] = 'attachment; filename=produtos.xls'
+    resposta = HttpResponse(dados.xlsx, content_type='application/vnd.ms-excel')
+    resposta['Content-Disposition'] = 'attachment; filename=produtos.xlsx'
     return resposta
 
 @login_required
@@ -230,7 +230,7 @@ def importar_produtos(request):
         resource = ProdutoResource()
         dataset = Dataset()
         novos_produtos = request.FILES['myfile']
-        dataset.load(novos_produtos.read(), 'xls')
+        dataset.load(novos_produtos.read(), 'xlsx')
         resource.import_data(dataset)
         return redirect('produtos:estoque_produtos')
         

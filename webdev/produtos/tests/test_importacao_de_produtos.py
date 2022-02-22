@@ -24,7 +24,7 @@ def test_btn_importar_produtos_presente(resposta_produtos):
 def resposta_importar_produtos(client, db):
     User.objects.create_user(username='TestUser', password='MinhaSenha123')
     client.login(username='TestUser', password='MinhaSenha123')
-    with open(os.path.join(os.path.dirname(__file__), 'importacoes/produtos.xls'), 'rb') as xl_file:
+    with open(os.path.join(os.path.dirname(__file__), 'importacoes/produtos.xlsx'), 'rb') as xl_file:
         resp = client.post(
             reverse('produtos:importar_produtos'),
             data={'myfile': xl_file}
