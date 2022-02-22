@@ -5,6 +5,7 @@ from django.contrib.auth.decorators import login_required
 from .models import Documento, Fornecedor, Fornecimento, Email, Telefone, Local, DadosBancarios, Servico
 from .forms import FornecedorForm, FornecimentoForm, EmailForm, TelefoneForm, LocalForm, DadosBancariosForm, ServicoForm
 from django.forms import inlineformset_factory, modelformset_factory
+from django.contrib import messages
 
 @login_required
 def meus_fornecedores(request):
@@ -450,6 +451,7 @@ def editar_servico(request, servico_id):
 def deletar_servico(request, servico_id):
     if request.method == 'POST':
         Servico.objects.get(id=servico_id).delete()
+        messages.success(request, 'Serviço deletado com sucesso.')
         next_url = request.POST.get('next')
         if next_url:
             return redirect(f'{next_url}')
