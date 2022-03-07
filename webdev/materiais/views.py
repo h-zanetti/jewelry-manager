@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.urls import reverse
 from webdev.materiais.models import Entrada, Material
-from webdev.materiais.forms import EntradaForm, CadastrarMaterialForm
+from webdev.materiais.forms import EditarEntradaForm, EntradaForm, CadastrarMaterialForm
 from .admin import EntradaResource, MaterialResource
 from tablib import Dataset
 
@@ -141,12 +141,12 @@ def editar_entrada(request, entrada_id):
         raise Http404('Entrada não encontrada')
 
     if request.method == 'POST':
-        form = EntradaForm(request.POST, instance=entrada)
+        form = EditarEntradaForm(request.POST, instance=entrada)
         if form.is_valid():
             form.save()
             return redirect('materiais:entradas_de_materiais')
     else:
-        form = EntradaForm(instance=entrada)
+        form = EditarEntradaForm(instance=entrada)
 
     context = {
         'title': 'Editar entrada de matéria prima',

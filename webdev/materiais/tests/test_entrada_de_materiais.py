@@ -170,6 +170,3 @@ def test_estoque_de_material_sem_alterar_unidades(resposta_entrada_sem_estoque):
 
 def test_estoque_de_material_sem_alterar_peso(resposta_entrada_sem_estoque):
     assert Material.objects.first().peso == 0
-
-# TODO: Edição de entradas (POST)
-# TODO: Deleção de entradas (POST)
