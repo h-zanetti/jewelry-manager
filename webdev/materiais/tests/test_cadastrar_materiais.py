@@ -35,6 +35,7 @@ def resposta_cadastrar_material(client, user):
     resp = client.post(reverse('materiais:cadastrar_material'), data={
         'nome': 'Esmeralda',
         'categoria': 'Pedra',
+        'valor': 250,
     })
     return resp
 
@@ -46,27 +47,3 @@ def test_cadastrar_material_status_code(resposta_cadastrar_material):
 
 def test_material_no_bd(resposta_cadastrar_material):
     assert Material.objects.exists()
-
-# Cadastro de materiais com entradas
-@pytest.fixture
-def resposta_material_com_entrada(client, user):
-    client.force_login(user)
-    resp = client.post(reverse('materiais:cadastrar_material'), data={
-        'nome': 'Esmeralda',
-        'categoria': 'Pedra',
-        'valor': 250,
-        'realizar_compra': True,
-    })
-    return resp
-
-# def test_form_sem_erros(resposta_material_com_entrada):
-#     assert not resposta_material_com_entrada.context['form'].errors
-
-def test_material_com_entrada_redirection(resposta_material_com_entrada):
-    assertRedirects(resposta_material_com_entrada, reverse('materiais:estoque_materiais'))
-
-def test_material_cadastrado(resposta_material_com_entrada):
-    assert Material.objects.exists()
-
-def test_entrada_registrada(resposta_material_com_entrada):
-    assert Entrada.objects.exists()
