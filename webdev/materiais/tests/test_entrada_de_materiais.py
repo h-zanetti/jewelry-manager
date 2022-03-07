@@ -76,7 +76,7 @@ def test_btn_submit_stay_presente(resposta_form_de_entrada):
 def test_btn_submit_leave_presente(resposta_form_de_entrada):
     assertContains(resposta_form_de_entrada, '<button type="submit" name="submit-leave"')
 
-# Entrada de materiais (POST)
+# Criar entrada de materiais (POST)
 @pytest.fixture
 def resposta_entrada_de_material(client, material):
     User.objects.create_user(username='TestUser', password='MinhaSenha123')
@@ -87,7 +87,8 @@ def resposta_entrada_de_material(client, material):
         'unidades': 5,
         'peso': 5,
         'unidade_de_medida': 'g',
-        'valor': 3000
+        'valor': 3000,
+        'alterar_estoque': True,
     })
     return resp
 
@@ -100,11 +101,13 @@ def test_entrada_de_material_redirect(resposta_entrada_de_material):
 def teste_despesa_criada(resposta_entrada_de_material):
     assert Despesa.objects.exists()
 
-def test_estoque_de_material_alterado_unidades(resposta_entrada_de_material):
-    assert Material.objects.first().estoque == 5
+def test_estoque_de_material_alterado_unidades(resposta_entrada_de_material, material):
+    m = Material.objects.get(pk=material.pk)
+    assert m.estoque == 5
 
-def test_estoque_de_material_alterado_peso(resposta_entrada_de_material):
-    assert Material.objects.first().peso == 5
+def test_estoque_de_material_alterado_peso(resposta_entrada_de_material, material):
+    m = Material.objects.get(pk=material.pk)
+    assert m.peso == 5
 
 # Testar validação de unidade de medida
 @pytest.fixture
@@ -135,3 +138,38 @@ def test_invalid_form(resposta_entrada_de_material_invalid):
 
 def test_unidade_de_medida_error(resposta_entrada_de_material_invalid):
     assert 'unidade_de_medida' in resposta_entrada_de_material_invalid.context['form'].errors
+
+
+# Entrada de materiais sem alterar o estoque (POST)
+@pytest.fixture
+def resposta_entrada_sem_estoque(client, material):
+    User.objects.create_user(username='TestUser', password='MinhaSenha123')
+    client.login(username='TestUser', password='MinhaSenha123')
+    resp = client.post(reverse('materiais:entrada_de_material'), data={
+        'data': '2021-04-26',
+        'material': material.id,
+        'unidades': 5,
+        'peso': 5,
+        'unidade_de_medida': 'g',
+        'valor': 3000,
+        'alterar_estoque': False,
+    })
+    return resp
+
+# def test_form_sem_erros(resposta_entrada_sem_estoque):
+#     assert not resposta_entrada_sem_estoque.context['form'].errors
+
+def test_redirect_entrada_sem_estoque(resposta_entrada_sem_estoque):
+    assertRedirects(resposta_entrada_sem_estoque, reverse('materiais:estoque_materiais'))
+
+def teste_despesa_sem_estoque_criada(resposta_entrada_sem_estoque):
+    assert Despesa.objects.exists()
+
+def test_estoque_de_material_sem_alterar_unidades(resposta_entrada_sem_estoque):
+    assert Material.objects.first().estoque == 0
+
+def test_estoque_de_material_sem_alterar_peso(resposta_entrada_sem_estoque):
+    assert Material.objects.first().peso == 0
+
+# TODO: Edição de entradas (POST)
+# TODO: Deleção de entradas (POST)
