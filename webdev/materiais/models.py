@@ -13,7 +13,7 @@ class Material(models.Model):
     altura = models.DecimalField(_("altura"), max_digits=8, decimal_places=2, blank=True, null=True)
     largura = models.DecimalField(_("largura"), max_digits=8, decimal_places=2, blank=True, null=True)
     comprimento = models.DecimalField(_("comprimento"), max_digits=8, decimal_places=2, blank=True, null=True)
-    peso = models.DecimalField(_("peso total"), max_digits=8, decimal_places=2, blank=True, null=True)
+    peso = models.DecimalField(_("peso total"), max_digits=8, decimal_places=2, default=0, blank=True)
     UNIDADE_DE_MEDIDA_CHOICES = (
         ('', 'Uniade de Medida'),
         ('g', 'Gramas'),
@@ -96,6 +96,7 @@ class Entrada(models.Model):
     )
     unidade_de_medida = models.CharField(_("unidade de medida"), max_length=2, choices=UNIDADE_DE_MEDIDA_CHOICES, blank=True, null=True)
     valor = models.DecimalField(_("valor total"), max_digits=8, decimal_places=2)
+    alterar_estoque = models.BooleanField(_("alterar estoque"), default=True, help_text=_("Define se o peso e as unidades desta entrada devem ser adicionados ao estoque."))
 
     class Meta:
         get_latest_by ='data'
