@@ -1,12 +1,11 @@
-import datetime as dt
-from webdev.financeiro.models import Despesa
 import pytest
+import datetime as dt
 from django.urls import reverse
 from django.contrib.auth.models import User
+from webdev.financeiro.models import Despesa
 from webdev.materiais.models import Entrada, Material
-from webdev.fornecedores.models import Fornecedor
 
-# Editar entrada
+# Fixtures
 @pytest.fixture
 def material(db):
     return Material.objects.create(
@@ -22,9 +21,11 @@ def entrada(material):
         unidades=3,
         peso=0.17,
         unidade_de_medida='ct',
-        valor=1000
+        valor=1000,
+        alterar_estoque=True,
     )
 
+# Editar entrada (GET)
 @pytest.fixture
 def resposta_form_editar_entrada(client, entrada):
     User.objects.create_user(username='TestUser', password='MinhaSenha123')
@@ -34,6 +35,7 @@ def resposta_form_editar_entrada(client, entrada):
         kwargs={'entrada_id': entrada.id})
     )
 
+
 def test_form_editar_entrada_status_code(resposta_form_editar_entrada):
     assert resposta_form_editar_entrada.status_code == 200
 
@@ -41,6 +43,7 @@ def test_despesa_criada(resposta_form_editar_entrada):
     assert Despesa.objects.exists()
     assert Despesa.objects.first().valor == 1000
 
+# Editar entrada e alterar estoque (POST)
 @pytest.fixture
 def resposta_editar_entrada(client, entrada, material):
     User.objects.create_user(username='TestUser', password='MinhaSenha123')
@@ -51,10 +54,11 @@ def resposta_editar_entrada(client, entrada, material):
             'data': '2021-05-26',
             'material': material.id,
             'despesa': entrada.despesa.id,
-            'unidades': 3,
+            'unidades': 5,
             'peso': 0.17,
             'unidade_de_medida': 'ct',
             'valor': 1500,
+            'alterar_estoque': True,
         }
     )
     return resp
@@ -68,6 +72,9 @@ def test_editar_entrada_status_code(resposta_editar_entrada):
 def test_entrada_alterada(resposta_editar_entrada):
     assert Entrada.objects.first().valor == 1500
     assert Entrada.objects.first().data == dt.date(2021, 5, 26)
+
+def test_material_alterado(resposta_editar_entrada):
+    assert Material.objects.first().estoque == 5
 
 def test_despesa_alterada(resposta_editar_entrada):
     assert Despesa.objects.first().valor == 1500
