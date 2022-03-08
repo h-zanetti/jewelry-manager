@@ -46,7 +46,7 @@
                     <div class="col-lg-6 col-sm-12">
                         <label class="form-label">Peso total</label>
                         <div class="input-group">
-                            <input type="number" name="peso" class="form-control" placeholder="Peso">
+                            <input type="number" name="peso" class="form-control" placeholder="Peso" step="0.01">
                             <select name="unidade_de_medida" class="form-select rounded-0 rounded-end" title="" id="id_unidade_de_medida">
                                 <option value="" selected>Uniade de Medida</option>
                                 <option value="g">Gramas</option>
@@ -57,6 +57,10 @@
                     <div class="col-lg-6 col-sm-12">
                         {% bootstrap_field form.valor %}
                     </div>
+                </div>
+
+                <div class="row gx-3">
+                    {% bootstrap_field form.alterar_estoque %}
                 </div>
 
                 <div class="row gx-3 d-flex justify-content-between">

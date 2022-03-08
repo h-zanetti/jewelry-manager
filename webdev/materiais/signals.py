@@ -1,44 +1,39 @@
-from django.contrib import messages
-from webdev.financeiro.models import Despesa
-from django.db.models.signals import pre_save, post_save, pre_delete
 from django.dispatch import receiver
+from django.db.models.signals import pre_save, pre_delete
+
+from webdev.financeiro.models import Despesa
 from webdev.materiais.models import Entrada
 
 @receiver(pre_save, sender=Entrada)
-def alterar_estoque(sender, instance, **kwargs):
-    # Subtrair peso e unidades quando modificado
+def gerenciar_entrada(sender, instance, **kwargs):
     material = instance.material
-    if instance.id != None:
-        if material.estoque:
-            material.estoque -= instance.unidades
-        if material.peso:
-            material.peso -= instance.peso
-    # Adicionar peso e unidades
-    material.estoque += instance.unidades
-    if not material.peso:
-        material.peso = instance.peso
-        material.unidade_de_medida = instance.unidade_de_medida
-    else:
-        material.peso += instance.peso
-    material.save()
+    if instance.pk:
+        # Subtrair estoque quando a Entrada é modificada (não foi salva pela primeira vez)
+        if instance.alterar_estoque:
+            entrada = Entrada.objects.get(pk=instance.pk)
+            if entrada.unidades and material.estoque >= entrada.unidades:
+                material.estoque -= entrada.unidades
+            if entrada.peso and material.peso >= entrada.peso:
+                material.peso -= entrada.peso
 
-@receiver(post_save, sender=Entrada)
-def criar_despesa(sender, instance, created, **kwargs):
-    if created:
-        despesa = Despesa.objects.create(
+        if instance.despesa.valor != instance.valor:
+            instance.despesa.valor = instance.valor
+            instance.despesa.save()
+        if instance.despesa.data != instance.data:
+            instance.despesa.data = instance.data
+            instance.despesa.save()
+    else:
+        instance.despesa = Despesa.objects.create(
             data=instance.data,
             categoria='Entrada de material',
             valor=instance.valor
         )
-        instance.despesa = despesa
-        instance.save()
-    else:
-        if instance.valor != instance.despesa.valor:
-            instance.despesa.valor = instance.valor
-            instance.despesa.save()
-        if instance.data != instance.despesa.data:
-            instance.despesa.data = instance.data
-            instance.despesa.save()
+
+    if instance.alterar_estoque:
+        # Somar novo estoque
+        material.estoque += instance.unidades
+        material.peso += instance.peso
+        material.save()
 
 @receiver(pre_delete, sender=Entrada)
 def deletar_despesa(sender, instance, **kwargs):
