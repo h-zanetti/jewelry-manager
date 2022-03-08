@@ -1,17 +1,11 @@
 from django import forms
 from .models import Entrada, Material
-from webdev.fornecedores.models import Fornecedor
-from webdev.financeiro.models import Despesa
 from django.core.exceptions import ValidationError
 
 class CadastrarMaterialForm(forms.ModelForm):
     foto = forms.ImageField(
         widget=forms.FileInput(),
         required=False
-    )
-    realizar_compra = forms.BooleanField(
-        required=False,
-        help_text="Cria também uma entrada e uma despesa."
     )
 
     class Meta:
