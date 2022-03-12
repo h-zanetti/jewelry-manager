@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% load bootstrap5 %}
+
+{% block content %}
+{% if title %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+    <h1 class="h2">{{ title }}</h1>
+</div>
+{% endif %}
+
+<div class="container-sm mb-4">
+    <div class="row d-flex justify-content-center">
+        <div class="col-md-9 border shadow px-4 py-3">
+            <form action={% url 'produtos:editar_servico_dp' servico_dp.id %} method="POST">
+                {% csrf_token %}
+                <div class="row">
+                    {% bootstrap_form form %}
+                </div>
+                <div class="row">
+                    <button type="submit" class="btn btn-primary w-100">Enviar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

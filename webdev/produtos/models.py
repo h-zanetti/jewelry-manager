@@ -48,15 +48,17 @@ class Produto(models.Model):
     data_criacao = models.DateField(_('Data de Criação'), blank=True, null=True)
     unidades = models.IntegerField(_("Unidades em Estoque"), default=0)
     tamanho = models.IntegerField(_("Tamanho"), blank=True, null=True)
-    servicos = models.ManyToManyField(Servico, verbose_name=_("Serviços"), blank=True)
     materiais = models.ManyToManyField(MaterialDoProduto, verbose_name=_("Materiais"), blank=True)
 
     def __str__(self):
         return f"{self.nome}"
 
+    def get_servicos(self):
+        return ServicoDoProduto.objects.filter(produto=self)
+
     def get_custo_de_producao(self):
         custo = 0
-        for servico in self.servicos.all():
+        for servico in self.get_servicos():
             custo += servico.valor
         for material_dp in self.materiais.all():
             custo += material_dp.get_custo()
@@ -70,3 +72,12 @@ class Produto(models.Model):
 
     def get_preco_cliente_final(self):
         return self.get_custo_de_producao() * 4
+
+
+class ServicoDoProduto(models.Model):
+    produto = models.ForeignKey(Produto, on_delete=models.CASCADE, verbose_name=_("produto"))
+    nome = models.CharField(_('nome'), max_length=150)
+    valor = models.DecimalField(_("valor"), max_digits=8, decimal_places=2)
+
+    def __str__(self):
+        return self.nome

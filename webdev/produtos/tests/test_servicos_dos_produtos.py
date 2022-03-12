@@ -1,73 +1,61 @@
 import pytest
+from pytest_django.asserts import assertRedirects
 from django.urls import reverse
 from pytest_django.asserts import assertContains
 from django.contrib.auth.models import User
-from webdev.produtos.models import Produto
-from webdev.fornecedores.models import Fornecedor, Servico
+from webdev.produtos.models import Produto, ServicoDoProduto
 
 @pytest.fixture
-def fornecedor(db):
-    return Fornecedor.objects.create(nome='Zé Comédia')
+def user(db):
+    return User.objects.create_user(username='TestUser', password='MinhaSenha123')
 
 @pytest.fixture
-def servico(fornecedor):
-    return Servico.objects.create(
-        nome='Fotografia',
-        data='2021-04-05',
-        fornecedor=fornecedor,
-        qualidade=5,
-        valor=100.5
-    )
-
-@pytest.fixture
-def produto_com_servico(servico):
+def produto1(db):
     p = Produto.objects.create(nome='Produto1', colecao="d'Mentira")
-    p.servicos.add(servico)
+    ServicoDoProduto.objects.create(nome='Fotografia', produto=p, valor=2500)
     return p
 
 # Visualização dos serviços no estoque de produtos
 @pytest.fixture
-def resposta_estoque_produtos(client, produto_com_servico, fornecedor, servico):
-    usr = User.objects.create_user(username='TestUser', password='MinhaSenha123')
-    client.login(username='TestUser', password='MinhaSenha123')
+def resposta_estoque_produtos(client, user, produto1):
+    client.force_login(user)
     resp = client.get(reverse('produtos:estoque_produtos'))
     return resp
 
-def test_servicos_do_produto_presente(resposta_estoque_produtos, produto_com_servico):
-    for s in produto_com_servico.servicos.all():
+def test_servicos_do_produto_presente(resposta_estoque_produtos, produto1):
+    for s in produto1.get_servicos():
         assertContains(resposta_estoque_produtos, s.nome)
 
-def test_btn_adicionar_servico_presente(resposta_estoque_produtos, produto_com_servico):
+def test_btn_adicionar_servico_presente(resposta_estoque_produtos, produto1):
     assertContains(
         resposta_estoque_produtos,
-        f'<a href="{reverse("produtos:adicionar_servico", kwargs={"produto_id": produto_com_servico.id})}"'
+        f'<a href="{reverse("produtos:adicionar_servico", kwargs={"produto_id": produto1.id})}"'
     )
 
-def test_btn_editar_servico_presente(resposta_estoque_produtos, produto_com_servico):
-    for s in produto_com_servico.servicos.all():
+def test_btn_editar_servico_presente(resposta_estoque_produtos, produto1):
+    for s in produto1.get_servicos():
         assertContains(
             resposta_estoque_produtos,
-            f'<a href="{reverse("fornecedores:editar_servico", kwargs={"servico_id": s.id})}"'
+            f'<a href="{reverse("produtos:editar_servico_dp", kwargs={"servico_dp_id": s.id})}"'
         )
 
-def test_btn_deletar_servico_presente(resposta_estoque_produtos, produto_com_servico):
-    for s in produto_com_servico.servicos.all():
+def test_btn_deletar_servico_presente(resposta_estoque_produtos, produto1):
+    for s in produto1.get_servicos():
         assertContains(
             resposta_estoque_produtos,
-            f'<form action="{reverse("fornecedores:deletar_servico", kwargs={"servico_id": s.id})}"'
+            f'<form action="{reverse("produtos:remover_servico_dp", kwargs={"servico_dp_id": s.id})}"'
         )
 
 # Adicionar serviço ao produto 
 @pytest.fixture
-def produto_sem_servico(db):
+def produto2(db):
     return Produto.objects.create(nome='Produto1', colecao="d'Mentira")
 
 # GET
 @pytest.fixture
-def resposta_adicionar_servico_ao_produto_get(client, produto_sem_servico, fornecedor):
-    usr = User.objects.create_user(username='TestUser', password='MinhaSenha123')
-    client.login(username='TestUser', password='MinhaSenha123')
-    resp = client.get(reverse('produtos:adicionar_servico', kwargs={"produto_id": produto_sem_servico.id}))
+def resposta_adicionar_servico_ao_produto_get(client, user, produto2):
+    client.force_login(user)
+    resp = client.get(reverse('produtos:adicionar_servico', kwargs={"produto_id": produto2.id}))
     return resp
 
 def test_adicionar_servico_status_code(resposta_adicionar_servico_ao_produto_get):
@@ -81,23 +69,67 @@ def test_btn_submit_and_stay_present(resposta_adicionar_servico_ao_produto_get):
 
 # POST
 @pytest.fixture
-def resposta_adicionar_servico_ao_produto(client, produto_sem_servico, fornecedor):
-    usr = User.objects.create_user(username='TestUser', password='MinhaSenha123')
-    client.login(username='TestUser', password='MinhaSenha123')
+def resposta_adicionar_servico_dp(client, user, produto2):
+    client.force_login(user)
     resp = client.post(
-        reverse('produtos:adicionar_servico', kwargs={"produto_id": produto_sem_servico.id}),
+        reverse('produtos:adicionar_servico', kwargs={"produto_id": produto2.id}),
         data={
             'nome': 'Fotografia',
-            'data': '04-05-2021',
-            'fornecedor': fornecedor.id,
-            'qualidade': 5,
-            'valor': 100.5
+            'produto': produto2.id,
+            'valor': 100.5,
         }
     )
     return resp
 
-def test_adicionar_servico_ao_produto_status_code(resposta_adicionar_servico_ao_produto, produto_sem_servico):
-    assert resposta_adicionar_servico_ao_produto.status_code == 302
+def test_adicionar_servico_redirect(resposta_adicionar_servico_dp):
+    assertRedirects(resposta_adicionar_servico_dp, reverse('produtos:estoque_produtos'))
 
-def test_servico_adicionado_ao_produto(resposta_adicionar_servico_ao_produto, produto_sem_servico):
-    assert produto_sem_servico.servicos.exists()
+def test_servico_adicionado_ao_produto(resposta_adicionar_servico_dp):
+    assert ServicoDoProduto.objects.exists()
+
+def test_valor_do_produto_alterado(resposta_adicionar_servico_dp, produto2):
+    assert produto2.get_custo_de_producao() == 100.5
+
+# Editar servico do produto
+@pytest.fixture
+def servico_dp(produto2):
+    return ServicoDoProduto.objects.create(nome='Fotografia', produto=produto2, valor=2000)
+
+def test_get_editar_servico_dp(client, user, servico_dp):
+    client.force_login(user)
+    response = client.get(reverse('produtos:editar_servico_dp', kwargs={'servico_dp_id': servico_dp.id}))
+    assert response.status_code == 200
+
+@pytest.fixture
+def resposta_editar_servico_dp(client, user, servico_dp):
+    client.force_login(user)
+    response = client.post(
+        reverse('produtos:editar_servico_dp', kwargs={'servico_dp_id': servico_dp.id}),
+        data={
+            'nome': 'Fotografia',
+            'valor': 1500
+        }
+    )
+    return response
+
+def test_editar_servico_dp_redirect(resposta_editar_servico_dp):
+    assertRedirects(resposta_editar_servico_dp, reverse('produtos:estoque_produtos'))
+
+def test_servico_dp_alterado(resposta_editar_servico_dp):
+    assert ServicoDoProduto.objects.first().valor == 1500
+
+def test_valor_do_produto_alterado2(resposta_editar_servico_dp, produto2):
+    assert produto2.get_custo_de_producao() == 1500
+
+# Remover servico do produto
+@pytest.fixture
+def resposta_remover_servico_dp(client, user, servico_dp):
+    client.force_login(user)
+    resp = client.post(reverse('produtos:remover_servico_dp', kwargs={'servico_dp_id': servico_dp.id}))
+    return resp
+
+def test_remover_servico_dp_status_code(resposta_remover_servico_dp):
+    assertRedirects(resposta_remover_servico_dp, reverse('produtos:estoque_produtos'))
+
+def test_servico_dp_deletado(resposta_remover_servico_dp):
+    assert not ServicoDoProduto.objects.exists()
