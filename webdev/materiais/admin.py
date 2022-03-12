@@ -14,3 +14,6 @@ class EntradaResource(resources.ModelResource):
     class Meta:
         model = Entrada
         exclude = ('despesa')
+
+    def after_save_instance(self, instance, using_transactions, dry_run):
+        return super().after_save_instance(instance, using_transactions, dry_run)
