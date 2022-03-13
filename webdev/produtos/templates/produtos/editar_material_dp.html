@@ -11,7 +11,7 @@
 <div class="container-sm mb-4">
     <div class="row d-flex justify-content-center">
         <div class="col-md-9 border shadow px-4 py-3">
-            <form action="{% url 'produtos:adicionar_material' produto.id %}" method="POST">
+            <form action="{% url 'produtos:editar_material_dp' material_dp.id %}" method="POST">
                 {% csrf_token %}
                 <div class="row gx-2">
                     <div class="col-12">

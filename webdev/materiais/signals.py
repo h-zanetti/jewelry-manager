@@ -31,9 +31,12 @@ def gerenciar_entrada(sender, instance, **kwargs):
 
     if instance.alterar_estoque:
         # Somar novo estoque
-        material.estoque += instance.unidades
-        material.peso += instance.peso
-        material.save()
+        if instance.unidades:
+            material.estoque += instance.unidades
+            material.save()
+        if instance.peso:
+            material.peso += instance.peso
+            material.save()
 
 @receiver(pre_delete, sender=Entrada)
 def deletar_despesa(sender, instance, **kwargs):

@@ -191,12 +191,7 @@ def adicionar_material(request, produto_id):
     if request.method == 'POST':
         form = MaterialDoProdutoForm(request.POST)
         if form.is_valid():
-            material_dp = form.save()
-            if not material_dp.peso:
-                material_dp.peso = material_dp.material.peso
-                material_dp.unidade_de_medida = material_dp.material.unidade_de_medida
-                material_dp.save()
-            produto.materiais.add(material_dp)
+            form.save()
             next_url = request.POST.get('next')
             if 'submit-stay' in request.POST:
                 return redirect('produtos:adicionar_material', produto_id)
@@ -209,8 +204,8 @@ def adicionar_material(request, produto_id):
 
     context = {
         'title': f'Adicionar material ao produto {produto.nome} #{produto.id}',
+        'produto': produto,
         'form': form,
-        'novo_obj': True
     }
 
     return render(request, 'produtos/adicionar_material.html', context)
@@ -232,10 +227,11 @@ def editar_material_dp(request, material_dp_id):
 
     context = {
         'title': f'Editar material do produto',
+        'material_dp': material_dp,
         'form': form
     }
 
-    return render(request, 'produtos/adicionar_material.html', context)
+    return render(request, 'produtos/editar_material_dp.html', context)
 
 @login_required
 def remover_material_dp(request, material_dp_id):
