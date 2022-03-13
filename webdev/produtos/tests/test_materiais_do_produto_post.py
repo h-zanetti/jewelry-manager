@@ -21,14 +21,18 @@ def produto(db):
         colecao="d'Mentira",
     )
 
+@pytest.fixture
+def user(db):
+    return User.objects.create_user(username='TestUser', password='MinhaSenha123')
+
 # Adicionar Material ao Produto
 @pytest.fixture
-def resposta_adicionar_material_do_produto(client, produto, material):
-    User.objects.create_user(username='TestUser', password='MinhaSenha123')
-    client.login(username='TestUser', password='MinhaSenha123')
+def resposta_adicionar_material_do_produto(client, produto, material, user):
+    client.force_login(user)
     resp = client.post(
         reverse('produtos:adicionar_material', kwargs={'produto_id': produto.id}),
         data={
+            'produto': produto.id,
             'material': material.id,
             'unidades': 1,
         }
@@ -45,21 +49,20 @@ def test_material_adicionado_ao_produto(resposta_adicionar_material_do_produto):
 # Editar Material ao Produto
 @pytest.fixture
 def material_do_produto(produto, material):
-    material_dp = MaterialDoProduto.objects.create(
+    return MaterialDoProduto.objects.create(
+        produto=produto,
         material=material,
         unidades=1
     )
-    produto.materiais.add(material_dp)
-    return material_dp
 
 @pytest.fixture
-def resposta_editar_material_do_produto(client, material_do_produto):
-    User.objects.create_user(username='TestUser', password='MinhaSenha123')
-    client.login(username='TestUser', password='MinhaSenha123')
+def resposta_editar_material_do_produto(client, material_do_produto, user, produto, material):
+    client.force_login(user)
     resp = client.post(
         reverse('produtos:editar_material_dp', kwargs={'material_dp_id': material_do_produto.id}),
         data={
-            'material': material_do_produto.material.id,
+            'produto': produto.id,
+            'material': material.id,
             'unidades': 2,
         }
     )
@@ -74,10 +77,11 @@ def test_material_do_produto_editado(resposta_editar_material_do_produto):
 
 # Remover Material ao Produto
 @pytest.fixture
-def resposta_remover_material_do_produto(client, material_do_produto):
-    User.objects.create_user(username='TestUser', password='MinhaSenha123')
-    client.login(username='TestUser', password='MinhaSenha123')
-    resp = client.post(reverse('produtos:remover_material_dp', kwargs={'material_dp_id': material_do_produto.id}))
+def resposta_remover_material_do_produto(client, material_do_produto, user):
+    client.force_login(user)
+    resp = client.post(reverse(
+        'produtos:remover_material_dp',
+        kwargs={'material_dp_id': material_do_produto.id}))
     return resp
 
 def test_remover_material_do_produto_status_code(resposta_remover_material_do_produto):

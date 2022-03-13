@@ -22,18 +22,21 @@ def produto(db):
 
 @pytest.fixture
 def material_do_produto(produto, material):
-    material_dp = MaterialDoProduto.objects.create(
+    return MaterialDoProduto.objects.create(
+        produto=produto,
         material=material,
         unidades=1
     )
-    produto.materiais.add(material_dp)
-    return material_dp
+
+@pytest.fixture
+def user(db):
+    return User.objects.create_user(username='TestUser', password='MinhaSenha123')
+
 
 # Visualização 
 @pytest.fixture
-def resposta_estoque(client, material_do_produto):
-    User.objects.create_user(username='TestUser', password='MinhaSenha123')
-    client.login(username='TestUser', password='MinhaSenha123')
+def resposta_estoque(client, material_do_produto, user):
+    client.force_login(user)
     resp = client.get(reverse('produtos:estoque_produtos'))
     return resp
 
@@ -57,9 +60,8 @@ def test_btn_remover_material_do_produto_presente(resposta_estoque, material_do_
 
 # Adicionar Material ao Produto
 @pytest.fixture
-def resposta_adicionar_material_do_produto(client, produto):
-    User.objects.create_user(username='TestUser', password='MinhaSenha123')
-    client.login(username='TestUser', password='MinhaSenha123')
+def resposta_adicionar_material_do_produto(client, produto, user):
+    client.force_login(user)
     resp = client.get(
         reverse('produtos:adicionar_material', kwargs={'produto_id': produto.id})
     )
