@@ -86,30 +86,37 @@ def editar_produto(request, produto_id):
 def duplicar_produto(request, produto_id):
     try:
         produto = Produto.objects.get(id=produto_id)
-        initial = produto.__dict__
-        initial.pop('_state')
-        initial.pop('id')
-    except:
-        raise Http404('Produto não encontrado')
+        produto.pk = None
 
-    if request.method == 'POST':
-        form = ProdutoForm(request.POST, request.FILES, initial=initial)
-        if form.is_valid():
-            novo_produto = form.save()
-            if 'submit-stay' in request.POST:
-                return redirect(reverse('produtos:duplicar_produto', kwargs={'produto_id': novo_produto.id}))
-            else:
+        if request.method == 'POST':
+            form = ProdutoForm(request.POST, request.FILES)
+            if form.is_valid():
+                prod_duplicado = form.save()
+                produto = Produto.objects.get(id=produto_id)
+                # Duplicar materiais do produto
+                for material_dp in produto.get_materiais():
+                    mdp = MaterialDoProduto.objects.get(pk=material_dp.pk)
+                    mdp.produto = prod_duplicado
+                    mdp.pk = None
+                    mdp.save()
+                # Duplicar servicos do produto
+                for servico_dp in produto.get_servicos():
+                    sdp = ServicoDoProduto.objects.get(pk=servico_dp.pk)
+                    sdp.produto = prod_duplicado
+                    sdp.pk = None
+                    sdp.save()
                 return redirect('produtos:estoque_produtos')
-    else:
-        form = ProdutoForm(initial=initial)
+        else:
+            form = ProdutoForm(instance=produto)
 
-    context = {
-        'title': 'Duplicar Produto',
-        'form': form,
-        'novo_obj': True
-    }
-
-    return render(request, 'produtos/novo_produto.html', context)
+        context = {
+            'title': 'Duplicar Produto',
+            'produto_id': produto_id,
+            'form': form,
+        }
+        return render(request, 'produtos/duplicar_produto.html', context)
+    except Produto.DoesNotExist:
+        raise Http404('Produto não encontrado')
 
 @login_required
 def deletar_produto(request, produto_id):
