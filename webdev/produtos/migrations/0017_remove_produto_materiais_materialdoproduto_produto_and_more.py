@@ -13,22 +13,12 @@ class Migration(migrations.Migration):
     operations = [
         migrations.RemoveField(
             model_name='produto',
-            name='materiais',
+            name='servicos',
         ),
         migrations.AddField(
             model_name='materialdoproduto',
             name='produto',
-            field=models.ForeignKey(default=None, on_delete=django.db.models.deletion.CASCADE, to='produtos.produto', verbose_name='produto'),
+            field=models.ForeignKey(default=None, on_delete=django.db.models.deletion.CASCADE, to='produtos.produto', verbose_name='produto', null=True),
             preserve_default=False,
-        ),
-        migrations.AlterField(
-            model_name='servicodoproduto',
-            name='nome',
-            field=models.CharField(max_length=150, verbose_name='nome'),
-        ),
-        migrations.AlterField(
-            model_name='servicodoproduto',
-            name='valor',
-            field=models.DecimalField(decimal_places=2, max_digits=8, verbose_name='valor'),
         ),
     ]
