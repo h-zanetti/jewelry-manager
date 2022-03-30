@@ -9,7 +9,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['navaz.codeupbrasil.com.br']
+ALLOWED_HOSTS = [os.environ.get('HOST_NAME')]
 
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
