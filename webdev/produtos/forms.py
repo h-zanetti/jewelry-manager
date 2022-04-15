@@ -1,5 +1,6 @@
+from faulthandler import disable
 from django import forms
-from .models import Produto, Categoria, MaterialDoProduto
+from .models import Produto, Categoria, MaterialDoProduto, ServicoDoProduto
 
 class CategoriaForm(forms.ModelForm):
     class Meta:
@@ -58,4 +59,14 @@ class MaterialDoProdutoForm(forms.ModelForm):
     )
     class Meta:
         model = MaterialDoProduto
+        fields = '__all__'
+    
+
+class ServicoDoProdutoForm(forms.ModelForm):
+    produto = forms.ModelChoiceField(
+        queryset=Produto.objects.all(),
+        disabled=True
+    )
+    class Meta:
+        model = ServicoDoProduto
         fields = '__all__'
