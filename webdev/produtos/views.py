@@ -126,9 +126,17 @@ def deletar_produto(request, produto_id):
 
 @login_required
 def estoque(request):
+    if request.GET:
+        produtos = Produto.objects.filter(nome__contains=request.GET.get('search'))
+    else:
+        produtos = Produto.objects.all()
+
     context = {
         'title': 'Estoque de Produtos',
-        'produtos': Produto.objects.all()
+        'import_url': reverse('produtos:importar_produtos'),
+        'export_url': reverse('produtos:exportar_produtos'),
+        'create_url': reverse('produtos:novo_produto'),
+        'produtos': produtos,
     }
     return render(request, 'produtos/estoque_produtos.html', context)
 

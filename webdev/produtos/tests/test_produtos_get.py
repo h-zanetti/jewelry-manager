@@ -26,6 +26,12 @@ def test_estoque_produtos_autenticado_status_code(resposta_estoque_autenticado):
 def test_btn_novo_produto_presente(resposta_estoque_autenticado):
     assertContains(resposta_estoque_autenticado, f'''<a href="{reverse('produtos:novo_produto')}"''')
 
+def test_btn_importar_produto_presente(resposta_estoque_autenticado):
+    assertContains(resposta_estoque_autenticado, f'''<a href="{reverse('produtos:importar_produtos')}"''')
+
+def test_btn_exportar_produto_presente(resposta_estoque_autenticado):
+    assertContains(resposta_estoque_autenticado, f'''<a href="{reverse('produtos:exportar_produtos')}"''')
+
 @pytest.fixture
 def estoque_de_produtos(db):
     return [
