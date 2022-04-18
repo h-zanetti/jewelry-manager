@@ -1,3 +1,4 @@
+from django.db.models import Q
 from django.contrib import messages
 from django.http.response import HttpResponse
 from tablib.core import Dataset
@@ -126,9 +127,21 @@ def deletar_produto(request, produto_id):
 
 @login_required
 def estoque(request):
+    if request.GET:
+        produtos = Produto.objects.filter(
+            Q(nome__contains=request.GET.get('search')) |
+            Q(colecao__contains=request.GET.get('search')) |
+            Q(familia__contains=request.GET.get('search'))
+        )
+    else:
+        produtos = Produto.objects.all()
+
     context = {
         'title': 'Estoque de Produtos',
-        'produtos': Produto.objects.all()
+        'import_url': reverse('produtos:importar_produtos'),
+        'export_url': reverse('produtos:exportar_produtos'),
+        'create_url': reverse('produtos:novo_produto'),
+        'produtos': produtos,
     }
     return render(request, 'produtos/estoque_produtos.html', context)
 
@@ -265,5 +278,5 @@ def importar_produtos(request):
         resource.import_data(dataset)
         return redirect('produtos:estoque_produtos')
         
-    return render(request, 'base_form_file.html', {'title': "Importação de despesas"})
+    return render(request, 'base_form_file.html', {'title': "Importação de produtos"})
 

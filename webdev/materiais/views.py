@@ -1,3 +1,4 @@
+from django.db.models import Q
 from django.contrib import messages
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
@@ -11,9 +12,21 @@ from tablib import Dataset
 # Estoque
 @login_required
 def estoque_materiais(request):
+    if request.GET:
+        materiais = Material.objects.filter(
+            Q(nome__contains=request.GET.get('search')) |
+            Q(categoria__contains=request.GET.get('search')) |
+            Q(subcategoria__contains=request.GET.get('search'))
+        )
+    else:
+        materiais = Material.objects.all()
+
     context = {
         'title': 'Estoque de matéria prima',
-        'materiais': Material.objects.all()
+        'import_url': reverse('materiais:importar_materiais'),
+        'export_url': reverse('materiais:exportar_materiais'),
+        'create_url': reverse('materiais:cadastrar_material'),
+        'materiais': materiais,
     }
     return render(request, 'materiais/estoque_materiais.html', context)
 
@@ -106,9 +119,21 @@ def importar_materiais(request):
 # Entradas
 @login_required
 def entradas_de_materiais(request):
+    if request.GET:
+        entradas = Entrada.objects.filter(
+            Q(material__nome__contains=request.GET.get('search')) |
+            Q(fornecedor__nome__contains=request.GET.get('search')) |
+            Q(codigo_do_fornecedor__contains=request.GET.get('search'))
+        )
+    else:
+        entradas = Entrada.objects.all()
+
     context = {
         'title': 'Entradas de matérias primas',
-        'entradas': Entrada.objects.all()
+        'import_url': reverse('materiais:importar_entradas'),
+        'export_url': reverse('materiais:exportar_entradas'),
+        'create_url': reverse('materiais:entrada_de_material'),
+        'entradas': entradas,
     }
     return render(request, 'materiais/entradas_de_materiais.html', context)
 

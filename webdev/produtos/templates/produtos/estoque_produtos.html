@@ -1,26 +1,8 @@
-{% extends 'base.html' %}
+{% extends 'base_table.html' %}
 {% load bootstrap5 %}
 {% load humanize %}
 
-{% block content %}
-<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
-    {% if title %}
-    <h1 class="h2">{{ title }}</h1>
-    {% endif %}
-    <div class="btn-toolbar" role="toolbar">
-        <div class="btn-group btn-group-sm me-2">
-          <a href="{% url 'produtos:importar_produtos' %}" class="btn btn-sm btn-outline-secondary">Importar</a>
-          <a href="{% url 'produtos:exportar_produtos' %}" class="btn btn-sm btn-outline-secondary">Exportar</a>
-        </div>
-        <a href="{% url 'produtos:categorias' %}" class="btn btn-sm btn-primary me-2">
-          <i class="fas fa-plus"></i><span class="ms-2">Categorias</span>
-        </a>
-        <a href="{% url 'produtos:novo_produto' %}" class="btn btn-sm btn-primary">
-          <i class="fas fa-plus"></i><span class="ms-2">Produto</span>
-        </a>
-    </div>
-</div>
-
+{% block table_block %}
 <div class="table">
 <table class="table">
   <thead>
@@ -311,4 +293,4 @@
     {% endfor %}
   </tbody>
 </table>
-{% endblock %}
+{% endblock table_block %}

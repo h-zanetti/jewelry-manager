@@ -1,3 +1,4 @@
+from django.db.models import Q
 from django.shortcuts import render, redirect
 from django.http import Http404, HttpResponseRedirect
 from django.urls import reverse
@@ -9,9 +10,20 @@ from django.contrib import messages
 
 @login_required
 def meus_fornecedores(request):
+    if request.GET:
+        fornecedores = Fornecedor.objects.filter(
+            Q(nome__contains=request.GET.get('search')) |
+            Q(fornecimento__nome__contains=request.GET.get('search'))
+        )
+    else:
+        fornecedores = Fornecedor.objects.all()
+
     context = {
         'title': 'Meus Fornecedores',
-        'fornecedores': Fornecedor.objects.all()
+        # 'import_url': reverse('fornecedores:importar_fornecedores'),
+        # 'export_url': reverse('fornecedores:exportar_fornecedores'),
+        'create_url': reverse('fornecedores:novo_fornecedor'),
+        'fornecedores': fornecedores,
     }
     return render(request, 'fornecedores/meus_fornecedores.html', context)
 
