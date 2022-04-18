@@ -16,7 +16,7 @@ def test_meus_fornecedores_status_code(resposta):
     assert resposta.status_code == 200
 
 def test_btn_novo_fornecedor_presente(resposta):
-    assertContains(resposta, f'''<a href="{reverse('fornecedores:novo_fornecedor')}"''')
+    assertContains(resposta, f'''href="{reverse('fornecedores:novo_fornecedor')}"''')
 
 def test_meus_fornecedores_nao_autenticado_status_code(client, db):
     resp = client.get(reverse('fornecedores:meus_fornecedores'))

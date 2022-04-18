@@ -278,5 +278,5 @@ def importar_produtos(request):
         resource.import_data(dataset)
         return redirect('produtos:estoque_produtos')
         
-    return render(request, 'base_form_file.html', {'title': "Importação de despesas"})
+    return render(request, 'base_form_file.html', {'title': "Importação de produtos"})
 
