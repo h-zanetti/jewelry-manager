@@ -1,29 +1,7 @@
-{% extends 'base.html' %}
+{% extends 'base_table.html' %}
 {% load bootstrap5 %}
 
-{% block content %}
-<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
-    {% if title %}
-    <h1 class="h2">{{ title }}</h1>
-    {% endif %}
-    <div class="btn-toolbar" role="toolbar">
-        <div class="btn-group btn-group-sm me-2" role="group">
-            <button type="button" class="btn btn-outline-secondary">Importar</button>
-            <button type="button" class="btn btn-outline-secondary">Exportar</button>
-        </div>
-        <div class="btn-group btn-group-sm me-2">
-            <a href="{% url 'fornecedores:novo_servico' %}" class="btn btn-primary">
-                <i class="fas fa-plus"></i> Serviço
-            </a>
-        </div>
-        <div class="btn-group btn-group-sm">
-            <a href="{% url 'fornecedores:novo_fornecedor' %}" class="btn btn-primary">
-                <i class="fas fa-plus"></i> Fornecedor
-            </a>
-        </div>
-    </div>
-</div>
-
+{% block table_block %}
 <div class="table">
 <table class="table">
   <thead>
