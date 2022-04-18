@@ -8,17 +8,24 @@
     <div class="btn-toolbar" role="toolbar">
         <div class="me-2">
             <form class="d-flex" method="get">
-                <input class="form-control form-control-sm me-2" type="search" name="search" placeholder="Search" aria-label="Search">
-                <button class="btn btn-sm btn-outline-primary" type="submit">Search</button>
+                <input class="form-control form-control-sm me-1" type="search" name="search" placeholder="Search" aria-label="Search">
+                <button class="btn btn-sm btn-outline-secondary" type="submit">
+                  <i class="fas fa-search black"></i>
+                </button>
             </form>
         </div>
-        <div class="btn-group btn-group-sm me-2">
-          <a href="{{ import_url }}" class="btn btn-sm btn-outline-secondary">Importar</a>
-          <a href="{{ export_url }}" class="btn btn-sm btn-outline-secondary">Exportar</a>
+
+        <div class="btn-group">
+          <button type="button" class="btn btn-sm btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+            Ações
+          </button>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="{{ create_url }}">Novo</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" href="{{ import_url }}">Importar</a></li>
+            <li><a class="dropdown-item" href="{{ export_url }}">Exportar</a></li>
+          </ul>
         </div>
-        <a href="{{ create_url }}" class="btn btn-sm btn-primary">
-          <i class="fas fa-plus"></i><span class="ms-1">Novo</span>
-        </a>
     </div>
 </div>
 
