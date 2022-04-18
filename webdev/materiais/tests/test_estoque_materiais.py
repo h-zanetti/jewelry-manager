@@ -28,6 +28,15 @@ def test_materiais_presente(resposta_estoque, material):
 def test_btn_estoque_materiais_presente(resposta_estoque):
     assertContains(resposta_estoque, f'href="{reverse("materiais:estoque_materiais")}"')
 
+def test_btn_cadastrar_material_presente(resposta_estoque):
+    assertContains(resposta_estoque, f'href="{reverse("materiais:cadastrar_material")}"')
+
+def test_btn_importar_materiais_presente(resposta_estoque):
+    assertContains(resposta_estoque, f'href="{reverse("materiais:importar_materiais")}"')
+
+def test_btn_exportar_materiais_presente(resposta_estoque):
+    assertContains(resposta_estoque, f'href="{reverse("materiais:exportar_materiais")}"')
+
 def test_btn_nova_entrada_presente(resposta_estoque):
     assertContains(resposta_estoque, f'href="{reverse("materiais:entrada_de_material")}"')
 
