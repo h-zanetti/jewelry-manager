@@ -14,9 +14,9 @@ from tablib import Dataset
 def estoque_materiais(request):
     if request.GET:
         materiais = Material.objects.filter(
-            Q(nome__contains=request.GET.get('search')) |
-            Q(categoria__contains=request.GET.get('search')) |
-            Q(subcategoria__contains=request.GET.get('search'))
+            Q(nome__icontains=request.GET.get('search')) |
+            Q(categoria__icontains=request.GET.get('search')) |
+            Q(subcategoria__icontains=request.GET.get('search'))
         )
     else:
         materiais = Material.objects.all()
@@ -121,9 +121,9 @@ def importar_materiais(request):
 def entradas_de_materiais(request):
     if request.GET:
         entradas = Entrada.objects.filter(
-            Q(material__nome__contains=request.GET.get('search')) |
-            Q(fornecedor__nome__contains=request.GET.get('search')) |
-            Q(codigo_do_fornecedor__contains=request.GET.get('search'))
+            Q(material__nome__icontains=request.GET.get('search')) |
+            Q(fornecedor__nome__icontains=request.GET.get('search')) |
+            Q(codigo_do_fornecedor__icontains=request.GET.get('search'))
         )
     else:
         entradas = Entrada.objects.all()
