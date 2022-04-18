@@ -126,11 +126,16 @@ def deletar_produto(request, produto_id):
 
 @login_required
 def estoque(request):
+    
     context = {
         'title': 'Estoque de Produtos',
-        'produtos': Produto.objects.all()
+        'model_name': 'Produto',
+        'objects': Produto.objects.all(),
+        'import_url': reverse('produtos:importar_produtos'),
+        'export_url': reverse('produtos:exportar_produtos'),
+        'create_url': reverse('produtos:novo_produto'),
     }
-    return render(request, 'produtos/estoque_produtos.html', context)
+    return render(request, 'base_table.html', context)
 
 @login_required
 def adicionar_servico(request, produto_id):

@@ -12,6 +12,7 @@ class CategoriaForm(forms.ModelForm):
             }
         }
 
+
 class ProdutoForm(forms.ModelForm):
     foto = forms.ImageField(
         widget=forms.FileInput(),
@@ -43,6 +44,7 @@ class ProdutoForm(forms.ModelForm):
         model = Produto
         exclude = ('servicos', 'materiais')
 
+
 class MaterialDoProdutoForm(forms.ModelForm):
     peso = forms.IntegerField(
         widget=forms.widgets.NumberInput(
@@ -70,3 +72,10 @@ class ServicoDoProdutoForm(forms.ModelForm):
     class Meta:
         model = ServicoDoProduto
         fields = '__all__'
+
+class SortProductsForm(forms.Form):
+    fields = forms.ChoiceField(
+        choices=[f.name for f in Produto._meta.fields \
+                 if f.name not in ['id', 'foto']]
+    )
+    order = forms.ChoiceField(choices=['Crescente', 'Decrescente'])
