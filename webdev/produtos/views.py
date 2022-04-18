@@ -1,3 +1,4 @@
+from django.db.models import Q
 from django.contrib import messages
 from django.http.response import HttpResponse
 from tablib.core import Dataset
@@ -127,7 +128,11 @@ def deletar_produto(request, produto_id):
 @login_required
 def estoque(request):
     if request.GET:
-        produtos = Produto.objects.filter(nome__contains=request.GET.get('search'))
+        produtos = Produto.objects.filter(
+            Q(nome__contains=request.GET.get('search')) |
+            Q(colecao__contains=request.GET.get('search')) |
+            Q(familia__contains=request.GET.get('search'))
+        )
     else:
         produtos = Produto.objects.all()
 
