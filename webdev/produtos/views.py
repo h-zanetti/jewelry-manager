@@ -129,9 +129,9 @@ def deletar_produto(request, produto_id):
 def estoque(request):
     if request.GET:
         produtos = Produto.objects.filter(
-            Q(nome__contains=request.GET.get('search')) |
-            Q(colecao__contains=request.GET.get('search')) |
-            Q(familia__contains=request.GET.get('search'))
+            Q(nome__icontains=request.GET.get('search')) |
+            Q(colecao__icontains=request.GET.get('search')) |
+            Q(familia__icontains=request.GET.get('search'))
         )
     else:
         produtos = Produto.objects.all()

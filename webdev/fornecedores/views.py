@@ -12,8 +12,8 @@ from django.contrib import messages
 def meus_fornecedores(request):
     if request.GET:
         fornecedores = Fornecedor.objects.filter(
-            Q(nome__contains=request.GET.get('search')) |
-            Q(fornecimento__nome__contains=request.GET.get('search'))
+            Q(nome__icontains=request.GET.get('search')) |
+            Q(fornecimento__nome__icontains=request.GET.get('search'))
         )
     else:
         fornecedores = Fornecedor.objects.all()
