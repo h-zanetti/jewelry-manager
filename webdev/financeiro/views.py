@@ -16,7 +16,7 @@ from .models import Despesa, Parcela, Receita
 from .forms import CriarDespesaForm, EditarDespesaForm, ReceitaForm
 
 # Receitas
-@permission_required('financeiro.view_receita')
+@permission_required('financeiro.view_receita', raise_exception=True)
 def receitas(request):
     context = {
         'title': 'Minhas receitas',
@@ -24,7 +24,7 @@ def receitas(request):
     }
     return render(request, 'financeiro/receitas.html', context)
 
-@permission_required('financeiro.add_receita')
+@permission_required('financeiro.add_receita', raise_exception=True)
 def nova_receita(request):
     if request.method == 'POST':
         form = ReceitaForm(request.POST)
@@ -48,7 +48,7 @@ def nova_receita(request):
 
     return render(request, 'financeiro/form_receita.html', context)
 
-@permission_required('financeiro.change_receita')
+@permission_required('financeiro.change_receita', raise_exception=True)
 def editar_receita(request, receita_id):
     try:
         receita = Receita.objects.get(id=receita_id)
@@ -70,14 +70,14 @@ def editar_receita(request, receita_id):
 
     return render(request, 'financeiro/form_receita.html', context)
 
-@permission_required('financeiro.delete_receita')
+@permission_required('financeiro.delete_receita', raise_exception=True)
 def deletar_receita(request, receita_id):
     if request.method == 'POST':
         Receita.objects.get(id=receita_id).delete()
     return HttpResponseRedirect(reverse('financeiro:receitas'))
 
 # Despesas
-@permission_required('financeiro.view_despesa')
+@permission_required('financeiro.view_despesa', raise_exception=True)
 def despesas(request):
     context = {
         'title': 'Minhas despesas',
@@ -85,7 +85,7 @@ def despesas(request):
     }
     return render(request, 'financeiro/despesas.html', context)
 
-@permission_required('financeiro.add_despesa')
+@permission_required('financeiro.add_despesa', raise_exception=True)
 def nova_despesa(request):
     if request.method == 'POST':
         form = CriarDespesaForm(request.POST)
@@ -109,7 +109,7 @@ def nova_despesa(request):
 
     return render(request, 'financeiro/form_despesa.html', context)
 
-@permission_required('financeiro.change_despesa')
+@permission_required('financeiro.change_despesa', raise_exception=True)
 def editar_despesa(request, despesa_id):
     try:
         despesa = Despesa.objects.get(id=despesa_id)
@@ -135,20 +135,20 @@ def editar_despesa(request, despesa_id):
 
     return render(request, 'financeiro/form_despesa.html', context)
 
-@permission_required('financeiro.delete_despesa')
+@permission_required('financeiro.delete_despesa', raise_exception=True)
 def deletar_despesa(request, despesa_id):
     if request.method == 'POST':
         Despesa.objects.get(id=despesa_id).delete()
     return HttpResponseRedirect(reverse('financeiro:despesas'))
 
-@permission_required('financeiro.view_despesa')
+@permission_required('financeiro.view_despesa', raise_exception=True)
 def exportar_despesas(request):
     dados = DespesaResource().export()
     resposta = HttpResponse(dados.xls, content_type='application/vnd.ms-excel')
     resposta['Content-Disposition'] = 'attachment; filename=despesas.xls'
     return resposta
 
-@permission_required('financeiro.add_despesa')
+@permission_required('financeiro.add_despesa', raise_exception=True)
 def importar_despesas(request):
     if request.method == 'POST':
         resource = DespesaResource()
@@ -161,8 +161,8 @@ def importar_despesas(request):
     return render(request, 'base_form_file.html', {'title': "Importação de despesas"})
 
 # Fluxo de Caixa
-@permission_required('financeiro.view_despesa')
-@permission_required('financeiro.view_receita')
+@permission_required('financeiro.view_despesa', raise_exception=True)
+@permission_required('financeiro.view_receita', raise_exception=True)
 def fluxo_de_caixa(request, ano, mes):
     # Dados do gráfico - Fluxo de caixa anual
     dados = [0 for i in range(12)]
