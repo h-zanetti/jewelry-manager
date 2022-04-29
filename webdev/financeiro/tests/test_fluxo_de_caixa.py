@@ -8,7 +8,7 @@ import pytest
 from django.urls import reverse
 from django.utils import timezone
 from pytest_django.asserts import assertContains, assertNotContains
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Permission
 from webdev.financeiro.models import Despesa, Parcela
 from webdev.vendas.models import Cliente, Venda
 from webdev.produtos.models import Produto
@@ -107,11 +107,17 @@ def servico(fornecedor):
         valor=100.5
     )
 
+@pytest.fixture
+def user(db):
+    user = User.objects.create_user(username='TestUser', password='MinhaSenha123')
+    permissions = Permission.objects.filter(content_type__app_label='financeiro', content_type__model__in=['receita', 'despesa'])
+    user.user_permissions.set(permissions)
+    return user
+
 # Visualizar Fluxo de Caixa
 @pytest.fixture
-def resposta_fluxo_de_caixa(client, lista_de_despesas, venda, entradas, servico):
-    User.objects.create_user(username='TestUser', password='MinhaSenha123')
-    client.login(username='TestUser', password='MinhaSenha123')
+def resposta_fluxo_de_caixa(client, lista_de_despesas, venda, entradas, servico, user):
+    client.force_login(user)
     resp = client.get(
         reverse('financeiro:fluxo_de_caixa',
         kwargs={'ano': timezone.localdate().year, 'mes': timezone.localdate().month})
@@ -204,9 +210,8 @@ def test_grafico_correto(resposta_fluxo_de_caixa):
                 dados[index] -= float(despesa.valor)
     assert resposta_fluxo_de_caixa.context['dados'] == dados
 
-def test_repeticao_mensal_encerrada(client, lista_de_despesas):
-    User.objects.create_user(username='TestUser', password='MinhaSenha123')
-    client.login(username='TestUser', password='MinhaSenha123')
+def test_repeticao_mensal_encerrada(client, lista_de_despesas, user):
+    client.force_login(user)
     date = timezone.localdate() + dt.timedelta(120)
     resp = client.get(
         reverse('financeiro:fluxo_de_caixa',
@@ -217,9 +222,8 @@ def test_repeticao_mensal_encerrada(client, lista_de_despesas):
     ))
     assertNotContains(resp, 'Conta de Luz')
 
-def test_repeticao_anual_encerrada(client, lista_de_despesas):
-    User.objects.create_user(username='TestUser', password='MinhaSenha123')
-    client.login(username='TestUser', password='MinhaSenha123')
+def test_repeticao_anual_encerrada(client, lista_de_despesas, user):
+    client.force_login(user)
     resp = client.get(
         reverse('financeiro:fluxo_de_caixa',
         kwargs={

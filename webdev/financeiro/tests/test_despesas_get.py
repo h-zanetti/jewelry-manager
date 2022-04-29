@@ -1,11 +1,11 @@
 import pytest
 from django.urls import reverse
-from django.contrib.auth.models import User
 from django.utils import timezone
-from pytest_django.asserts import assertContains, assertNotContains
 from webdev.financeiro.models import Despesa
+from django.contrib.auth.models import User, Permission
+from pytest_django.asserts import assertContains, assertNotContains
 
-# Despesas
+# Fixtures
 @pytest.fixture
 def despesas(db):
     return [
@@ -13,11 +13,17 @@ def despesas(db):
         Despesa.objects.create(data=timezone.now(), categoria='MEI', valor=65, repetir='m')
     ]
 
+@pytest.fixture
+def user(db):
+    user = User.objects.create_user(username='TestUser', password='MinhaSenha123')
+    permissions = Permission.objects.filter(content_type__app_label='financeiro', content_type__model='despesa')
+    user.user_permissions.set(permissions)
+    return user
+
 # Visualizar Despesas
 @pytest.fixture
-def resposta_despesas(client, despesas):
-    User.objects.create_user(username='TestUser', password='MinhaSenha123')
-    client.login(username='TestUser', password='MinhaSenha123')
+def resposta_despesas(client, despesas, user):
+    client.force_login(user)
     resp = client.get(reverse('financeiro:despesas'))
     return resp
 
@@ -56,9 +62,8 @@ def test_btn_deletar_despesa_presente(resposta_despesas, despesas):
 
 # Novas Despesas
 @pytest.fixture
-def resposta_nova_despesa(client, db):
-    User.objects.create_user(username='TestUser', password='MinhaSenha123')
-    client.login(username='TestUser', password='MinhaSenha123')
+def resposta_nova_despesa(client, user):
+    client.force_login(user)
     resp = client.get(reverse('financeiro:nova_despesa'))
     return resp
 
@@ -76,9 +81,8 @@ def test_btn_submit_leave_presente(resposta_nova_despesa):
 
 # Editar Despesas
 @pytest.fixture
-def resposta_editar_despesa(client, despesas):
-    User.objects.create_user(username='TestUser', password='MinhaSenha123')
-    client.login(username='TestUser', password='MinhaSenha123')
+def resposta_editar_despesa(client, despesas, user):
+    client.force_login(user)
     resp = client.get(reverse('financeiro:editar_despesa', kwargs={'despesa_id': despesas[0].id}))
     return resp
 
