@@ -1,7 +1,7 @@
 from dateutil.relativedelta import relativedelta
 import pytest
 from django.urls import reverse
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Permission
 from django.utils import timezone
 from pytest_django.asserts import assertContains, assertNotContains
 from webdev.financeiro.models import Receita, Parcela
@@ -24,11 +24,17 @@ def lista_de_parcelas(receita):
         parcelas.append(parcela)
     return parcelas
 
+@pytest.fixture
+def user(db):
+    user = User.objects.create_user(username='TestUser', password='MinhaSenha123')
+    permissions = Permission.objects.filter(content_type__app_label='financeiro', content_type__model='receita')
+    user.user_permissions.set(permissions)
+    return user
+
 # Visualizar receita
 @pytest.fixture
-def resposta_receita(client, receita):
-    User.objects.create_user(username='TestUser', password='MinhaSenha123')
-    client.login(username='TestUser', password='MinhaSenha123')
+def resposta_receita(client, receita, user):
+    client.force_login(user)
     resp = client.get(reverse('financeiro:receitas'))
     return resp
 
@@ -46,9 +52,8 @@ def test_btn_deletar_receita_presente(resposta_receita, receita):
 
 # Novas receita
 @pytest.fixture
-def resposta_nova_receita(client, db):
-    User.objects.create_user(username='TestUser', password='MinhaSenha123')
-    client.login(username='TestUser', password='MinhaSenha123')
+def resposta_nova_receita(client, user):
+    client.force_login(user)
     resp = client.get(reverse('financeiro:nova_receita'))
     return resp
 
@@ -66,9 +71,8 @@ def test_btn_submit_leave_presente(resposta_nova_receita):
 
 # Editar receita
 @pytest.fixture
-def resposta_editar_receita(client, receita):
-    User.objects.create_user(username='TestUser', password='MinhaSenha123')
-    client.login(username='TestUser', password='MinhaSenha123')
+def resposta_editar_receita(client, receita, user):
+    client.force_login(user)
     resp = client.get(reverse('financeiro:editar_receita', kwargs={'receita_id': receita.id}))
     return resp
 
@@ -83,3 +87,17 @@ def test_btn_submit_stay_nao_presente(resposta_editar_receita):
 
 def test_btn_submit_leave_presente(resposta_editar_receita):
     assertContains(resposta_editar_receita, f'<button type="submit" name="submit-leave"')
+
+
+# Deletar receita
+@pytest.fixture
+def resposta_deletar_receita(client, receita, user):
+    client.force_login(user)
+    resp = client.post(reverse('financeiro:deletar_receita', kwargs={'receita_id': receita.id}))
+    return resp
+
+def test_deletar_receita_status_code(resposta_deletar_receita):
+    assert resposta_deletar_receita.status_code == 302
+
+def test_receita_deletada(resposta_deletar_receita):
+    assert not Receita.objects.exists()
