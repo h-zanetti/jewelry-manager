@@ -7,4 +7,4 @@ class ProdutoResource(resources.ModelResource):
         model = Produto
         exclude = ('foto', 'servicos', 'materiais')
 
-admin.site.register(Categoria)
+# admin.site.register(Categoria)
