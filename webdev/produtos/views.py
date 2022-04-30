@@ -143,7 +143,7 @@ def estoque(request):
         'create_url': reverse('produtos:novo_produto'),
         'produtos': produtos,
     }
-    return render(request, 'produtos/estoque_produtos.html', context)
+    return render(request, 'base_table.html', context)
 
 @login_required
 def adicionar_servico(request, produto_id):
