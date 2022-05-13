@@ -34,5 +34,5 @@ urlpatterns = [
     path('deletar_servico/<int:servico_id>/', views.deletar_servico, name='deletar_servico'),
     # Import/export
     path('exportar/', views.exportar_fornecedores, name='exportar_fornecedores'),
-    # path('importar/', views.importar_produtos, name='importar_produtos'),   
+    path('importar/', views.importar_fornecedores, name='importar_fornecedores'),   
 ]
