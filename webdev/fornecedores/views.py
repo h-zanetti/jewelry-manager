@@ -534,4 +534,4 @@ def importar_fornecedores(request):
 
         return redirect('fornecedores:meus_fornecedores')
         
-    return render(request, 'base_form_file.html', {'title': "Importação de produtos"})
+    return render(request, 'base_form_file.html', {'title': "Importação de fornecedores"})
