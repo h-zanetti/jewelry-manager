@@ -493,8 +493,9 @@ def exportar_fornecedores(request):
     wb.remove(ws)
     for name, data in datasets.items():
         ws = wb.create_sheet(name)
-        for row in data.csv.split('\r\n'):
-            ws.append(row.split(','))
+        ws.append(data._get_headers())
+        for row in data._data:
+            ws.append(list(row))
     virtual_wb = save_virtual_workbook(wb)
     resposta = HttpResponse(virtual_wb, content_type='application/vnd.ms-excel')
     resposta['Content-Disposition'] = 'attachment; filename=fornecedores.xls'
