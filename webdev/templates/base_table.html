@@ -7,6 +7,11 @@
   <h1 class="h2">{{ title }}</h1>
   {% endif %}
   <div class="btn-toolbar" role="toolbar">
+    <!-- Sort -->
+    <div class="me-2">
+      <button type="button" class="btn btn-sm btn-{% if not sorting %}outline-{% endif %}primary" data-bs-toggle="modal" data-bs-target="#sortModal">Ordenar</button>
+    </div>
+    <!-- Search -->
     <div class="me-2">
       <form class="d-flex" method="get">
         <div class="input-group">
@@ -36,15 +41,19 @@
                 <h5 class="modal-title" id="sortModalLabel">Ordenar lista</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body">
-                <form method="get">
-                    {% bootstrap_formset formset %}
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-primary">Salvar</button>
-            </div>
+            <form method="get">
+              <div class="modal-body">
+                <div class="row g-2">
+                  {% for field in sort_form %}
+                    <div class="col-6">{% bootstrap_field field %}</div>                        
+                  {% endfor %}
+                </div>
+              </div>
+              <div class="modal-footer">
+                <a href="{% url 'produtos:estoque_produtos' %}" class="btn btn-danger">Limpar</a>
+                <button type="submit" class="btn btn-primary">Salvar</button>
+              </div>
+            </form>
         </div>
     </div>
 </div>

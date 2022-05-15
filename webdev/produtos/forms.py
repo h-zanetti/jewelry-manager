@@ -74,8 +74,5 @@ class ServicoDoProdutoForm(forms.ModelForm):
         fields = '__all__'
 
 class SortProductsForm(forms.Form):
-    fields = forms.ChoiceField(
-        choices=[f.name for f in Produto._meta.fields \
-                 if f.name not in ['id', 'foto']]
-    )
-    order = forms.ChoiceField(choices=['Crescente', 'Decrescente'])
+    field = forms.ChoiceField(choices=Produto.get_sortable_fields(), label='Atributo')
+    order = forms.ChoiceField(choices=(('', 'Crescente'), ('-', 'Decrescente')), required=False, label='Ordem')
