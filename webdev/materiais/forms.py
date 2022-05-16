@@ -12,6 +12,7 @@ class CadastrarMaterialForm(forms.ModelForm):
         model = Material
         fields = '__all__'
 
+
 class EntradaForm(forms.ModelForm):
     class Meta:
         model = Entrada
@@ -24,6 +25,7 @@ class EntradaForm(forms.ModelForm):
             raise ValidationError('A unidade de medida de uma Entrada deve ser a mesma do Material em estoque.')
         return unidade_de_medida
 
+
 class EditarEntradaForm(forms.ModelForm):
     class Meta:
         model = Entrada
@@ -35,3 +37,8 @@ class EditarEntradaForm(forms.ModelForm):
         if material.unidade_de_medida and unidade_de_medida != material.unidade_de_medida:
             raise ValidationError('A unidade de medida de uma Entrada deve ser a mesma do Material em estoque.')
         return unidade_de_medida
+
+
+class SortMaterialsForm(forms.Form):
+    field = forms.ChoiceField(choices=Material.get_sortable_fields(), label='Atributo')
+    order = forms.ChoiceField(choices=(('', 'Crescente'), ('-', 'Decrescente')), required=False, label='Ordem')

@@ -50,7 +50,7 @@
                 </div>
               </div>
               <div class="modal-footer">
-                <a href="{% url 'produtos:estoque_produtos' %}" class="btn btn-danger">Limpar</a>
+                <a href="{{ request.path }}" class="btn btn-danger">Limpar</a>
                 <button type="submit" class="btn btn-primary">Salvar</button>
               </div>
             </form>
