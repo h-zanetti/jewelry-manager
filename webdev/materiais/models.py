@@ -62,10 +62,7 @@ class Material(models.Model):
         entradas = self.get_entradas()
         if entradas:
             entrada = entradas.latest()
-            if not entrada.unidades:
-                return 0
-            valor_unitario = entrada.valor / entrada.unidades
-            return valor_unitario
+            return entrada.valor / entrada.unidades if entrada.unidades else 0
         else:
             return 0
     
@@ -73,10 +70,7 @@ class Material(models.Model):
         entradas = self.get_entradas()
         if entradas:
             entrada = entradas.latest()
-            if not entrada.peso:
-                return 0
-            valor_peso = entrada.valor / entrada.peso
-            return valor_peso
+            return entrada.valor / entrada.peso if entrada.peso else 0
         else:
             return 0
     
