@@ -24,7 +24,7 @@ def materiais(db):
 def material_barcode_response(client, user, materiais):
     client.force_login(user)
     resp = client.get(reverse('materiais:material_barcode'), data={
-        'materials': [1,2]
+        'materials': '[1, 2]'
     })
     return resp
 
