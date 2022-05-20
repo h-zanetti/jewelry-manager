@@ -1,3 +1,7 @@
+from tempfile import NamedTemporaryFile
+from barcode import EAN13
+from barcode.writer import ImageWriter
+from django.core.files import File
 from webdev.financeiro.models import Despesa
 from django.db import models
 from django.utils.translation import gettext_lazy as _
@@ -23,6 +27,7 @@ class Material(models.Model):
     estoque = models.IntegerField(_("unidades em estoque"), default=0, blank=True)
     observacao = models.TextField(_('observação'), blank=True, null=True)
     valor = models.DecimalField(_("valor"), max_digits=8, decimal_places=2, blank=True, default=0)
+    barcode = models.ImageField(_('código de barras'), upload_to='materiais/barcode/', blank=True, null=True)
 
     def __str__(self):
         return f"{self.nome} #{self.id}"
@@ -57,10 +62,7 @@ class Material(models.Model):
         entradas = self.get_entradas()
         if entradas:
             entrada = entradas.latest()
-            if not entrada.unidades:
-                return 0
-            valor_unitario = entrada.valor / entrada.unidades
-            return valor_unitario
+            return entrada.valor / entrada.unidades if entrada.unidades else 0
         else:
             return 0
     
@@ -68,10 +70,7 @@ class Material(models.Model):
         entradas = self.get_entradas()
         if entradas:
             entrada = entradas.latest()
-            if not entrada.peso:
-                return 0
-            valor_peso = entrada.valor / entrada.peso
-            return valor_peso
+            return entrada.valor / entrada.peso if entrada.peso else 0
         else:
             return 0
     
@@ -79,6 +78,23 @@ class Material(models.Model):
         if self.unidade_de_medida:
             return self.get_preco_por_peso() * self.peso
         return self.get_preco_unitario() * self.estoque
+
+    def generate_barcode(self):
+        img_temp_file = NamedTemporaryFile(delete=True)
+        EAN13(format(self.id, '012'), writer=ImageWriter()).write(img_temp_file)
+        temp_file = File(img_temp_file, name=f'{self.id}.png')
+        if self.barcode:
+            self.barcode.delete()
+            self.save()
+        self.barcode = temp_file
+        self.save()
+        return self.barcode
+    
+    def get_barcode(self):
+        if self.barcode:
+            return self.barcode
+        else:
+            return self.generate_barcode()
 
 
 class Entrada(models.Model):

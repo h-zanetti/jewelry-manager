@@ -1,3 +1,4 @@
+from urllib.parse import urlencode
 from django.db.models import Q
 from django.contrib import messages
 from django.shortcuts import render, redirect
@@ -5,7 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.urls import reverse
 from webdev.materiais.models import Entrada, Material
-from webdev.materiais.forms import EditarEntradaForm, EntradaForm, CadastrarMaterialForm
+from webdev.materiais.forms import EditarEntradaForm, EntradaForm, CadastrarMaterialForm, MaterialActionForm
 from .admin import EntradaResource, MaterialResource
 from tablib import Dataset
 
@@ -62,6 +63,44 @@ def cadastrar_material(request):
     }
 
     return render(request, 'materiais/material_form.html', context)
+
+@login_required
+def material_barcode(request):
+    materials = Material.objects.all()
+    if request.GET:
+        params = request.GET.get('materials')
+        params = params[1:-1].split(', ')
+        materials = materials.filter(id__in=params)
+    context = {
+        'title': 'Códigos de Barras dos Materiais',
+        'materials': materials
+    }
+    return render(request, 'materiais/material_barcode.html', context)
+
+@login_required
+def material_action_page(request):
+    materials = Material.objects.all()
+    if request.GET:
+        form = MaterialActionForm(request.GET)
+        if form.is_valid:
+            action = form.data.get('action')
+            materials = form.data.getlist('materials')
+            materials = [int(m) for m in materials]
+            if action == 'barcode':
+                base_url = reverse('materiais:material_barcode')
+                query_string =  urlencode({'materials': materials})
+                url = f'{base_url}?{query_string}'
+                return redirect(url)
+
+    else:
+        form = MaterialActionForm()
+    context = {
+        'title': 'Ações em massa de materiais',
+        'materials': materials,
+        'form': form,
+    }
+    return render(request, 'materiais/material_actions.html', context)
+
 
 @login_required
 def editar_material(request, material_id):

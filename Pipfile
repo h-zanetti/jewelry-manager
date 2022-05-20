@@ -11,6 +11,7 @@ django-bootstrap-v5 = "*"
 python-dateutil = "*"
 django-import-export = "*"
 openpyxl = "*"
+python-barcode = "*"
 
 [dev-packages]
 pytest-django = "*"

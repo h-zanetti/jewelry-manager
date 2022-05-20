@@ -11,6 +11,8 @@ urlpatterns = [
     path('deletar_material/<int:material_id>/', views.deletar_material, name='deletar_material'),
     path('exportar_material/', views.exportar_materiais, name='exportar_materiais'),
     path('importar_material/', views.importar_materiais, name='importar_materiais'),
+    path('actions/', views.material_action_page, name='material_actions'),
+    path('material_barcode/', views.material_barcode, name='material_barcode'),
     # Entradas
     path('entrada_de_material/', views.entrada_de_material, name='entrada_de_material'), # Formulário de entrada de material
     path('entradas_de_materiais/', views.entradas_de_materiais, name='entradas_de_materiais'), # Lista de entradas de materiais
