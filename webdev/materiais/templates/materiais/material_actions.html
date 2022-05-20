@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% load humanize %}
+{% load bootstrap5 %}
+
+{% block content %}
+
+<form action="{% url 'materiais:material_actions' %}" method="GET">
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+        {% if title %}
+            <h1 class="h2">{{ title }}</h1>
+        {% endif %}
+        <div class="btn-toolbar" role="toolbar">
+            {% bootstrap_field form.action show_label=False form_group_class='input-group-sm me-2' %}
+            <button type="submit" class="btn btn-sm btn-primary">Enviar</button>
+        </div>
+    </div>
+    {% comment %} {% bootstrap_field form.materials %} {% endcomment %}
+    <div class="table">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>
+                        <input class="form-check-input me-1" type="checkbox" onClick="toggle(this)" />
+                        Selecionar
+                    </th>
+                    <th>ID</th>
+                    <th>Categoria (Subcategoria)</th>
+                    <th>Dimensões (mm)</th>
+                    <th>Peso</th>
+                    <th>Estoque</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for material in materials %}
+                <tr>
+                    <td>
+                        <input id="id_materials_{{material.id}}" name="materials" title="" type="checkbox" value="{{ material.id }}" class="form-check-input">
+                        <label class="form-check-label" for="id_materials_{{material.id}}">
+                            <span class="ms-2">{{ material.nome }}</span>
+                        </label>                </td>
+                    <td>{{ material.id }}</td>
+                    <td>
+                        {{ material.categoria }}
+                        {% if material.subcategoria %}
+                            ({{ material.subcategoria|default:"Nenhuma" }})
+                        {% endif %}
+                    </td>
+                    <td>{{ material.get_dimensoes }}</td>
+                    <td>{{ material.get_peso }}</td>
+                    <td>{{ material.estoque }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</form>
+
+<script>
+    function toggle(source) {
+      checkboxes = document.getElementsByName('materials');
+      for(var i=0, n=checkboxes.length;i<n;i++)
+        checkboxes[i].checked = source.checked;
+    }
+</script>
+
+{% endblock content %}
