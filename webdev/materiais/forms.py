@@ -39,6 +39,7 @@ class EditarEntradaForm(forms.ModelForm):
 class MaterialActionForm(forms.Form):
     materials = forms.ModelMultipleChoiceField(
         queryset=Material.objects.all(),
-        widget=forms.CheckboxSelectMultiple()
-        )
+        widget=forms.CheckboxSelectMultiple(),
+        required=True, error_messages={'required': 'É necessário selecionar ao menos um material'}
+    )
     action = forms.ChoiceField(choices=(('barcode', 'Gerar código de barras'),))
