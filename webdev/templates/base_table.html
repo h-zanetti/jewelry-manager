@@ -21,6 +21,9 @@
           </button>
           <ul class="dropdown-menu">
             <li><a class="dropdown-item" href="{{ create_url }}"><i class="fas fa-plus me-2"></i>Novo</a></li>
+            {% if actions_url %}
+              <li><a class="dropdown-item" href="{{ actions_url }}"><i class="fas fa-ellipsis-h me-2"></i>Ver mais</a></li>
+            {% endif %}
             <li><hr class="dropdown-divider"></li>
             <li><a class="dropdown-item" href="{{ import_url }}"><i class="fas fa-download me-2"></i>Importar</a></li>
             <li><a class="dropdown-item" href="{{ export_url }}"><i class="fas fa-upload me-2"></i>Exportar</a></li>

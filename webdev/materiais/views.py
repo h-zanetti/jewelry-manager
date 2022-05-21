@@ -27,6 +27,7 @@ def estoque_materiais(request):
         'import_url': reverse('materiais:importar_materiais'),
         'export_url': reverse('materiais:exportar_materiais'),
         'create_url': reverse('materiais:cadastrar_material'),
+        'actions_url': reverse('materiais:material_actions'),
         'materiais': materiais,
     }
     return render(request, 'materiais/estoque_materiais.html', context)
