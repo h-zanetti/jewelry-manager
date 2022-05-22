@@ -7,7 +7,7 @@ def generate_produto_barcodes(apps, schema_editor):
 
     from django.db import connection
     cursor = connection.cursor()
-    cursor.execute('''SELECT produto_id FROM produtos_produto''')
+    cursor.execute('''SELECT id FROM produtos_produto''')
     produtos = cursor.fetchall()
     
     for p in produtos:
@@ -27,7 +27,7 @@ class Migration(migrations.Migration):
             field=models.ImageField(blank=True, null=True, upload_to='produtos/barcode/', verbose_name='código de barras'),
         ),
         migrations.RunPython(generate_produto_barcodes),
-        
+
         # Extra stuff - minor changes
         migrations.AlterField(
             model_name='produto',
