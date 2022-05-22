@@ -2,18 +2,6 @@
 
 from django.db import migrations, models
 
-def generate_produto_barcodes(apps, schema_editor):
-    Produto = apps.get_model('produtos', 'Produto')
-
-    from django.db import connection
-    cursor = connection.cursor()
-    cursor.execute('''SELECT id FROM produtos_produto''')
-    produtos = cursor.fetchall()
-    
-    for p in produtos:
-        produto = Produto.objects.get(pk=p[0])
-        produto.generate_barcode()
-
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -26,9 +14,6 @@ class Migration(migrations.Migration):
             name='barcode',
             field=models.ImageField(blank=True, null=True, upload_to='produtos/barcode/', verbose_name='código de barras'),
         ),
-        migrations.RunPython(generate_produto_barcodes),
-
-        # Extra stuff - minor changes
         migrations.AlterField(
             model_name='produto',
             name='tamanho',
