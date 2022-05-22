@@ -98,7 +98,6 @@ class MaterialDoProduto(models.Model):
             return self.material.get_peso()
 
     def get_custo(self):
-        preco = 0
         if self.peso:
             preco = self.peso * self.material.get_preco_por_peso()
         else:

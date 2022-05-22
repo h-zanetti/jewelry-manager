@@ -70,3 +70,12 @@ class ServicoDoProdutoForm(forms.ModelForm):
     class Meta:
         model = ServicoDoProduto
         fields = '__all__'
+
+
+class ProductActionForm(forms.Form):
+    produtos = forms.ModelMultipleChoiceField(
+        queryset=Produto.objects.all(),
+        widget=forms.CheckboxSelectMultiple(),
+        required=True, error_messages={'required': 'É necessário selecionar ao menos um produto'}
+    )
+    action = forms.ChoiceField(choices=(('barcode', 'Gerar código de barras'),))

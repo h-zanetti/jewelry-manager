@@ -83,9 +83,9 @@ def material_action_page(request):
     materials = Material.objects.all()
     if request.GET:
         form = MaterialActionForm(request.GET)
-        if form.is_valid:
-            action = form.data.get('action')
-            materials = form.data.getlist('materials')
+        if form.is_valid():
+            action = form.cleaned_data.get('action')
+            materials = form.cleaned_data.getlist('materials')
             materials = [int(m) for m in materials]
             if action == 'barcode':
                 base_url = reverse('materiais:material_barcode')

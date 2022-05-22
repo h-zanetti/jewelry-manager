@@ -1,3 +1,4 @@
+from urllib.parse import urlencode
 from django.db.models import Q
 from django.contrib import messages
 from django.http.response import HttpResponse
@@ -9,7 +10,7 @@ from django.http import HttpResponseRedirect, Http404
 from django.contrib.auth.decorators import login_required
 from django.forms import modelformset_factory
 from .models import Produto, MaterialDoProduto, Categoria, ServicoDoProduto
-from .forms import ProdutoForm, MaterialDoProdutoForm, CategoriaForm
+from .forms import ProductActionForm, ProdutoForm, MaterialDoProdutoForm, CategoriaForm
 from webdev.produtos.forms import ServicoDoProdutoForm
 
 @login_required
@@ -59,6 +60,44 @@ def novo_produto(request):
     }
 
     return render(request, 'produtos/novo_produto.html', context)
+
+@login_required
+def product_barcode(request):
+    produtos = Produto.objects.all()
+    if request.GET:
+        params = request.GET.get('produtos')
+        params = params[1:-1].split(', ')
+        produtos = produtos.filter(id__in=params)
+    context = {
+        'title': 'Códigos de Barras dos Produtos',
+        'produtos': produtos
+    }
+    return render(request, 'produtos/product_barcode.html', context)
+
+
+@login_required
+def product_action_page(request):
+    produtos = Produto.objects.all()
+    if request.GET:
+        form = ProductActionForm(request.GET)
+        if form.is_valid():
+            action = form.cleaned_data.get('action')
+            produtos = form.cleaned_data.get('produtos')
+            produtos = [p.id for p in produtos]
+            if action == 'barcode':
+                base_url = reverse('produtos:product_barcode')
+                query_string =  urlencode({'produtos': produtos})
+                url = f'{base_url}?{query_string}'
+                return redirect(url)
+
+    else:
+        form = ProductActionForm()
+    context = {
+        'title': 'Ações em massa de produtos',
+        'produtos': produtos,
+        'form': form,
+    }
+    return render(request, 'produtos/product_actions.html', context)
 
 @login_required
 def editar_produto(request, produto_id):
@@ -141,6 +180,7 @@ def estoque(request):
         'import_url': reverse('produtos:importar_produtos'),
         'export_url': reverse('produtos:exportar_produtos'),
         'create_url': reverse('produtos:novo_produto'),
+        'actions_url': reverse('produtos:product_actions'),
         'produtos': produtos,
     }
     return render(request, 'produtos/estoque_produtos.html', context)

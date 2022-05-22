@@ -14,6 +14,11 @@
             <button type="submit" class="btn btn-sm btn-primary">Enviar</button>
         </div>
     </div>
+
+    {% if form.errors %}
+        {% bootstrap_form_errors form %}
+    {% endif %}
+
     {% comment %} {% bootstrap_field form.materials %} {% endcomment %}
     <div class="table">
         <table class="table">
