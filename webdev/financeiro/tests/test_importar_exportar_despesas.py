@@ -1,9 +1,9 @@
-from django.utils import timezone
 import pytest
 from django.urls import reverse
-from django.contrib.auth.models import User
-from pytest_django.asserts import assertContains
+from django.utils import timezone
 from webdev.financeiro.models import Despesa
+from pytest_django.asserts import assertContains
+from django.contrib.auth.models import User, Permission
 
 @pytest.fixture
 def despesa(db):
@@ -14,11 +14,18 @@ def despesa(db):
         repetir='n'
     )
 
+@pytest.fixture
+def user(db):
+    user = User.objects.create_user(username='TestUser', password='MinhaSenha123')
+    permissions = Permission.objects.filter(content_type__app_label='financeiro', content_type__model='despesa')
+    user.user_permissions.set(permissions)
+    return user
+
+
 # GET
 @pytest.fixture
-def resposta_despesas(client, despesa):
-    User.objects.create_user(username='TestUser', password='MinhaSenha123')
-    client.login(username='TestUser', password='MinhaSenha123')
+def resposta_despesas(client, despesa, user):
+    client.force_login(user)
     resp = client.get(reverse('financeiro:despesas'))
     return resp
 

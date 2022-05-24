@@ -1,27 +1,8 @@
-{% extends 'base.html' %}
+{% extends 'base_table.html' %}
 {% load bootstrap5 %}
 {% load humanize %}
 
-{% block content %}
-
-<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
-    {% if title %}
-    <h1 class="h2">{{ title }}</h1>
-    {% endif %}
-    <div class="btn-toolbar mb-2 mb-md-0">
-        <div class="btn-group me-2">
-            <a href="{% url 'materiais:importar_materiais' %}" class="btn btn-sm btn-outline-secondary">Importar</a>
-            <a href="{% url 'materiais:exportar_materiais' %}" class="btn btn-sm btn-outline-secondary">Exportar</a>
-        </div>
-        <a href="{% url 'materiais:entrada_de_material' %}" class="btn btn-sm btn-primary me-2">
-            <i class="fas fa-plus"></i> Entrada
-        </a>
-        <a href="{% url 'materiais:cadastrar_material' %}" class="btn btn-sm btn-primary">
-            <i class="fas fa-plus"></i> Material
-        </a>
-    </div>
-</div>
-
+{% block table_block %}
 <div class="table">
     <table class="table">
         <thead>
@@ -198,4 +179,4 @@
     </table>
 </div>
 
-{% endblock %}
+{% endblock table_block %}

@@ -1,19 +1,48 @@
+from django.db.models import Q
 from django.contrib import messages
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.urls import reverse
 from webdev.materiais.models import Entrada, Material
-from webdev.materiais.forms import EditarEntradaForm, EntradaForm, CadastrarMaterialForm
+from webdev.materiais.forms import EditarEntradaForm, EntradaForm, CadastrarMaterialForm, SortMaterialsForm
 from .admin import EntradaResource, MaterialResource
 from tablib import Dataset
 
 # Estoque
 @login_required
 def estoque_materiais(request):
+    if request.GET:
+        # Filter
+        if 'search' in request.GET:
+            materiais = Material.objects.filter(
+                Q(nome__icontains=request.GET.get('search')) |
+                Q(categoria__icontains=request.GET.get('search')) |
+                Q(subcategoria__icontains=request.GET.get('search'))
+            )
+        else:
+            materiais = Material.objects.all()
+        # Sort
+        if 'sort-field' in request.GET:
+            sort_form = SortMaterialsForm(request.GET, prefix='sort')
+            if sort_form.is_valid():
+                field = sort_form.data.get(sort_form.prefix + '-field')
+                order = sort_form.data.get(sort_form.prefix + '-order')
+                materiais = materiais.order_by(order + field)
+        else:
+            sort_form = SortMaterialsForm(prefix='sort')
+    else:
+        sort_form = SortMaterialsForm(prefix='sort')
+        materiais = Material.objects.all()
+
     context = {
         'title': 'Estoque de matéria prima',
-        'materiais': Material.objects.all()
+        'import_url': reverse('materiais:importar_materiais'),
+        'export_url': reverse('materiais:exportar_materiais'),
+        'create_url': reverse('materiais:cadastrar_material'),
+        'materiais': materiais,
+        'sort_form': sort_form,
+        'sorting': True if 'sort-field' in request.GET else False
     }
     return render(request, 'materiais/estoque_materiais.html', context)
 
@@ -106,9 +135,21 @@ def importar_materiais(request):
 # Entradas
 @login_required
 def entradas_de_materiais(request):
+    if request.GET:
+        entradas = Entrada.objects.filter(
+            Q(material__nome__icontains=request.GET.get('search')) |
+            Q(fornecedor__nome__icontains=request.GET.get('search')) |
+            Q(codigo_do_fornecedor__icontains=request.GET.get('search'))
+        )
+    else:
+        entradas = Entrada.objects.all()
+
     context = {
         'title': 'Entradas de matérias primas',
-        'entradas': Entrada.objects.all()
+        'import_url': reverse('materiais:importar_entradas'),
+        'export_url': reverse('materiais:exportar_entradas'),
+        'create_url': reverse('materiais:entrada_de_material'),
+        'entradas': entradas,
     }
     return render(request, 'materiais/entradas_de_materiais.html', context)
 

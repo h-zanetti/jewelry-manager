@@ -1,3 +1,4 @@
+from django.db.models import Q
 from django.contrib import messages
 from django.http.response import HttpResponse
 from tablib.core import Dataset
@@ -8,7 +9,7 @@ from django.http import HttpResponseRedirect, Http404
 from django.contrib.auth.decorators import login_required
 from django.forms import modelformset_factory
 from .models import Produto, MaterialDoProduto, Categoria, ServicoDoProduto
-from .forms import ProdutoForm, MaterialDoProdutoForm, CategoriaForm
+from .forms import ProdutoForm, MaterialDoProdutoForm, CategoriaForm, SortProductsForm
 from webdev.produtos.forms import ServicoDoProdutoForm
 
 @login_required
@@ -126,16 +127,37 @@ def deletar_produto(request, produto_id):
 
 @login_required
 def estoque(request):
-    
+    if request.GET:
+        # Filters
+        if 'search' in request.GET:
+            produtos = Produto.objects.filter(
+                Q(nome__icontains=request.GET.get('search')) |
+                Q(colecao__icontains=request.GET.get('search')) |
+                Q(familia__icontains=request.GET.get('search'))
+            )
+        else:
+            produtos = Produto.objects.all()
+        # Sort
+        if 'sort-order' in request.GET:
+            sort_form = SortProductsForm(request.GET, prefix='sort')
+            if sort_form.is_valid():
+                field = sort_form.data.get(sort_form.prefix + '-field')
+                order = sort_form.data.get(sort_form.prefix + '-order')
+                produtos = produtos.order_by(order + field)
+    else:
+        sort_form = SortProductsForm(prefix='sort')
+        produtos = Produto.objects.all()
+
     context = {
         'title': 'Estoque de Produtos',
-        'model_name': 'Produto',
-        'objects': Produto.objects.all(),
         'import_url': reverse('produtos:importar_produtos'),
         'export_url': reverse('produtos:exportar_produtos'),
         'create_url': reverse('produtos:novo_produto'),
+        'produtos': produtos,
+        'sort_form': sort_form,
+        'sorting': True if 'sort-order' in request.GET else False
     }
-    return render(request, 'base_table.html', context)
+    return render(request, 'produtos/estoque_produtos.html', context)
 
 @login_required
 def adicionar_servico(request, produto_id):
@@ -270,5 +292,5 @@ def importar_produtos(request):
         resource.import_data(dataset)
         return redirect('produtos:estoque_produtos')
         
-    return render(request, 'base_form_file.html', {'title': "Importação de despesas"})
+    return render(request, 'base_form_file.html', {'title': "Importação de produtos"})
 

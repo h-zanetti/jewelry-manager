@@ -1,15 +1,21 @@
 import pytest
 from django.urls import reverse
-from dateutil.relativedelta import relativedelta
-from django.contrib.auth.models import User
-from webdev.financeiro.models import Despesa
 from django.utils import timezone
+from webdev.financeiro.models import Despesa
+from dateutil.relativedelta import relativedelta
+from django.contrib.auth.models import User, Permission
+
+@pytest.fixture
+def user(db):
+    user = User.objects.create_user(username='TestUser', password='MinhaSenha123')
+    permissions = Permission.objects.filter(content_type__app_label='financeiro', content_type__model='despesa')
+    user.user_permissions.set(permissions)
+    return user
 
 # Nova Despesa
 @pytest.fixture
-def resposta_nova_despesa(client, db):
-    User.objects.create_user(username='TestUser', password='MinhaSenha123')
-    client.login(username='TestUser', password='MinhaSenha123')
+def resposta_nova_despesa(client, user):
+    client.force_login(user)
     resp = client.post(
         reverse('financeiro:nova_despesa'),
         data={
@@ -38,9 +44,8 @@ def despesa(db):
     )
 
 @pytest.fixture
-def resposta_editar_despesa(client, despesa):
-    User.objects.create_user(username='TestUser', password='MinhaSenha123')
-    client.login(username='TestUser', password='MinhaSenha123')
+def resposta_editar_despesa(client, despesa, user):
+    client.force_login(user)
     resp = client.post(
         reverse('financeiro:editar_despesa', kwargs={'despesa_id': despesa.id}),
         data={
@@ -60,9 +65,8 @@ def test_despesa_editada(resposta_editar_despesa):
 
 # Encerrar Despesa
 @pytest.fixture
-def resposta_encerrar_despesa(client, despesa):
-    User.objects.create_user(username='TestUser', password='MinhaSenha123')
-    client.login(username='TestUser', password='MinhaSenha123')
+def resposta_encerrar_despesa(client, despesa, user):
+    client.force_login(user)
     st_date = timezone.localdate() - relativedelta(years=1, months=3)
     resp = client.post(
         reverse('financeiro:editar_despesa', kwargs={'despesa_id': despesa.id}),
@@ -84,9 +88,8 @@ def test_data_de_encerramento_alterada(resposta_encerrar_despesa):
 
 # Deletar Despesa
 @pytest.fixture
-def resposta_deletar_despesa(client, despesa):
-    usr = User.objects.create_user(username='TestUser', password='MinhaSenha123')
-    client.login(username='TestUser', password='MinhaSenha123')
+def resposta_deletar_despesa(client, despesa, user):
+    client.force_login(user)
     resp = client.post(reverse('financeiro:deletar_despesa', kwargs={'despesa_id': despesa.id}))
     return resp
 

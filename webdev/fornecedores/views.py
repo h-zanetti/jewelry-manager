@@ -1,17 +1,34 @@
+from tablib.core import Dataset
+import openpyxl
+from openpyxl.writer.excel import save_virtual_workbook
+from django.db.models import Q
 from django.shortcuts import render, redirect
 from django.http import Http404, HttpResponseRedirect
+from django.http.response import HttpResponse
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 from .models import Documento, Fornecedor, Fornecimento, Email, Telefone, Local, DadosBancarios, Servico
 from .forms import FornecedorForm, FornecimentoForm, EmailForm, TelefoneForm, LocalForm, DadosBancariosForm, ServicoForm
+from . import admin
 from django.forms import inlineformset_factory, modelformset_factory
 from django.contrib import messages
 
 @login_required
 def meus_fornecedores(request):
+    if request.GET:
+        fornecedores = Fornecedor.objects.filter(
+            Q(nome__icontains=request.GET.get('search')) |
+            Q(fornecimento__nome__icontains=request.GET.get('search'))
+        )
+    else:
+        fornecedores = Fornecedor.objects.all()
+
     context = {
         'title': 'Meus Fornecedores',
-        'fornecedores': Fornecedor.objects.all()
+        'import_url': reverse('fornecedores:importar_fornecedores'),
+        'export_url': reverse('fornecedores:exportar_fornecedores'),
+        'create_url': reverse('fornecedores:novo_fornecedor'),
+        'fornecedores': fornecedores,
     }
     return render(request, 'fornecedores/meus_fornecedores.html', context)
 
@@ -457,3 +474,64 @@ def deletar_servico(request, servico_id):
             return redirect(f'{next_url}')
         else:
             return redirect('fornecedores:meus_fornecedores')
+
+# Importar e exportar fornecedores
+@login_required
+def exportar_fornecedores(request):
+    datasets = {
+        'Fornecimentos': admin.FornecimentoResource().export(),
+        'Fornecedores': admin.FornecedorResource().export(),
+        'Emails': admin.EmailResource().export(),
+        'Telefones': admin.TelefoneResource().export(),
+        'Locais': admin.LocalResource().export(),
+        'Dados_bancarios': admin.DadosBancariosResource().export(),
+        'Documentos': admin.DocumentoResource().export(),
+    }
+    # Create xl file
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    wb.remove(ws)
+    for name, data in datasets.items():
+        ws = wb.create_sheet(name)
+        ws.append(data._get_headers())
+        for row in data._data:
+            ws.append(list(row))
+    virtual_wb = save_virtual_workbook(wb)
+    resposta = HttpResponse(virtual_wb, content_type='application/vnd.ms-excel')
+    resposta['Content-Disposition'] = 'attachment; filename=fornecedores.xls'
+    return resposta
+
+@login_required
+def importar_fornecedores(request):
+    if request.method == 'POST':
+        resources = {
+            'Fornecimentos': admin.FornecimentoResource(),
+            'Fornecedores': admin.FornecedorResource(),
+            'Emails': admin.EmailResource(),
+            'Telefones': admin.TelefoneResource(),
+            'Locais': admin.LocalResource(),
+            'Dados_bancarios': admin.DadosBancariosResource(),
+            'Documentos': admin.DocumentoResource(),
+        }
+        datasets = {}
+        for model in resources.keys():
+            datasets[model] = Dataset()
+
+        xl_file = request.FILES['myfile']
+        wb = openpyxl.load_workbook(xl_file)
+        for ws in wb.worksheets:
+            data = datasets[ws.title]
+            data.tite = ws.title
+            for i, row in enumerate(ws.rows):
+                row_vals = [c.value for c in row]
+                if i==0:
+                    data.headers = row_vals
+                else:
+                    data.append(row_vals)
+
+        for name, resource in resources.items():
+            resource.import_data(datasets[name])
+
+        return redirect('fornecedores:meus_fornecedores')
+        
+    return render(request, 'base_form_file.html', {'title': "Importação de fornecedores"})

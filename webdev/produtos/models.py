@@ -21,6 +21,12 @@ class Produto(models.Model):
 
     def __str__(self):
         return f"{self.nome}"
+    
+    @classmethod
+    def get_sortable_fields(cls):
+        sortable_fields = [(f.name, f.verbose_name) for f in cls._meta.fields \
+                            if f.name not in ['id', 'foto']]
+        return sortable_fields
 
     def get_servicos(self):
         return ServicoDoProduto.objects.filter(produto=self)
