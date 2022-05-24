@@ -25,7 +25,7 @@ class Produto(models.Model):
     @classmethod
     def get_sortable_fields(cls):
         sortable_fields = [(f.name, f.verbose_name) for f in cls._meta.fields \
-                            if f.name not in ['id', 'foto']]
+                            if f.name not in ['id', 'foto', 'observacao']]
         return sortable_fields
 
     def get_servicos(self):
