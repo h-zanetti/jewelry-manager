@@ -1,4 +1,9 @@
+from tempfile import NamedTemporaryFile
+from barcode import EAN13
+from barcode.writer import ImageWriter
+import openpyxl as xl
 from django.db import models
+from django.core.files import File
 from django.utils.translation import gettext_lazy as _
 from webdev.materiais.models import Material
 
@@ -16,8 +21,9 @@ class Produto(models.Model):
     observacao = models.TextField(_('Observação'), blank=True, null=True)
     categorias = models.ManyToManyField(Categoria, verbose_name=_('Categorias'), blank=True)
     data_criacao = models.DateField(_('Data de Criação'), blank=True, null=True)
-    unidades = models.IntegerField(_("Unidades em Estoque"), default=0)
-    tamanho = models.IntegerField(_("Tamanho"), blank=True, null=True)
+    unidades = models.IntegerField(_('unidades em estoque'), default=0)
+    tamanho = models.IntegerField(_('tamanho'), blank=True, null=True)
+    barcode = models.ImageField(_('código de barras'), upload_to='produtos/barcode/', blank=True, null=True)
 
     def __str__(self):
         return f"{self.nome}"
@@ -50,6 +56,30 @@ class Produto(models.Model):
 
     def get_preco_cliente_final(self):
         return self.get_custo_de_producao() * 4
+    
+    def generate_barcode(self):
+        img_temp_file = NamedTemporaryFile(delete=True)
+        EAN13(format(self.id, '012'), writer=ImageWriter()).write(img_temp_file)
+        temp_file = File(img_temp_file, name=f'{self.id}.png')
+        if self.barcode:
+            self.barcode.delete()
+            self.save()
+        self.barcode = temp_file
+        self.save()
+        return self.barcode
+    
+    def get_barcode(self):
+        if self.barcode:
+            return self.barcode
+        else:
+            return self.generate_barcode()
+
+    def get_barcode_workbook(self):
+        wb = xl.Workbook()
+        ws = wb.active
+        ws['A1'] = self.nome
+        ws['A2'] = self.get_custo_de_producao()
+        return wb
 
 
 class MaterialDoProduto(models.Model):

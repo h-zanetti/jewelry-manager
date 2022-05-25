@@ -42,7 +42,7 @@ class ProdutoForm(forms.ModelForm):
     )
     class Meta:
         model = Produto
-        exclude = ('servicos', 'materiais')
+        exclude = ('servicos', 'materiais', 'barcode')
 
 
 class MaterialDoProdutoForm(forms.ModelForm):
