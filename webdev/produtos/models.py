@@ -66,7 +66,7 @@ class MaterialDoProduto(models.Model):
 
     def __str__(self):
         return f"{self.material.nome} {self.unidades} unid."
-    
+
     def get_peso(self):
         if self.peso and self.unidade_de_medida:
             return f"{self.peso} {self.unidade_de_medida}"

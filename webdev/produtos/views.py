@@ -144,6 +144,8 @@ def estoque(request):
                 field = sort_form.data.get(sort_form.prefix + '-field')
                 order = sort_form.data.get(sort_form.prefix + '-order')
                 produtos = produtos.order_by(order + field)
+        else:
+            sort_form = SortProductsForm(prefix='sort')
     else:
         sort_form = SortProductsForm(prefix='sort')
         produtos = Produto.objects.all()

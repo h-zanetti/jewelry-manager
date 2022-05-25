@@ -10,8 +10,8 @@ def user(db):
 @pytest.fixture
 def materiais(db):
     return [
-        Material.objects.create(nome='Material1', categoria="d'Mentira"),
-        Material.objects.create(nome='Material2', categoria="d'Mentira")
+        Material.objects.create(nome='Material 1', categoria="d'Mentira"),
+        Material.objects.create(nome='Material 2', categoria="d'Mentira")
     ]
 
 @pytest.fixture
@@ -27,4 +27,4 @@ def test_sorted_materials_status_code(resposta_sorted_materials):
     assert resposta_sorted_materials.status_code == 200
 
 def test_materials_sorted(resposta_sorted_materials):
-    assert resposta_sorted_materials.context['materiais'][0].nome == 'Material2'
+    assert resposta_sorted_materials.context['materiais'][0].nome == 'Material 2'
