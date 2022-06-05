@@ -32,6 +32,12 @@ class Material(models.Model):
     def __str__(self):
         return f"{self.nome} #{self.id}"
 
+    @classmethod
+    def get_sortable_fields(cls):
+        sortable_fields = [(f.name, f.verbose_name.title()) for f in cls._meta.fields \
+                            if f.name not in ['id', 'foto', 'unidade_de_medida', 'observacao']]
+        return sortable_fields
+
     def get_dimensoes(self):
         dimensoes = [self.altura, self.largura, self.comprimento]
         has_dimensoes = True if self.largura and self.comprimento else False

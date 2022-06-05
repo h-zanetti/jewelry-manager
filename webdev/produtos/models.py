@@ -27,6 +27,12 @@ class Produto(models.Model):
 
     def __str__(self):
         return f"{self.nome}"
+    
+    @classmethod
+    def get_sortable_fields(cls):
+        sortable_fields = [(f.name, f.verbose_name) for f in cls._meta.fields \
+                            if f.name not in ['id', 'foto', 'observacao']]
+        return sortable_fields
 
     def get_servicos(self):
         return ServicoDoProduto.objects.filter(produto=self)
@@ -90,7 +96,7 @@ class MaterialDoProduto(models.Model):
 
     def __str__(self):
         return f"{self.material.nome} {self.unidades} unid."
-    
+
     def get_peso(self):
         if self.peso and self.unidade_de_medida:
             return f"{self.peso} {self.unidade_de_medida}"

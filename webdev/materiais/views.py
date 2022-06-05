@@ -6,7 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.urls import reverse
 from webdev.materiais.models import Entrada, Material
-from webdev.materiais.forms import EditarEntradaForm, EntradaForm, CadastrarMaterialForm, MaterialActionForm
+from webdev.materiais.forms import EditarEntradaForm, EntradaForm, CadastrarMaterialForm, MaterialActionForm, SortMaterialsForm
 from .admin import EntradaResource, MaterialResource
 from tablib import Dataset
 
@@ -14,12 +14,26 @@ from tablib import Dataset
 @login_required
 def estoque_materiais(request):
     if request.GET:
-        materiais = Material.objects.filter(
-            Q(nome__icontains=request.GET.get('search')) |
-            Q(categoria__icontains=request.GET.get('search')) |
-            Q(subcategoria__icontains=request.GET.get('search'))
-        )
+        # Filter
+        if 'search' in request.GET:
+            materiais = Material.objects.filter(
+                Q(nome__icontains=request.GET.get('search')) |
+                Q(categoria__icontains=request.GET.get('search')) |
+                Q(subcategoria__icontains=request.GET.get('search'))
+            )
+        else:
+            materiais = Material.objects.all()
+        # Sort
+        if 'sort-field' in request.GET:
+            sort_form = SortMaterialsForm(request.GET, prefix='sort')
+            if sort_form.is_valid():
+                field = sort_form.data.get(sort_form.prefix + '-field')
+                order = sort_form.data.get(sort_form.prefix + '-order')
+                materiais = materiais.order_by(order + field)
+        else:
+            sort_form = SortMaterialsForm(prefix='sort')
     else:
+        sort_form = SortMaterialsForm(prefix='sort')
         materiais = Material.objects.all()
 
     context = {
@@ -29,6 +43,8 @@ def estoque_materiais(request):
         'create_url': reverse('materiais:cadastrar_material'),
         'actions_url': reverse('materiais:material_actions'),
         'materiais': materiais,
+        'sort_form': sort_form,
+        'sorting': True if 'sort-field' in request.GET else False
     }
     return render(request, 'materiais/estoque_materiais.html', context)
 
