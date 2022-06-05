@@ -9,7 +9,7 @@ from django.http import HttpResponseRedirect, Http404
 from django.contrib.auth.decorators import login_required
 from django.forms import modelformset_factory
 from .models import Produto, MaterialDoProduto, Categoria, ServicoDoProduto
-from .forms import ProdutoForm, MaterialDoProdutoForm, CategoriaForm
+from .forms import ProdutoForm, MaterialDoProdutoForm, CategoriaForm, SortProductsForm
 from webdev.produtos.forms import ServicoDoProdutoForm
 
 @login_required
@@ -128,12 +128,26 @@ def deletar_produto(request, produto_id):
 @login_required
 def estoque(request):
     if request.GET:
-        produtos = Produto.objects.filter(
-            Q(nome__icontains=request.GET.get('search')) |
-            Q(colecao__icontains=request.GET.get('search')) |
-            Q(familia__icontains=request.GET.get('search'))
-        )
+        # Filters
+        if 'search' in request.GET:
+            produtos = Produto.objects.filter(
+                Q(nome__icontains=request.GET.get('search')) |
+                Q(colecao__icontains=request.GET.get('search')) |
+                Q(familia__icontains=request.GET.get('search'))
+            )
+        else:
+            produtos = Produto.objects.all()
+        # Sort
+        if 'sort-order' in request.GET:
+            sort_form = SortProductsForm(request.GET, prefix='sort')
+            if sort_form.is_valid():
+                field = sort_form.data.get(sort_form.prefix + '-field')
+                order = sort_form.data.get(sort_form.prefix + '-order')
+                produtos = produtos.order_by(order + field)
+        else:
+            sort_form = SortProductsForm(prefix='sort')
     else:
+        sort_form = SortProductsForm(prefix='sort')
         produtos = Produto.objects.all()
 
     context = {
@@ -142,6 +156,8 @@ def estoque(request):
         'export_url': reverse('produtos:exportar_produtos'),
         'create_url': reverse('produtos:novo_produto'),
         'produtos': produtos,
+        'sort_form': sort_form,
+        'sorting': True if 'sort-order' in request.GET else False
     }
     return render(request, 'produtos/estoque_produtos.html', context)
 
