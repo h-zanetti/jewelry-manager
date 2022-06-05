@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% load humanize %}
+{% load bootstrap5 %}
+
+{% block content %}
+
+<form action="{% url 'produtos:product_actions' %}" method="GET">
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+        {% if title %}
+            <h1 class="h2">{{ title }}</h1>
+        {% endif %}
+        <div class="btn-toolbar" role="toolbar">
+            {% bootstrap_field form.action show_label=False form_group_class='input-group-sm me-2' %}
+            <button type="submit" class="btn btn-sm btn-primary">Enviar</button>
+        </div>
+    </div>
+
+    {% if form.errors %}
+        {% bootstrap_form_errors form %}
+    {% endif %}
+
+    <div class="table">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>
+                        <input class="form-check-input me-1" type="checkbox" onClick="toggle(this)" />
+                        Selecionar
+                    </th>
+                    <th>ID</th>
+                    <th>Nome</th>
+                    <th>Coleção</th>
+                    <th>Família</th>
+                    <th>Categorias</th>
+                    <th>Estoque</th>
+                    <th>Tamanho</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for produto in produtos %}
+                    <tr>
+                        <td>
+                            <input id="id_produtos_{{produto.id}}" name="produtos" title="" type="checkbox" value="{{ produto.id }}" class="form-check-input">
+                            <label class="form-check-label" for="id_produtos_{{produto.id}}">
+                                <span class="ms-2">{{ produto.nome }}</span>
+                            </label>
+                        </td>
+                        <td>{{ produto.id }}</td>
+                        <td>{{ produto.nome }}</td>
+                        <td>{{ produto.colecao }}</td>
+                        <td>{{ produto.familia|default:"Nenhuma" }}</td>
+                        <td>{{ produto.categorias.all|join:", "|default:"Nenhuma" }}</td>
+                        <td>{{ produto.unidades }}</td>
+                        <td>{{ produto.tamanho|default:"Indisponível" }}</td>
+                    </tr>
+                {% endfor %}        
+            </tbody>
+        </table>
+    </div>
+</form>
+
+<script>
+    function toggle(source) {
+      checkboxes = document.getElementsByName('produtos');
+      for(var i=0, n=checkboxes.length;i<n;i++)
+        checkboxes[i].checked = source.checked;
+    }
+</script>
+
+{% endblock content %}

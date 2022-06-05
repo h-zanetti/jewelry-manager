@@ -22,9 +22,14 @@
     </div>
 
     <div class="btn-group">
-      <button type="button" class="btn btn-sm btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">Ações</button>
+      <button type="button" class="btn btn-sm btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+        Ações
+      </button>
       <ul class="dropdown-menu">
         <li><a class="dropdown-item" href="{{ create_url }}"><i class="fas fa-plus me-2"></i>Novo</a></li>
+        {% if actions_url %}
+          <li><a class="dropdown-item" href="{{ actions_url }}"><i class="fas fa-list me-2"></i>Selecionar</a></li>
+        {% endif %}
         <li><hr class="dropdown-divider"></li>
         <li><a class="dropdown-item" href="{{ import_url }}"><i class="fas fa-download me-2"></i>Importar</a></li>
         <li><a class="dropdown-item" href="{{ export_url }}"><i class="fas fa-upload me-2"></i>Exportar</a></li>
@@ -32,6 +37,7 @@
     </div>
   </div>
 </div>
+
 
 <!-- Sort modal -->
 <div class="modal fade" id="sortModal" tabindex="-1" aria-labelledby="sortModalLabel" aria-hidden="true">

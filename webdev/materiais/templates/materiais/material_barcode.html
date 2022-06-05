@@ -1,0 +1,35 @@
+{% extends 'simple_base.html' %}
+{% load humanize %}
+{% load static %}
+{% block content %}
+
+<div class="container my-3">
+    <div class="row gy-3">
+        {% for material in materials %}
+            <div class="col-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title fs-3">{{ material.nome }}</h5>
+                        <ul class="fs-4 list-unstyled">
+                            <li>Cor: {{ material.cor }} </li>
+                            <li>Categoria: {{ material.categoria }} </li>
+                            <li>Subategoria: {{ material.subcategoria }} </li>
+                            <li>Valor: R${{ material.valor|intcomma }} </li>
+                            <li>Medida: {{ material.get_dimensoes }} </li>
+                        </ul>
+                    </div>
+                    <div class="row">
+                        <div class="col-8">
+                            <img src="{{ material.get_barcode.url }}" class="card-img-bottom" alt="...">
+                        </div>
+                        <div class="col-3 me-1 mt-1">
+                            <img src="{% static 'images/z.png' %}" class="card-img-bottom" alt="...">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</did>
+
+{% endblock content %}

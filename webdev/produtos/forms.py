@@ -73,6 +73,14 @@ class ServicoDoProdutoForm(forms.ModelForm):
         model = ServicoDoProduto
         fields = '__all__'
 
+
+class ProductActionForm(forms.Form):
+    produtos = forms.ModelMultipleChoiceField(
+        queryset=Produto.objects.all(),
+        widget=forms.CheckboxSelectMultiple(),
+        required=True, error_messages={'required': 'É necessário selecionar ao menos um produto'}
+    )
+    action = forms.ChoiceField(choices=(('barcode', 'Gerar código de barras'),))
 class SortProductsForm(forms.Form):
     field = forms.ChoiceField(choices=Produto.get_sortable_fields(), label='Atributo')
     order = forms.ChoiceField(choices=(('', 'Crescente'), ('-', 'Decrescente')), required=False, label='Ordem')

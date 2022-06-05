@@ -38,6 +38,13 @@ class EditarEntradaForm(forms.ModelForm):
             raise ValidationError('A unidade de medida de uma Entrada deve ser a mesma do Material em estoque.')
         return unidade_de_medida
 
+class MaterialActionForm(forms.Form):
+    materials = forms.ModelMultipleChoiceField(
+        queryset=Material.objects.all(),
+        widget=forms.CheckboxSelectMultiple(),
+        required=True, error_messages={'required': 'É necessário selecionar ao menos um material'}
+    )
+    action = forms.ChoiceField(choices=(('barcode', 'Gerar código de barras'),))
 
 class SortMaterialsForm(forms.Form):
     field = forms.ChoiceField(choices=Material.get_sortable_fields(), label='Atributo')
