@@ -13,6 +13,12 @@ def resposta_novo_cliente(client, db):
         data={
             'nome': 'José',
             'sobrenome': 'Azevedo',
+            'email': 'Pedro.Azevedo@email.com',
+            'telefone': '+5511944440000',
+            'endereco': 'R. Lapala',
+            'cpf': '00000000000',
+            'birth_date': '01-01-2000',
+            'observacao': '',
         }
     )
     return resp

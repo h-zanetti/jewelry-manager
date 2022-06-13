@@ -3,6 +3,7 @@ from django.urls import reverse
 from pytest_django.asserts import assertContains
 from django.contrib.auth.models import User
 from webdev.vendas.models import Cliente
+from webdev.vendas.forms import ClienteForm
 
 # Visualizar Clientes
 @pytest.fixture
@@ -29,7 +30,7 @@ def test_lista_de_clientes_presente(resposta_clientes, cliente):
     assertContains(resposta_clientes, cliente)
 
 def test_btn_novo_cliente_presente(resposta_clientes):
-    assertContains(resposta_clientes, f'<a href="{reverse("vendas:novo_cliente")}')
+    assertContains(resposta_clientes, f'<a class="dropdown-item" href="{reverse("vendas:novo_cliente")}')
 
 def test_btn_editar_cliente_presente(resposta_clientes, cliente):
     assertContains(resposta_clientes, f'<a href="{reverse("vendas:editar_cliente", kwargs={"cliente_id": cliente.id})}')
@@ -51,6 +52,11 @@ def test_despesas_status_code(resposta_novo_cliente):
 
 def test_form_presente(resposta_novo_cliente):
     assertContains(resposta_novo_cliente, f'<form')
+
+def test_all_fields_present(resposta_novo_cliente):
+    form = ClienteForm()
+    for field in form.fields:
+        assertContains(resposta_novo_cliente, f'id="id_{field}"')
 
 def test_btn_submit_stay_presente(resposta_novo_cliente):
     assertContains(resposta_novo_cliente, f'<button type="submit" name="submit-stay"')

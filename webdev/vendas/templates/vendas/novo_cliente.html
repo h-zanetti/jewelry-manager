@@ -16,20 +16,29 @@
                     <div class="col-12 px-2">
                         {% csrf_token %}
                     </div>
-                    <div class="col-6">
+                    <div class="col-4">
                         {% bootstrap_field form.nome %}
                     </div>
-                    <div class="col-6">
+                    <div class="col-4">
                         {% bootstrap_field form.sobrenome %}
                     </div>
-                    <div class="col-6">
+                    <div class="col-4">
+                        {% bootstrap_field form.birth_date %}
+                    </div>
+                    <div class="col-4">
                         {% bootstrap_field form.email %}
                     </div>
-                    <div class="col-6">
+                    <div class="col-4">
                         {% bootstrap_field form.telefone %}
+                    </div>
+                    <div class="col-4">
+                        {% bootstrap_field form.cpf %}
                     </div>
                     <div class="col-12">
                         {% bootstrap_field form.endereco %}
+                    </div>
+                    <div class="col-12">
+                        {% bootstrap_field form.observacao%}
                     </div>
                 </div>
                 <div class="row g-2 d-flex justify-content-between">
