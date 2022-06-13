@@ -11,6 +11,9 @@ class Cliente(models.Model):
     email = models.EmailField(_("Email"), blank=True, null=True)
     telefone = models.CharField(_('Telefone'), max_length=15, blank=True, null=True)
     endereco = models.CharField(_('Endereço'), max_length=100, blank=True, null=True)
+    cpf = models.CharField('CPF', max_length=11, blank=True, null=True)
+    birth_date = models.DateField(_('data de aniversário'), blank=True, null=True)
+    observacao = models.TextField(_('observação'), blank=True, null=True)
 
     def get_nome_completo(self):
         return f'{self.nome} {self.sobrenome}'
