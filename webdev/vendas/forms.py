@@ -4,9 +4,20 @@ from webdev.financeiro.models import Receita
 from webdev.produtos.models import Produto
 
 class ClienteForm(forms.ModelForm):
+    birth_date = forms.DateField(
+        input_formats=['%d/%m/%Y', '%d-%m-%Y'],
+        widget=forms.DateInput(attrs={'placeholder': 'dd/mm/aaaa'}),
+        required=False
+    )
     class Meta:
         model = Cliente
         fields = '__all__'
+
+
+class SortClientsForm(forms.Form):
+    field = forms.ChoiceField(choices=Cliente.get_sortable_fields(), label='Atributo')
+    order = forms.ChoiceField(choices=(('', 'Crescente'), ('-', 'Decrescente')), required=False, label='Ordem')
+
 
 class VendaForm(forms.ModelForm):
     data = forms.DateField(
@@ -35,3 +46,9 @@ class VendaForm(forms.ModelForm):
     class Meta:
         model = Venda
         fields = '__all__'
+
+
+class SortSalesForm(forms.Form):
+    field = forms.ChoiceField(choices=Venda.get_sortable_fields(), label='Atributo')
+    order = forms.ChoiceField(choices=(('', 'Crescente'), ('-', 'Decrescente')), required=False, label='Ordem')
+

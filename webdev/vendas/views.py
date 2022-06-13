@@ -1,19 +1,53 @@
-from webdev.financeiro.models import Parcela, Receita
-from django.utils import timezone
-from dateutil.relativedelta import relativedelta
 from django.http.response import Http404, HttpResponseRedirect
 from django.urls.base import reverse
-from webdev.vendas.forms import ClienteForm, VendaForm
+from webdev.vendas.forms import ClienteForm, SortSalesForm, VendaForm, SortClientsForm
 from webdev.vendas.models import Cliente, Venda
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
+from django.db.models import Q
 
 # Clientes
 @login_required
 def clientes(request):
+    if request.GET:
+        # Filters
+        if 'search' in request.GET:
+            clients = Cliente.objects.filter(
+                Q(nome__icontains=request.GET.get('search')) |
+                Q(sobrenome__icontains=request.GET.get('search')) |
+                Q(email__icontains=request.GET.get('search')) |
+                Q(telefone__icontains=request.GET.get('search')) |
+                Q(endereco__icontains=request.GET.get('search')) |
+                Q(cpf__icontains=request.GET.get('search')) |
+                Q(birth_date__icontains=request.GET.get('search')) |
+                Q(observacao__icontains=request.GET.get('search'))
+            )
+        else:
+            clients = Cliente.objects.all()
+        # Sort
+        if 'sort-order' in request.GET:
+            sort_form = SortClientsForm(request.GET, prefix='sort')
+            if sort_form.is_valid():
+                field = sort_form.data.get(sort_form.prefix + '-field')
+                order = sort_form.data.get(sort_form.prefix + '-order')
+                clients = clients.order_by(order + field)
+        else:
+            sort_form = SortClientsForm(prefix='sort')
+
+    else:
+        sort_form = SortClientsForm(prefix='sort')
+        clients = Cliente.objects.all()
+
     context = {
+        # TODO: create import/export views for clients
+        # 'import_url': reverse('vendas:importar_produtos'),
+        # 'export_url': reverse('vendas:exportar_produtos'),
+        'create_url': reverse('vendas:novo_cliente'),
+        # 'actions_url': reverse('vendas:product_actions'),
         'title': 'Meus clientes',
-        'clientes': Cliente.objects.all()
+        'clientes': clients,
+        'sort_form': sort_form,
+        'sorting': True if 'sort-order' in request.GET else False
     }
     return render(request, 'vendas/clientes.html', context)
 
@@ -71,9 +105,41 @@ def deletar_cliente(request, cliente_id):
 # Vendas
 @login_required
 def minhas_vendas(request):
+    if request.GET:
+        # Filters
+        if 'search' in request.GET:
+            vendas = Venda.objects.filter(
+                Q(data=request.GET.get('search')) |
+                # Q(cliente__icontains=request.GET.get('search')) |
+                # Q(produtos__icontains=request.GET.get('search')) |
+                Q(observacao__icontains=request.GET.get('search')) |
+                Q(valor__icontains=request.GET.get('search')) |
+                Q(parcelas__icontains=request.GET.get('search'))
+            )
+        else:
+            vendas = Venda.objects.all()
+        # Sort
+        if 'sort-order' in request.GET:
+            sort_form = SortSalesForm(request.GET, prefix='sort')
+            if sort_form.is_valid():
+                field = sort_form.data.get(sort_form.prefix + '-field')
+                order = sort_form.data.get(sort_form.prefix + '-order')
+                vendas = vendas.order_by(order + field)
+        else:
+            sort_form = SortSalesForm(prefix='sort')
+
+    else:
+        sort_form = SortSalesForm(prefix='sort')
+        vendas = Venda.objects.all()
+
     context = {
+        # TODO: create import/export views for sales
+        # 'import_url': reverse('vendas:importar_produtos'),
+        # 'export_url': reverse('vendas:exportar_produtos'),
+        'create_url': reverse('vendas:nova_venda'),
+        # 'actions_url': reverse('vendas:product_actions'),
         'title': 'Vendas Cadastradas',
-        'vendas': Venda.objects.all()
+        'vendas': vendas
     }
     return render(request, 'vendas/minhas_vendas.html', context)
 
