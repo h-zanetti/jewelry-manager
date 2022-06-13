@@ -13,7 +13,7 @@ class VendaForm(forms.ModelForm):
         input_formats=['%d/%m/%Y', '%d-%m-%Y'],
         widget=forms.DateInput(attrs={'placeholder': 'dd/mm/aaaa'}),
     )
-    cliente = forms.ModelChoiceField(queryset=Cliente.objects.all().order_by('nome'))
+    cliente = forms.ModelChoiceField(queryset=Cliente.objects.all().order_by('nome'), required=False)
     produtos = forms.ModelMultipleChoiceField(
         queryset=Produto.objects.all().order_by('nome'),
         widget=forms.SelectMultiple(

@@ -1,13 +1,11 @@
-from pytest_django.asserts import assertNotContains
-from webdev.financeiro.models import Parcela, Receita
-from django.utils import timezone
-from dateutil.relativedelta import relativedelta
 import pytest
 from django.urls import reverse
-from django.contrib.auth.models import User
-from webdev.produtos.models import Produto
+from django.utils import timezone
 from webdev.vendas.models import Venda
-from webdev.vendas.forms import VendaForm
+from webdev.produtos.models import Produto
+from django.contrib.auth.models import User
+from dateutil.relativedelta import relativedelta
+from webdev.financeiro.models import Parcela, Receita
 
 @pytest.fixture
 def produto(db):
