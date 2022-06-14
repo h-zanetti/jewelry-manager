@@ -139,7 +139,9 @@ def minhas_vendas(request):
         'create_url': reverse('vendas:nova_venda'),
         # 'actions_url': reverse('vendas:product_actions'),
         'title': 'Vendas Cadastradas',
-        'vendas': vendas
+        'vendas': vendas,
+        'sort_form': sort_form,
+        'sorting': True if 'sort-order' in request.GET else False
     }
     return render(request, 'vendas/minhas_vendas.html', context)
 
