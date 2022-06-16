@@ -24,14 +24,14 @@
                         {% bootstrap_field form.unidades %}
                     </div>
                     <div class="col-lg-12">
-                        {% bootstrap_label form.peso.label %}
-                        <div class="row g-0">
-                            <div class="col-6">
-                                {% bootstrap_field form.peso show_label=False %}
-                            </div>
-                            <div class="col-6">
-                                {% bootstrap_field form.unidade_de_medida show_label=False %}
-                            </div>
+                        <label class="form-label">Peso total</label>
+                        <div class="input-group">
+                            <input type="number" name="peso" class="form-control" placeholder="Peso" step="0.01" id="id_peso">
+                            <select name="unidade_de_medida" class="form-select rounded-0 rounded-end" title="" id="id_unidade_de_medida">
+                                <option value="" selected>Uniade de Medida</option>
+                                <option value="g">Gramas</option>
+                                <option value="ct">Quilates</option>
+                            </select>
                         </div>
                     </div>
                 </div>
