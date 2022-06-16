@@ -11,6 +11,15 @@ class Cliente(models.Model):
     email = models.EmailField(_("Email"), blank=True, null=True)
     telefone = models.CharField(_('Telefone'), max_length=15, blank=True, null=True)
     endereco = models.CharField(_('Endereço'), max_length=100, blank=True, null=True)
+    cpf = models.CharField('CPF', max_length=11, blank=True, null=True)
+    birth_date = models.DateField(_('data de aniversário'), blank=True, null=True)
+    observacao = models.TextField(_('observação'), blank=True, null=True)
+
+    @classmethod
+    def get_sortable_fields(cls):
+        sortable_fields = [(f.name, f.verbose_name) for f in cls._meta.fields \
+                            if f.name not in ['id', 'observacao']]
+        return sortable_fields
 
     def get_nome_completo(self):
         return f'{self.nome} {self.sobrenome}'
@@ -43,6 +52,12 @@ class Venda(models.Model):
 
     class Meta:
         get_latest_by = "data"
+
+    @classmethod
+    def get_sortable_fields(cls):
+        sortable_fields = [(f.name, f.verbose_name) for f in cls._meta.fields \
+                            if f.name not in ['id', 'cliente', 'produtos', 'observacao', 'receita']]
+        return sortable_fields
 
     def __str__(self):
         return f'Venda #{self.id}'

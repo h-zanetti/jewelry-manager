@@ -49,7 +49,7 @@ def test_lista_de_vendas_presente(resposta_vendas, venda):
     assertContains(resposta_vendas, venda.cliente.get_nome_completo())
 
 def test_btn_cadastrar_venda_presente(resposta_vendas):
-    assertContains(resposta_vendas, f'<a href="{reverse("vendas:nova_venda")}')
+    assertContains(resposta_vendas, f'<a class="dropdown-item" href="{reverse("vendas:nova_venda")}')
 
 def test_btn_editar_venda_presente(resposta_vendas, venda):
     assertContains(resposta_vendas, f'<a href="{reverse("vendas:editar_venda", kwargs={"venda_id": venda.id})}')

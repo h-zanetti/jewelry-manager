@@ -8,9 +8,12 @@
   {% endif %}
   <div class="btn-toolbar" role="toolbar">
     <!-- Sort -->
-    <div class="me-2">
-      <button type="button" class="btn btn-sm btn-{% if not sorting %}outline-{% endif %}primary" data-bs-toggle="modal" data-bs-target="#sortModal">Ordenar</button>
-    </div>
+    {% if sort_form %}
+      <div class="me-2">
+        <button type="button" class="btn btn-sm btn-{% if not sorting %}outline-{% endif %}primary" data-bs-toggle="modal" data-bs-target="#sortModal">Ordenar</button>
+      </div>
+    {% endif %}
+    
     <!-- Search -->
     <div class="me-2">
       <form class="d-flex" method="get">
@@ -27,12 +30,10 @@
       </button>
       <ul class="dropdown-menu">
         <li><a class="dropdown-item" href="{{ create_url }}"><i class="fas fa-plus me-2"></i>Novo</a></li>
-        {% if actions_url %}
-          <li><a class="dropdown-item" href="{{ actions_url }}"><i class="fas fa-list me-2"></i>Selecionar</a></li>
-        {% endif %}
+        <li><a class="dropdown-item {% if not actions_url %}disabled{% endif %}" href="{{ actions_url }}"><i class="fas fa-list me-2"></i>Selecionar</a></li>
         <li><hr class="dropdown-divider"></li>
-        <li><a class="dropdown-item" href="{{ import_url }}"><i class="fas fa-download me-2"></i>Importar</a></li>
-        <li><a class="dropdown-item" href="{{ export_url }}"><i class="fas fa-upload me-2"></i>Exportar</a></li>
+        <li><a class="dropdown-item {% if not import_url %}disabled{% endif %}" href="{{ import_url }}"><i class="fas fa-download me-2"></i>Importar</a></li>
+        <li><a class="dropdown-item {% if not export_url %}disabled{% endif %}" href="{{ export_url }}"><i class="fas fa-upload me-2"></i>Exportar</a></li>
       </ul>
     </div>
   </div>
