@@ -1,7 +1,8 @@
+from django.forms import modelformset_factory
 from django.http.response import Http404, HttpResponseRedirect
 from django.urls.base import reverse
-from webdev.vendas.forms import ClienteForm, SortSalesForm, VendaForm, SortClientsForm
-from webdev.vendas.models import Cliente, Venda
+from webdev.vendas.forms import BasketForm, BasketItemForm, ClienteForm, SortSalesForm, VendaForm, SortClientsForm
+from webdev.vendas.models import Basket, BasketItem, Cliente, Venda
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
 from django.db.models import Q
@@ -101,6 +102,38 @@ def deletar_cliente(request, cliente_id):
     if request.method == 'POST':
         Cliente.objects.get(id=cliente_id).delete()
     return HttpResponseRedirect(reverse('vendas:clientes'))
+
+
+# Basket
+@login_required
+def basket_summary(request):
+    BasketItemFormSet = modelformset_factory(BasketItem, form=BasketItemForm)
+    basket = Basket.objects.filter(is_active=True)
+    basket = basket.first() if basket else Basket.objects.create()
+    if request.method == 'POST':
+        basket_form = BasketForm(request.POST)
+        item_formset = BasketItemFormSet(request.POST, prefix='item')
+        if basket_form.is_valid() and item_formset.is_valid():
+            if 'submit-item' in request.POST:
+                item_formset.save()
+                return redirect('vendas:basket_summary')
+            else:
+                basket_form.save()
+                item_formset.save()
+                return redirect('vendas:')
+    else:
+        basket_form = BasketForm()
+        item_formset = BasketItemFormSet(queryset=BasketItem.objects.filter(basket=basket),
+                                         prefix='item')
+
+    context = {
+        'title': 'Nova venda',
+        'basket_form': basket_form,
+        'item_formset': item_formset,
+    }
+
+    return render(request, 'vendas/basket.html', context)
+
 
 # Vendas
 @login_required

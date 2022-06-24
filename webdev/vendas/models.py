@@ -27,26 +27,39 @@ class Cliente(models.Model):
     def __str__(self):
         return self.get_nome_completo()
 
+
+class Basket(models.Model):
+    is_active = models.BooleanField(_('está ativo'), default=True)
+    markup = models.FloatField(default=1)
+
+    def get_items(self):
+        return BasketItem.objects.filter(basket=self)
+    
+    def get_production_cost(self):
+        cost = sum(item.get_production_cost() for item in self.get_items())
+        return cost
+
+class BasketItem(models.Model):
+    basket = models.ForeignKey(Basket, on_delete=models.CASCADE, verbose_name=_('carrinho de compras'))
+    product = models.ForeignKey(Produto, on_delete=models.SET_NULL, null=True, verbose_name=_('produto'))
+    quantity = models.IntegerField(_('quantidade'))
+
+    def get_production_cost(self):
+        return self.quantity * self.product.get_custo_producao()
+
+
 class Venda(models.Model):
     data = models.DateField(_("Data"), default=timezone.now)
+    basket = models.ForeignKey(Basket, on_delete=models.SET_NULL, null=True, blank=True, verbose_name=_("Cliente"))
     cliente = models.ForeignKey(Cliente, on_delete=models.SET_NULL, null=True, blank=True, verbose_name=_("Cliente"))
-    produtos = models.ManyToManyField(Produto, verbose_name=_("Produtos"))
     observacao = models.TextField(_('Observação'), blank=True, null=True)
     valor = models.DecimalField(_("Valor"), max_digits=8, decimal_places=2)
     receita = OneToOneField(Receita, on_delete=models.SET_NULL, null=True, blank=True, verbose_name=_("Receita"))
     PARCELAS_CHOICES = (
-        (1, '1x'),
-        (2, '2x'),
-        (3, '3x'),
-        (4, '4x'),
-        (5, '5x'),
-        (6, '6x'),
-        (7, '7x'),
-        (8, '8x'),
-        (9, '9x'),
-        (10, '10x'),
-        (11, '11x'),
-        (12, '12x'),
+        (1, '1x'),(2, '2x'),(3, '3x'),
+        (4, '4x'),(5, '5x'),(6, '6x'),
+        (7, '7x'),(8, '8x'),(9, '9x'),
+        (10, '10x'),(11, '11x'),(12, '12x'),
     )
     parcelas = models.IntegerField(_("Parcelas"), choices=PARCELAS_CHOICES, default=1)
 

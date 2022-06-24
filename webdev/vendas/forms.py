@@ -1,5 +1,5 @@
 from django import forms
-from .models import Cliente, Venda
+from .models import Basket, BasketItem, Cliente, Venda
 from webdev.financeiro.models import Receita
 from webdev.produtos.models import Produto
 
@@ -52,3 +52,19 @@ class SortSalesForm(forms.Form):
     field = forms.ChoiceField(choices=Venda.get_sortable_fields(), label='Atributo')
     order = forms.ChoiceField(choices=(('', 'Crescente'), ('-', 'Decrescente')), required=False, label='Ordem')
 
+
+class BasketForm(forms.ModelForm):
+    class Meta:
+        model = Basket
+        fields = ['markup']
+
+
+class BasketItemForm(forms.ModelForm):
+    basket = forms.ModelChoiceField(
+        queryset=Basket.objects.all(),
+        widget=forms.HiddenInput(),
+        disabled=True,
+    )
+    class Meta:
+        model = BasketItem
+        exclude = '__all__'
