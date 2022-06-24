@@ -3,7 +3,7 @@ from django.urls import reverse
 from pytest_django.asserts import assertContains
 from django.contrib.auth.models import User
 from webdev.produtos.models import Produto
-from webdev.vendas.models import Basket, BasketItem
+from webdev.vendas.models import Basket, BasketItem, Venda
 
 @pytest.fixture
 def user(db):
@@ -41,9 +41,9 @@ def test_basket_summary_status_code(resposta_basket_summary):
 def test_item_formset_present(resposta_basket_summary):
     assertContains(resposta_basket_summary, '<input type="hidden" name="item-TOTAL_FORMS"')
 
-def test_items_present(resposta_basket_summary, product):
+def test_item_present(resposta_basket_summary, product):
     assertContains(resposta_basket_summary, f'<option value="{product.id}" selected>{product.nome}</option>')
-    
+
 
 @pytest.fixture
 def product1(db):
@@ -55,26 +55,40 @@ def product1(db):
 
 # POST
 @pytest.fixture
-def resposta_basket_add(client, user, basket, basket_item, product, product1):
+def resposta_basket_add(client, user, product, product1, basket, basket_item):
     client.force_login(user)
-    resp = client.post(reverse('vendas:resposta_basket_add'), data={
+    resp = client.post(reverse('vendas:basket_summary'), data={
         'markup': 2.5,
-        'item-TOTAL_FORMS': 2,
-        'item-INITIAL_FORMS': 1,
-        'item-0-basket': basket.id,
-        'item-0-product': product.id,
-        'item-0-quantity': 1,
-        'item-1-basket': basket.id,
-        'item-1-product': product1.id,
-        'item-1-quantity': 2,
+        'item-basket': basket.id,
+        'item-product': product1.id,
+        'item-quantity': 2,
     })
     return resp
 
-def test_resposta_basket_add_status_code(resposta_resposta_basket_add):
-    assert resposta_resposta_basket_add.status_code == 302
 
-def test_basket_item_updated(resposta_basket_add):
-    assert BasketItem.objects.first() == 1
+# def test_basket_add_item_form_errors(resposta_basket_add):
+#     assert not resposta_basket_add.context['basket_form'].errors
+#     assert not resposta_basket_add.context['item_form'].errors
+
+def test_resposta_basket_add_status_code(resposta_basket_add):
+    assert resposta_basket_add.status_code == 302
 
 def test_basket_item_created(resposta_basket_add):
     assert len(BasketItem.objects.all()) == 2
+
+def test_basket_still_active(resposta_basket_add, basket):
+    assert basket.is_active
+
+
+@pytest.fixture
+def resposta_basket_remove(client, user, basket_item):
+    client.force_login(user)
+    return client.post(reverse('vendas:basket_remove', kwargs={'pk': basket_item.pk}))
+
+
+def test_resposta_basket_remove_status_code(resposta_basket_remove):
+    assert resposta_basket_remove.status_code == 302
+
+def test_basket_item_removed(resposta_basket_remove):
+    assert not BasketItem.objects.exists()
+

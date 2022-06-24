@@ -1,3 +1,4 @@
+from faulthandler import disable
 from django import forms
 from .models import Basket, BasketItem, Cliente, Venda
 from webdev.financeiro.models import Receita
@@ -63,8 +64,14 @@ class BasketItemForm(forms.ModelForm):
     basket = forms.ModelChoiceField(
         queryset=Basket.objects.all(),
         widget=forms.HiddenInput(),
-        disabled=True,
+        disabled=True, required=True
     )
+    product = forms.ModelChoiceField(
+        queryset=Produto.objects.all(),
+        widget=forms.NumberInput(),
+        required=False
+    )
+    quantity = forms.IntegerField(required=False)
     class Meta:
         model = BasketItem
-        exclude = '__all__'
+        fields = '__all__'

@@ -38,14 +38,22 @@ class Basket(models.Model):
     def get_production_cost(self):
         cost = sum(item.get_production_cost() for item in self.get_items())
         return cost
+    
+    def get_sale_price(self):
+        price = sum(item.get_sale_price() for item in self.get_items())
+        return price
 
 class BasketItem(models.Model):
     basket = models.ForeignKey(Basket, on_delete=models.CASCADE, verbose_name=_('carrinho de compras'))
     product = models.ForeignKey(Produto, on_delete=models.SET_NULL, null=True, verbose_name=_('produto'))
-    quantity = models.IntegerField(_('quantidade'))
+    quantity = models.PositiveIntegerField(_('quantidade'))
 
     def get_production_cost(self):
-        return self.quantity * self.product.get_custo_producao()
+        return self.quantity * self.product.get_custo_de_producao()
+
+    def get_sale_price(self):
+        cost = self.get_production_cost()
+        return float(cost) * self.basket.markup
 
 
 class Venda(models.Model):

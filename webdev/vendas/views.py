@@ -4,7 +4,7 @@ from django.urls.base import reverse
 from webdev.vendas.forms import BasketForm, BasketItemForm, ClienteForm, SortSalesForm, VendaForm, SortClientsForm
 from webdev.vendas.models import Basket, BasketItem, Cliente, Venda
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import redirect, render
+from django.shortcuts import get_object_or_404, redirect, render
 from django.db.models import Q
 
 # Clientes
@@ -107,32 +107,40 @@ def deletar_cliente(request, cliente_id):
 # Basket
 @login_required
 def basket_summary(request):
-    BasketItemFormSet = modelformset_factory(BasketItem, form=BasketItemForm)
     basket = Basket.objects.filter(is_active=True)
     basket = basket.first() if basket else Basket.objects.create()
     if request.method == 'POST':
         basket_form = BasketForm(request.POST)
-        item_formset = BasketItemFormSet(request.POST, prefix='item')
-        if basket_form.is_valid() and item_formset.is_valid():
-            if 'submit-item' in request.POST:
-                item_formset.save()
-                return redirect('vendas:basket_summary')
-            else:
+        item_form = BasketItemForm(request.POST, prefix='item', initial={'basket': basket.id})
+        if basket_form.is_valid() and item_form.is_valid():
+            if 'submit-basket' in request.POST:
+                item_form.save()
                 basket_form.save()
-                item_formset.save()
-                return redirect('vendas:')
+                return redirect('vendas:minhas_vendas')
+            elif 'submit-item':
+                item_form.save()
+                return redirect('vendas:basket_summary')
     else:
         basket_form = BasketForm()
-        item_formset = BasketItemFormSet(queryset=BasketItem.objects.filter(basket=basket),
-                                         prefix='item')
+        item_form = BasketItemForm(prefix='item', initial={'basket': basket.id})
 
     context = {
         'title': 'Nova venda',
+        'basket': basket,
         'basket_form': basket_form,
-        'item_formset': item_formset,
+        'item_form': item_form,
     }
 
     return render(request, 'vendas/basket.html', context)
+
+@login_required
+def basket_remove(request, pk):
+    if request.method == 'POST':
+        bitem = get_object_or_404(BasketItem, pk=pk)
+        if bitem.basket.is_active:
+            bitem.delete()
+    return redirect('vendas:basket_summary')
+
 
 
 # Vendas

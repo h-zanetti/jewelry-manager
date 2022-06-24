@@ -11,6 +11,7 @@ urlpatterns = [
     path('deletar_venda/<int:venda_id>', views.deletar_venda, name='deletar_venda'),
     # Basket
     path('basket_summary/', views.basket_summary, name='basket_summary'),
+    path('basket_remove/<int:pk>', views.basket_remove, name='basket_remove'),
     # Cliente
     path('clientes/', views.clientes, name='clientes'),
     path('novo_cliente/', views.novo_cliente, name='novo_cliente'),
