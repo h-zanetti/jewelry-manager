@@ -1,8 +1,8 @@
-from faulthandler import disable
 from django import forms
-from .models import Basket, BasketItem, Cliente, Venda
+
 from webdev.financeiro.models import Receita
 from webdev.produtos.models import Produto
+from .models import Basket, BasketItem, Cliente, Venda
 
 class ClienteForm(forms.ModelForm):
     birth_date = forms.DateField(
@@ -26,13 +26,6 @@ class VendaForm(forms.ModelForm):
         widget=forms.DateInput(attrs={'placeholder': 'dd/mm/aaaa'}),
     )
     cliente = forms.ModelChoiceField(queryset=Cliente.objects.all().order_by('nome'), required=False)
-    produtos = forms.ModelMultipleChoiceField(
-        queryset=Produto.objects.all().order_by('nome'),
-        widget=forms.SelectMultiple(
-            attrs={'style': 'padding: 9px 6px 10px'}
-        ),
-        required=False
-    )
     observacao = forms.CharField(
         widget=forms.Textarea(
             attrs={'rows': "4"}
@@ -43,6 +36,11 @@ class VendaForm(forms.ModelForm):
         queryset=Receita.objects.all(),
         widget=forms.HiddenInput(),
         required=False
+    )
+    basket = forms.ModelChoiceField(
+        queryset=Basket.objects.all(),
+        widget=forms.HiddenInput(),
+        disabled=True,
     )
     class Meta:
         model = Venda
@@ -57,7 +55,7 @@ class SortSalesForm(forms.Form):
 class BasketForm(forms.ModelForm):
     class Meta:
         model = Basket
-        fields = ['markup']
+        exclude = ('is_active',)
 
 
 class BasketItemForm(forms.ModelForm):
@@ -68,10 +66,11 @@ class BasketItemForm(forms.ModelForm):
     )
     product = forms.ModelChoiceField(
         queryset=Produto.objects.all(),
-        widget=forms.NumberInput(),
+        widget=forms.TextInput(),
         required=False
     )
-    quantity = forms.IntegerField(required=False)
+    quantity = forms.IntegerField(required=False, min_value=1, initial=1)
+
     class Meta:
         model = BasketItem
         fields = '__all__'

@@ -27,11 +27,8 @@
                     </div>
                 </div>
                 <div class="row g-2 d-flex justify-content-between">
-                    <div class="col-md-6">
-                        <button type="submit" name="submit-item" class="btn btn-primary w-100">Adicionar Item</button>
-                    </div>
-                    <div class="col-md-6">
-                        <button type="submit" name="submit-basket" class="btn btn-primary w-100">Revisar Venda</button>
+                    <div class="col-md-12">
+                        <button type="submit" name="submit-item" class="btn btn-primary w-100">Atualizar</button>
                     </div>
                 </div>
             </form>
@@ -72,8 +69,11 @@
         </div>
     </div>
     <div class="row mt-3 d-flex justify-content-end">
-        <div class='col-3 text-end'>
+        <div class='col-12 text-end'>
             <p><strong>Total: </strong>R$ {{ basket.get_sale_price|intcomma }}</p>
+        </div>
+        <div class='col-12 text-end'>
+            <a href="{% url 'vendas:basket_review' %}" class="btn btn-danger">Revisar Venda</a>
         </div>
     </div>
 </div>

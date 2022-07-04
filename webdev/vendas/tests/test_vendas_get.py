@@ -3,7 +3,7 @@ from django.urls import reverse
 from django.utils import timezone
 from pytest_django.asserts import assertContains, assertNotContains
 from django.contrib.auth.models import User
-from webdev.vendas.models import Venda, Cliente
+from webdev.vendas.models import Venda, Cliente, Basket, BasketItem, MarkUp
 from webdev.produtos.models import Produto
 
 # Visualizar Vendas
@@ -18,21 +18,40 @@ def cliente(db):
     )
 
 @pytest.fixture
-def produto(db):
+def product(db):
     return Produto.objects.create(
         nome='Produto Legal',
         colecao="d'Mentira",
     )
 
 @pytest.fixture
-def venda(cliente, produto):
+def markups(db):
+    return [
+        MarkUp.objects.create(key='Cliente final', value=3),
+        MarkUp.objects.create(key='Atacado', value=1.75),
+    ]
+
+@pytest.fixture
+def basket(markups):
+    return Basket.objects.create(markup=markups[0])
+
+@pytest.fixture
+def basket_item(basket, product):
+    return BasketItem.objects.create(
+        basket=basket,
+        product=product,
+        quantity=2,
+    )
+
+@pytest.fixture
+def venda(cliente, basket):
     venda = Venda.objects.create(
+        basket=basket,
         data=timezone.now(),
         cliente=cliente,
         parcelas=6,
         valor=1200
     )
-    venda.produtos.add(produto)
     return venda
 
 @pytest.fixture

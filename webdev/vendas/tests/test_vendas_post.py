@@ -1,30 +1,49 @@
 import pytest
 from django.urls import reverse
 from django.utils import timezone
-from webdev.vendas.models import Venda
+from webdev.vendas.models import Venda, Basket, BasketItem, MarkUp
 from webdev.produtos.models import Produto
 from django.contrib.auth.models import User
 from dateutil.relativedelta import relativedelta
 from webdev.financeiro.models import Parcela, Receita
 
 @pytest.fixture
-def produto(db):
+def product(db):
     return Produto.objects.create(
         nome='Produto Legal',
         colecao="d'Mentira",
     )
 
+@pytest.fixture
+def markups(db):
+    return [
+        MarkUp.objects.create(key='Cliente final', value=3),
+        MarkUp.objects.create(key='Atacado', value=1.75),
+    ]
+
+@pytest.fixture
+def basket(markups):
+    return Basket.objects.create(markup=markups[0])
+
+@pytest.fixture
+def basket_item(basket, product):
+    return BasketItem.objects.create(
+        basket=basket,
+        product=product,
+        quantity=2,
+    )
+
 # Nova Venda
 @pytest.fixture
-def resposta_nova_venda(client, produto):
+def resposta_nova_venda(client, product, basket):
     User.objects.create_user(username='TestUser', password='MinhaSenha123')
     client.login(username='TestUser', password='MinhaSenha123')
     resp = client.post(
         reverse('vendas:nova_venda'),
         data={
             'data': timezone.localdate().strftime('%d-%m-%Y'),
+            'basket': basket.id,
             'cliente': '',
-            'produtos': [produto.id],
             'observacao': '',
             'valor': 4500,
             'receita': '',
@@ -52,23 +71,25 @@ def test_parcelas_criadas(resposta_nova_venda):
 
 # Editar Venda
 @pytest.fixture
-def venda(db):
-    return Venda.objects.create(
-        data=timezone.localdate(),
-        valor=1200,
+def venda(basket):
+    venda = Venda.objects.create(
+        basket=basket,
+        data=timezone.now(),
         parcelas=6,
+        valor=1200
     )
+    return venda
 
 @pytest.fixture
-def resposta_editar_venda(client, venda, produto):
+def resposta_editar_venda(client, venda, basket):
     User.objects.create_user(username='TestUser', password='MinhaSenha123')
     client.login(username='TestUser', password='MinhaSenha123')
     resp = client.post(
         reverse('vendas:editar_venda', kwargs={'venda_id': venda.id}),
         data={
             'data': timezone.localdate().strftime('%d/%m/%Y'),
+            'basket': basket.id,
             'cliente': '',
-            'produtos': [produto.id],
             'observacao': '',
             'valor': 12000,
             'receita': venda.receita.id,
@@ -83,7 +104,6 @@ def test_editar_venda_status_code(resposta_editar_venda):
 def test_venda_alterada(resposta_editar_venda):
     venda = Venda.objects.first()
     assert venda.parcelas == 12
-    assert venda.produtos.first() != None
 
 def test_parcelas_alteradas(resposta_editar_venda, venda):
     for parcela in range(venda.parcelas):

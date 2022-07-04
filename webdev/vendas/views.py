@@ -1,4 +1,3 @@
-from django.forms import modelformset_factory
 from django.http.response import Http404, HttpResponseRedirect
 from django.urls.base import reverse
 from webdev.vendas.forms import BasketForm, BasketItemForm, ClienteForm, SortSalesForm, VendaForm, SortClientsForm
@@ -6,6 +5,7 @@ from webdev.vendas.models import Basket, BasketItem, Cliente, Venda
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect, render
 from django.db.models import Q
+from django.contrib import messages
 
 # Clientes
 @login_required
@@ -110,18 +110,22 @@ def basket_summary(request):
     basket = Basket.objects.filter(is_active=True)
     basket = basket.first() if basket else Basket.objects.create()
     if request.method == 'POST':
-        basket_form = BasketForm(request.POST)
+        basket_form = BasketForm(request.POST, prefix='basket', instance=basket)
         item_form = BasketItemForm(request.POST, prefix='item', initial={'basket': basket.id})
-        if basket_form.is_valid() and item_form.is_valid():
-            if 'submit-basket' in request.POST:
-                item_form.save()
-                basket_form.save()
-                return redirect('vendas:minhas_vendas')
-            elif 'submit-item':
-                item_form.save()
-                return redirect('vendas:basket_summary')
+        if basket_form.is_valid() and not (item_form.data.get('item-product') and item_form.data.get('item-quantity')):
+            basket_form.save()
+            return redirect('vendas:basket_summary')
+        elif basket_form.is_valid() and item_form.is_valid():
+            basket_form.save()
+            bitem = item_form.save(commit=False)
+            for i in basket.get_items():
+                if bitem.product == i.product:
+                    i.delete()
+            bitem.save()
+            return redirect('vendas:basket_summary')
+
     else:
-        basket_form = BasketForm()
+        basket_form = BasketForm(prefix='basket', instance=basket)
         item_form = BasketItemForm(prefix='item', initial={'basket': basket.id})
 
     context = {
@@ -141,6 +145,31 @@ def basket_remove(request, pk):
             bitem.delete()
     return redirect('vendas:basket_summary')
 
+@login_required
+def basket_review(request):
+    basket = Basket.objects.filter(is_active=True)
+    if basket:
+        basket = basket.first()
+    else:
+        return redirect('vendas:basket_summary')
+
+    if request.method == 'POST':
+        form = VendaForm(request.POST, initial={'basket': basket})
+        if form.is_valid():
+            sale = form.save()
+            sale.basket.is_active = False
+            sale.basket.save()
+            messages.success(request, 'Venda criada com sucesso.')
+            return redirect('vendas:minhas_vendas')
+    else:
+        form = VendaForm(initial={'basket': basket, 'valor': basket.get_sale_price()})
+
+    context = {
+        'title': 'Revisar venda',
+        'basket': basket,
+        'form': form,
+    }
+    return render(request, 'vendas/basket_review.html', context)
 
 
 # Vendas
@@ -177,7 +206,7 @@ def minhas_vendas(request):
         # TODO: create import/export views for sales
         # 'import_url': reverse('vendas:importar_produtos'),
         # 'export_url': reverse('vendas:exportar_produtos'),
-        'create_url': reverse('vendas:nova_venda'),
+        'create_url': reverse('vendas:basket_summary'),
         # 'actions_url': reverse('vendas:product_actions'),
         'title': 'Vendas Cadastradas',
         'vendas': vendas,
