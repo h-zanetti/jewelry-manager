@@ -49,7 +49,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='venda',
             name='basket',
-            field=models.OneToOneField(default=0, on_delete=django.db.models.deletion.CASCADE, to='vendas.basket', verbose_name='basket'),
+            field=models.OneToOneField(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='vendas.basket', verbose_name='basket'),
             preserve_default=False,
         ),
     ]
