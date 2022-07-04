@@ -1,10 +1,9 @@
-from dateutil.relativedelta import relativedelta
-from webdev.financeiro.models import Despesa, Parcela, Receita
-from django.db.models.signals import post_save, pre_delete
 from django.dispatch import receiver
 from webdev.vendas.models import Venda
-from webdev.materiais.models import Material
 from webdev.fornecedores.models import Servico
+from dateutil.relativedelta import relativedelta
+from webdev.financeiro.models import Despesa, Parcela, Receita
+from django.db.models.signals import post_save, pre_delete, post_delete
 
 # Vendas
 @receiver(post_save, sender=Venda)
@@ -33,7 +32,7 @@ def criar_receita(sender, instance, created, **kwargs):
                 )
         instance.receita.save()
 
-@receiver(pre_delete, sender=Venda)
+@receiver(post_delete, sender=Venda)
 def deletar_receita(sender, instance, **kwargs):
     if instance.receita != None:
         instance.receita.delete()

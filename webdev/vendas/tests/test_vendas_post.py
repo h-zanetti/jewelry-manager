@@ -8,7 +8,7 @@ from dateutil.relativedelta import relativedelta
 from webdev.financeiro.models import Parcela, Receita
 
 @pytest.fixture
-def produto(db):
+def product(db):
     return Produto.objects.create(
         nome='Produto Legal',
         colecao="d'Mentira",
@@ -16,7 +16,7 @@ def produto(db):
 
 # Nova Venda
 @pytest.fixture
-def resposta_nova_venda(client, produto):
+def resposta_nova_venda(client, product):
     User.objects.create_user(username='TestUser', password='MinhaSenha123')
     client.login(username='TestUser', password='MinhaSenha123')
     resp = client.post(
@@ -24,7 +24,6 @@ def resposta_nova_venda(client, produto):
         data={
             'data': timezone.localdate().strftime('%d-%m-%Y'),
             'cliente': '',
-            'produtos': [produto.id],
             'observacao': '',
             'valor': 4500,
             'receita': '',
@@ -32,6 +31,9 @@ def resposta_nova_venda(client, produto):
         }
     )
     return resp
+
+# def test_new_sale_form_errors(resposta_nova_venda):
+#     assert not resposta_nova_venda.context['form'].errors
 
 def test_nova_venda_status_code(resposta_nova_venda):
     assert resposta_nova_venda.status_code == 302
@@ -53,14 +55,15 @@ def test_parcelas_criadas(resposta_nova_venda):
 # Editar Venda
 @pytest.fixture
 def venda(db):
-    return Venda.objects.create(
-        data=timezone.localdate(),
-        valor=1200,
+    venda = Venda.objects.create(
+        data=timezone.now(),
         parcelas=6,
+        valor=1200
     )
+    return venda
 
 @pytest.fixture
-def resposta_editar_venda(client, venda, produto):
+def resposta_editar_venda(client, venda):
     User.objects.create_user(username='TestUser', password='MinhaSenha123')
     client.login(username='TestUser', password='MinhaSenha123')
     resp = client.post(
@@ -68,7 +71,6 @@ def resposta_editar_venda(client, venda, produto):
         data={
             'data': timezone.localdate().strftime('%d/%m/%Y'),
             'cliente': '',
-            'produtos': [produto.id],
             'observacao': '',
             'valor': 12000,
             'receita': venda.receita.id,
@@ -83,7 +85,6 @@ def test_editar_venda_status_code(resposta_editar_venda):
 def test_venda_alterada(resposta_editar_venda):
     venda = Venda.objects.first()
     assert venda.parcelas == 12
-    assert venda.produtos.first() != None
 
 def test_parcelas_alteradas(resposta_editar_venda, venda):
     for parcela in range(venda.parcelas):

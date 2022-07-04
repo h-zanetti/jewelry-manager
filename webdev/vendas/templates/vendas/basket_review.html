@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% load bootstrap5 %}
+{% load humanize %}
+{% block content %}
+
+{% if title %}
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+        <h1 class="h2">{{ title }}</h1>
+    </div>
+{% endif %}
+
+<div class="container-sm mb-4">
+    <form action="{% url 'vendas:basket_review' %}" method="POST">
+        {% csrf_token %}
+        {% bootstrap_field form.basket %}
+        <div class="row d-flex justify-content-center border-bottom">
+            <div class='col-6'>
+                {% bootstrap_field form.cliente %}
+            </div>
+            <div class='col-6'>
+                {% bootstrap_field form.data %}
+            </div>
+            <div class='col-12'>
+                {% bootstrap_field form.observacao %}
+            </div>
+        </div>
+
+        {% for item in basket.get_items %}
+            <div class="row d-flex justify-content-center border-bottom">
+                <div class="col-2">
+                    <img src="{{ item.product.foto.url }}" class="img-fluid rounded-start" alt="{{ item.product.nome }}" width="100">
+                </div>
+                <div class="col-6 my-auto">
+                    <h5>{{ item.product.nome }}</h5>
+                    <p class="form-text mb-0">{{ item.product.colecao }}</p>
+                </div>
+                <div class="col-2 my-auto">
+                    <p class="mb-1">R$ {{ item.get_sale_price|intcomma }} <span class='form-text'>x</span></p>
+                </div>
+                <div class="col-2 my-auto">
+                    <p class="mb-1">{{ item.quantity }}</p>
+                </div>
+            </div>
+        {% endfor %}
+
+        <div class="row d-flex my-4">
+            <div class='col-12'>
+                <div class="row mb-3">
+                    <label for="id_valor" class="col-auto col-form-label">Total: R$</label>
+                    <div class="col-sm-3">
+                        {% bootstrap_field form.valor form_group_class='' form_field_class='' show_label=False %}
+                    </div>
+                    <label for="id_valor" class="col-auto col-form-label">Parcelas:</label>
+                    <div class="col-sm-3">
+                        {% bootstrap_field form.parcelas form_group_class='' form_field_class='' show_label=False %}
+                    </div>
+                </div>
+            </div>
+            <div class='col-12'>
+                <button type="submit" class="btn btn-danger">Confirmar venda</button>
+                <a href="{% url 'vendas:basket_summary' %}" class="btn btn-primary">Voltar</a>
+            </div>
+        </div>
+    </form>
+</div>
+
+{% endblock content %}

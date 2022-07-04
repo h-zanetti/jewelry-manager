@@ -74,6 +74,9 @@ class Produto(models.Model):
         else:
             return self.generate_barcode()
 
+    def get_barcode_obj(self):
+        return EAN13(format(self.id, '012'))
+
     def get_barcode_workbook(self):
         wb = xl.Workbook()
         ws = wb.active
