@@ -69,7 +69,7 @@ class BasketItem(models.Model):
 
 class Venda(models.Model):
     receita = OneToOneField(Receita, on_delete=models.CASCADE, null=True, blank=True, verbose_name="receita")
-    basket = models.OneToOneField(Basket, on_delete=models.CASCADE, verbose_name="basket")
+    basket = models.OneToOneField(Basket, on_delete=models.SET_NULL, null=True, blank=True, verbose_name="basket")
     cliente = models.ForeignKey(Cliente, on_delete=models.SET_NULL, null=True, blank=True, verbose_name="cliente")
     data = models.DateField("data", default=timezone.now, null=True, blank=True)
     observacao = models.TextField('observação', blank=True, null=True)

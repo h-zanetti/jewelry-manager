@@ -1,7 +1,7 @@
 import pytest
 from django.urls import reverse
 from django.utils import timezone
-from webdev.vendas.models import Venda, Basket, BasketItem, MarkUp
+from webdev.vendas.models import Venda
 from webdev.produtos.models import Produto
 from django.contrib.auth.models import User
 from dateutil.relativedelta import relativedelta
@@ -14,35 +14,15 @@ def product(db):
         colecao="d'Mentira",
     )
 
-@pytest.fixture
-def markups(db):
-    return [
-        MarkUp.objects.create(key='Cliente final', value=3),
-        MarkUp.objects.create(key='Atacado', value=1.75),
-    ]
-
-@pytest.fixture
-def basket(markups):
-    return Basket.objects.create(markup=markups[0])
-
-@pytest.fixture
-def basket_item(basket, product):
-    return BasketItem.objects.create(
-        basket=basket,
-        product=product,
-        quantity=2,
-    )
-
 # Nova Venda
 @pytest.fixture
-def resposta_nova_venda(client, product, basket):
+def resposta_nova_venda(client, product):
     User.objects.create_user(username='TestUser', password='MinhaSenha123')
     client.login(username='TestUser', password='MinhaSenha123')
     resp = client.post(
         reverse('vendas:nova_venda'),
         data={
             'data': timezone.localdate().strftime('%d-%m-%Y'),
-            'basket': basket.id,
             'cliente': '',
             'observacao': '',
             'valor': 4500,
@@ -51,6 +31,9 @@ def resposta_nova_venda(client, product, basket):
         }
     )
     return resp
+
+# def test_new_sale_form_errors(resposta_nova_venda):
+#     assert not resposta_nova_venda.context['form'].errors
 
 def test_nova_venda_status_code(resposta_nova_venda):
     assert resposta_nova_venda.status_code == 302
@@ -71,9 +54,8 @@ def test_parcelas_criadas(resposta_nova_venda):
 
 # Editar Venda
 @pytest.fixture
-def venda(basket):
+def venda(db):
     venda = Venda.objects.create(
-        basket=basket,
         data=timezone.now(),
         parcelas=6,
         valor=1200
@@ -81,14 +63,13 @@ def venda(basket):
     return venda
 
 @pytest.fixture
-def resposta_editar_venda(client, venda, basket):
+def resposta_editar_venda(client, venda):
     User.objects.create_user(username='TestUser', password='MinhaSenha123')
     client.login(username='TestUser', password='MinhaSenha123')
     resp = client.post(
         reverse('vendas:editar_venda', kwargs={'venda_id': venda.id}),
         data={
             'data': timezone.localdate().strftime('%d/%m/%Y'),
-            'basket': basket.id,
             'cliente': '',
             'observacao': '',
             'valor': 12000,

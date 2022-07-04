@@ -37,11 +37,6 @@ class VendaForm(forms.ModelForm):
         widget=forms.HiddenInput(),
         required=False
     )
-    basket = forms.ModelChoiceField(
-        queryset=Basket.objects.all(),
-        widget=forms.HiddenInput(),
-        disabled=True,
-    )
     class Meta:
         model = Venda
         fields = '__all__'
