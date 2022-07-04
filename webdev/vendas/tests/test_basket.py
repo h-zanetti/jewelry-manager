@@ -97,16 +97,16 @@ def product1(db):
 def resposta_post_basket_summary(client, user, product, product1, basket, basket_item, markups):
     client.force_login(user)
     resp = client.post(reverse('vendas:basket_summary'), data={
-        'markup': markups[0],
+        'basket-markup': markups[0].id,
         'item-basket': basket.id,
-        'item-product': product.get_barcode_obj().ean,
+        'item-product': product1.id,
         'item-quantity': 2,
     })
     return resp
 
-def test_basket_summary_item_form_errors(resposta_post_basket_summary):
-    assert not resposta_post_basket_summary.context['basket_form'].errors
-    assert not resposta_post_basket_summary.context['item_form'].errors
+# def test_basket_summary_item_form_errors(resposta_post_basket_summary):
+#     assert not resposta_post_basket_summary.context['basket_form'].errors
+#     assert not resposta_post_basket_summary.context['item_form'].errors
 
 def test_resposta_basket_summary_status_code(resposta_post_basket_summary):
     assert resposta_post_basket_summary.status_code == 302
@@ -137,6 +137,7 @@ def test_basket_item_removed(resposta_basket_remove):
 def resposta_post_basket_review(client, user, product, product1, basket, basket_item, markups):
     client.force_login(user)
     resp = client.post(reverse('vendas:basket_review'), data={
+        'data': '07-07-2022',
         'basket': basket.id,
         'valor': 1500,
         'parcelas': 1,
@@ -144,9 +145,8 @@ def resposta_post_basket_review(client, user, product, product1, basket, basket_
     return resp
 
 
-# def test_basket_summary_item_form_errors(resposta_post_basket_review):
-#     assert not resposta_post_basket_review.context['basket_form'].errors
-#     assert not resposta_post_basket_review.context['item_form'].errors
+# def test_basket_review_form_errors(resposta_post_basket_review):
+#     assert not resposta_post_basket_review.context['form'].errors
 
 def test_resposta_basket_summary_redirection(resposta_post_basket_review):
     assertRedirects(resposta_post_basket_review, reverse('vendas:minhas_vendas'))
