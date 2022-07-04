@@ -20,7 +20,7 @@ def create_basket_for_existing_sales(apps, schema_editor):
         cursor.execute(f'''SELECT produto_id FROM vendas_venda_produtos WHERE venda_id = {venda.id}''')
         produtos = cursor.fetchall()
         for p in produtos:
-            produto = Produto.object.get(pk=p[0])
+            produto = Produto.objects.get(pk=p[0])
             BasketItem.objects.create(basket=basket, product=produto, quantity=1)
         venda.basket = basket
         venda.save()
