@@ -67,6 +67,10 @@ def test_vendas_status_code(resposta_vendas):
 def test_lista_de_vendas_presente(resposta_vendas, venda):
     assertContains(resposta_vendas, venda.cliente.get_nome_completo())
 
+def test_produto_presente(resposta_vendas, venda):
+    produtos = venda.get_products()
+    assertContains(resposta_vendas, ', '.join(produtos))
+
 def test_btn_cadastrar_venda_presente(resposta_vendas):
     assertContains(resposta_vendas, f'<a class="dropdown-item" href="{reverse("vendas:basket_summary")}')
 

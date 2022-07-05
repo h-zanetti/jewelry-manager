@@ -23,7 +23,7 @@
                 <th scope="col">{{ venda.id }}</th>
                 <td>{{ venda.data|date:"d-m-Y" }}</td>
                 <td>{{ venda.cliente.get_nome_completo|default:"Desconhecido" }}</td>
-                <td>{{ venda.produtos.all|join:", " }}</td>
+                <td>{{ venda.get_products|join:", " }}</td>
                 <td>{{ venda.parcelas }}x de R$ {{ venda.get_valor_parcela|intcomma }}</td>
                 <td>R$ {{ venda.valor|intcomma }}</td>
                 <td>

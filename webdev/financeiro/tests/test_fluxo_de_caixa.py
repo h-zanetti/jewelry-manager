@@ -154,6 +154,10 @@ def test_parcelas_presente(resposta_fluxo_de_caixa, venda):
 def test_vendas_presente(resposta_fluxo_de_caixa, venda):
     assertContains(resposta_fluxo_de_caixa, venda.cliente.get_nome_completo())
 
+def test_products_from_venda_presente(resposta_fluxo_de_caixa, basket):
+    for item in basket.get_items():
+        assertContains(resposta_fluxo_de_caixa, item.product.nome)
+
 def test_materiais_presente(resposta_fluxo_de_caixa, entradas):
     for entrada in entradas:
         assertContains(resposta_fluxo_de_caixa, entrada.material.nome)

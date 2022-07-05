@@ -94,6 +94,9 @@ class Venda(models.Model):
     def __str__(self):
         return f'Venda #{self.id}'
 
+    def get_products(self):
+        return [item.product for item in self.basket.get_items()]
+
     def get_sale_price(self):
         if self.value:
             return round(self.value, 2)
