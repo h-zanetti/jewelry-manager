@@ -156,16 +156,18 @@ var myChart = new Chart(ctx, {
                                                             <thead>
                                                                 <th scope="col">Código</th>
                                                                 <th scope="col">Produto</th>
-                                                                <th scope="col">Coleção</th>
+                                                                <th scope="col">Quantidade</th>
                                                                 <th scope="col">Custo de Produção</th>
+                                                                <th scope="col">Preço total</th>
                                                             </thead>
                                                             <tbody>
-                                                                {% for produto in t.receita.venda.produtos.all %}
+                                                                {% for bitem in t.receita.venda.basket.get_items %}
                                                                 <tr>
-                                                                    <td scope="col">{{ produto.id }}</td>
-                                                                    <td>{{ produto.nome }}</td>
-                                                                    <td>{{ produto.colecao }}</td>
-                                                                    <td>R$ {{ produto.get_custo_de_producao|intcomma }}</td>
+                                                                    <td scope="col">{{ bitem.product.id }}</td>
+                                                                    <td>{{ bitem.product.nome }}</td>
+                                                                    <td>{{ bitem.quantity }}</td>
+                                                                    <td>R$ {{ bitem.get_production_cost|intcomma }}</td>
+                                                                    <td>R$ {{ bitem.get_sale_price|intcomma }}</td>
                                                                 </tr>
                                                                 {% endfor %}
                                                             </tbody>
