@@ -46,10 +46,4 @@ class Migration(migrations.Migration):
             name='valor',
             field=models.DecimalField(decimal_places=2, max_digits=8, verbose_name='valor'),
         ),
-        migrations.AddField(
-            model_name='venda',
-            name='basket',
-            field=models.OneToOneField(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='vendas.basket', verbose_name='basket'),
-            preserve_default=False,
-        ),
     ]
