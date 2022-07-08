@@ -47,7 +47,7 @@
             </div>
         </div>
         <div class="btn-group" role="group">
-            <a href="{% url 'vendas:nova_venda' %}?next={{ request.path|urlencode }}" class="btn btn-sm btn-primary">
+            <a href="{% url 'vendas:basket_summary' %}?next={{ request.path|urlencode }}" class="btn btn-sm btn-primary">
                 <i class="fas fa-plus"></i><span class="ms-2">Venda</span>
             </a>
         </div>
