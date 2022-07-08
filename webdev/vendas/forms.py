@@ -1,4 +1,5 @@
 from django import forms
+from django.core.exceptions import ValidationError
 
 from webdev.financeiro.models import Receita
 from webdev.produtos.models import Produto
@@ -65,13 +66,18 @@ class BasketItemForm(forms.ModelForm):
         widget=forms.HiddenInput(),
         disabled=True, required=True
     )
-    product = forms.ModelChoiceField(
-        queryset=Produto.objects.all(),
-        widget=forms.TextInput(),
-        required=False
-    )
+    product = forms.CharField(required=False)
     quantity = forms.IntegerField(required=False, min_value=1, initial=1)
 
     class Meta:
         model = BasketItem
         fields = '__all__'
+
+    def clean_product(self):
+        pk = self.cleaned_data['product'][:-1] # Remove last number
+        try:
+            product = Produto.objects.get(pk=pk)
+            return product
+        except Produto.DoesNotExist:
+            raise ValidationError('Escolha um produto válido')
+

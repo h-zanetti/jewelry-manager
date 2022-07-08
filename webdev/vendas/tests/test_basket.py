@@ -99,7 +99,7 @@ def resposta_post_basket_summary(client, user, product, product1, basket, basket
     resp = client.post(reverse('vendas:basket_summary'), data={
         'basket-markup': markups[0].id,
         'item-basket': basket.id,
-        'item-product': product1.id,
+        'item-product': product1.get_barcode_obj().get_fullcode(),
         'item-quantity': 2,
     })
     return resp
