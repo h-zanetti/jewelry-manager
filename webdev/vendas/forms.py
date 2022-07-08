@@ -1,7 +1,9 @@
 from django import forms
-from .models import Cliente, Venda
+from django.core.exceptions import ValidationError
+
 from webdev.financeiro.models import Receita
 from webdev.produtos.models import Produto
+from .models import Basket, BasketItem, Cliente, Venda
 
 class ClienteForm(forms.ModelForm):
     birth_date = forms.DateField(
@@ -24,14 +26,13 @@ class VendaForm(forms.ModelForm):
         input_formats=['%d/%m/%Y', '%d-%m-%Y'],
         widget=forms.DateInput(attrs={'placeholder': 'dd/mm/aaaa'}),
     )
-    cliente = forms.ModelChoiceField(queryset=Cliente.objects.all().order_by('nome'), required=False)
-    produtos = forms.ModelMultipleChoiceField(
-        queryset=Produto.objects.all().order_by('nome'),
-        widget=forms.SelectMultiple(
-            attrs={'style': 'padding: 9px 6px 10px'}
-        ),
+    basket = forms.ModelChoiceField(
+        queryset=Basket.objects.all(),
+        widget=forms.HiddenInput(),
+        disabled=True,
         required=False
     )
+    cliente = forms.ModelChoiceField(queryset=Cliente.objects.all().order_by('nome'), required=False)
     observacao = forms.CharField(
         widget=forms.Textarea(
             attrs={'rows': "4"}
@@ -51,4 +52,37 @@ class VendaForm(forms.ModelForm):
 class SortSalesForm(forms.Form):
     field = forms.ChoiceField(choices=Venda.get_sortable_fields(), label='Atributo')
     order = forms.ChoiceField(choices=(('', 'Crescente'), ('-', 'Decrescente')), required=False, label='Ordem')
+
+
+class BasketForm(forms.ModelForm):
+    class Meta:
+        model = Basket
+        exclude = ('is_active',)
+
+
+class BasketItemForm(forms.ModelForm):
+    basket = forms.ModelChoiceField(
+        queryset=Basket.objects.all(),
+        widget=forms.HiddenInput(),
+        disabled=True, required=True
+    )
+    product = forms.CharField(required=False)
+    quantity = forms.IntegerField(required=False, min_value=1, initial=1)
+
+    class Meta:
+        model = BasketItem
+        fields = '__all__'
+
+    def clean_product(self):
+        data = self.cleaned_data['product']
+        pk = data[:-1]
+        try:
+            product = Produto.objects.get(pk=pk)
+            barcode = product.get_barcode_obj()
+            if data == barcode.ean:
+                return product
+            else:
+                raise ValidationError('Escolha um produto válido')
+        except Produto.DoesNotExist:
+            raise ValidationError('Escolha um produto válido')
 

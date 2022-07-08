@@ -10,7 +10,7 @@ from django.utils import timezone
 from pytest_django.asserts import assertContains, assertNotContains
 from django.contrib.auth.models import User, Permission
 from webdev.financeiro.models import Despesa, Parcela
-from webdev.vendas.models import Cliente, Venda
+from webdev.vendas.models import Basket, BasketItem, Cliente, Venda
 from webdev.produtos.models import Produto
 from webdev.materiais.models import Entrada, Material
 
@@ -32,21 +32,27 @@ def lista_de_produtos(db):
         Produto.objects.create(nome='Bracelete', colecao="d'Mentira")
     ]
 
+@pytest.fixture
+def basket(lista_de_produtos):
+    bskt = Basket.objects.create()
+    for product in lista_de_produtos:
+        BasketItem.objects.create(basket=bskt, product=product, quantity=1)
+    return bskt
+
 '''
 Objetos do tipo Parcela e Receita são criados, edidatos ou deletados automaticamente ao salvar, editar ou 
 deletar um objeto do tipo Venda. Para mais informações, ver tests do arquivo test_vendas_post.py ou as 
 funções em webdev.financeiro.signals
 '''
 @pytest.fixture
-def venda(cliente, lista_de_produtos):
+def venda(cliente, basket):
     venda = Venda.objects.create(
+        basket=basket,
         data=timezone.localdate(),
         cliente=cliente,
         parcelas=6,
         valor=1200
     )
-    for produto in lista_de_produtos:
-        venda.produtos.add(produto)
     return venda
 
 ''' Gerar despesas:
@@ -148,6 +154,10 @@ def test_parcelas_presente(resposta_fluxo_de_caixa, venda):
 def test_vendas_presente(resposta_fluxo_de_caixa, venda):
     assertContains(resposta_fluxo_de_caixa, venda.cliente.get_nome_completo())
 
+def test_products_from_venda_presente(resposta_fluxo_de_caixa, basket):
+    for item in basket.get_items():
+        assertContains(resposta_fluxo_de_caixa, item.product.nome)
+
 def test_materiais_presente(resposta_fluxo_de_caixa, entradas):
     for entrada in entradas:
         assertContains(resposta_fluxo_de_caixa, entrada.material.nome)
@@ -212,7 +222,7 @@ def test_grafico_correto(resposta_fluxo_de_caixa):
 
 def test_repeticao_mensal_encerrada(client, lista_de_despesas, user):
     client.force_login(user)
-    date = timezone.localdate() + dt.timedelta(120)
+    date = timezone.localdate() + dt.timedelta(122)
     resp = client.get(
         reverse('financeiro:fluxo_de_caixa',
         kwargs={
@@ -252,10 +262,10 @@ def test_btn_novo_servico_presente(resposta_fluxo_de_caixa):
         f'href="{reverse("fornecedores:novo_servico")}'
     )
 
-def test_btn_nova_venda_presente(resposta_fluxo_de_caixa):
+def test_btn_basket_summary_presente(resposta_fluxo_de_caixa):
     assertContains(
         resposta_fluxo_de_caixa,
-        f'href="{reverse("vendas:nova_venda")}'
+        f'href="{reverse("vendas:basket_summary")}'
     )
 
 def test_btn_visualizar_despesa_presente(resposta_fluxo_de_caixa, lista_de_despesas):
