@@ -25,6 +25,12 @@ class VendaForm(forms.ModelForm):
         input_formats=['%d/%m/%Y', '%d-%m-%Y'],
         widget=forms.DateInput(attrs={'placeholder': 'dd/mm/aaaa'}),
     )
+    basket = forms.ModelChoiceField(
+        queryset=Basket.objects.all(),
+        widget=forms.HiddenInput(),
+        disabled=True,
+        required=False
+    )
     cliente = forms.ModelChoiceField(queryset=Cliente.objects.all().order_by('nome'), required=False)
     observacao = forms.CharField(
         widget=forms.Textarea(

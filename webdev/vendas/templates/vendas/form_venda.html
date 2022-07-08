@@ -16,16 +16,24 @@
                     <div class="col-12">
                         {% csrf_token %}
                         <input type="hidden" name="next" value="{{ request.GET.next }}">
+                        {% bootstrap_field form.basket %}
+                        {% bootstrap_field form.receita %}
                     </div>
-                    {% for field in form %}
-                        {% if field.name == 'receita' %}
-                            {% bootstrap_field field %}
-                        {% else %}
-                            <div class="col-lg-6 col-md-12">
-                                {% bootstrap_field field %}
-                            </div>
-                        {% endif %}
-                    {% endfor %}
+                    <div class="col-lg-6 col-md-12">
+                        {% bootstrap_field form.data %}
+                    </div>
+                    <div class="col-lg-6 col-md-12">
+                        {% bootstrap_field form.cliente %}
+                    </div>
+                    <div class="col-lg-6 col-md-12">
+                        {% bootstrap_field form.valor %}
+                    </div>
+                    <div class="col-lg-6 col-md-12">
+                        {% bootstrap_field form.parcelas %}
+                    </div>
+                    <div class="col-12">
+                        {% bootstrap_field form.observacao %}
+                    </div>
                 </div>
                 <div class="row g-2 d-flex justify-content-between">
                     {% if novo_obj %}
