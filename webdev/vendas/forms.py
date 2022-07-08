@@ -74,10 +74,15 @@ class BasketItemForm(forms.ModelForm):
         fields = '__all__'
 
     def clean_product(self):
-        pk = self.cleaned_data['product'][:-1] # Remove last number
+        data = self.cleaned_data['product']
+        pk = data[:-1]
         try:
             product = Produto.objects.get(pk=pk)
-            return product
+            barcode = product.get_barcode_obj()
+            if data == barcode.ean:
+                return product
+            else:
+                raise ValidationError('Escolha um produto válido')
         except Produto.DoesNotExist:
             raise ValidationError('Escolha um produto válido')
 
