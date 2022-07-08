@@ -95,7 +95,7 @@ class Venda(models.Model):
         return f'Venda #{self.id}'
 
     def get_products(self):
-        if self.basekt:
+        if self.basket:
             return [item.product for item in self.basket.get_items()]
         return None
 
