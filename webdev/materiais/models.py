@@ -29,6 +29,9 @@ class Material(models.Model):
     valor = models.DecimalField(_("valor"), max_digits=8, decimal_places=2, blank=True, default=0)
     barcode = models.ImageField(_('código de barras'), upload_to='materiais/barcode/', blank=True, null=True)
 
+    class Meta:
+        ordering = ['nome']
+
     def __str__(self):
         return f"{self.nome} #{self.id}"
 
@@ -122,6 +125,7 @@ class Entrada(models.Model):
 
     class Meta:
         get_latest_by ='data'
+        order_with_respect_to = 'material'
 
     def __str__(self):
         return f"{self.data} {self.material}"
