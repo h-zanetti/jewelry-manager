@@ -264,7 +264,10 @@ def importar_entradas(request):
         dataset.load(novas_entradas.read(), 'xlsx')
         # Validar dados
         is_valid = True
-        for row in dataset:
+        for i, row in zip(range(len(dataset)), dataset):
+            if not any(row):
+                del dataset[i]
+                continue
             material_id = int(row[2])
             try:
                 material = Material.objects.get(id=material_id)
@@ -278,9 +281,16 @@ def importar_entradas(request):
                 break
         # Import data
         if is_valid:
-            resource = EntradaResource()
-            resource.import_data(dataset)
-            return redirect('materiais:entradas_de_materiais')
+            # resource = EntradaResource()
+            # resource.import_data(dataset, raise_errors=True)
+            # return redirect('materiais:entradas_de_materiais')
+            try:
+                resource = EntradaResource()
+                resource.import_data(dataset, raise_errors=True)
+                return redirect('materiais:entradas_de_materiais')
+            except Exception as e:
+                messages.error(request, e)
+                return redirect('materiais:importar_entradas')
         else:
             messages.error(request, error_msg)
             return redirect('materiais:importar_entradas')
