@@ -13,4 +13,4 @@ class MaterialResource(resources.ModelResource):
 class EntradaResource(resources.ModelResource):
     class Meta:
         model = Entrada
-        exclude = ('despesa')
+        exclude = ('despesa',)
