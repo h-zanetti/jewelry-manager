@@ -7,30 +7,31 @@ from webdev.materiais.models import Entrada
 @receiver(pre_save, sender=Entrada)
 def gerenciar_entrada(sender, instance, **kwargs):
     material = instance.material
-    if instance.pk:
-        # Subtrair estoque quando a Entrada é modificada (não foi salva pela primeira vez)
-        if instance.alterar_estoque:
-            entrada = Entrada.objects.get(pk=instance.pk)
+    try:
+        # Verifica se entrada existe
+        entrada = Entrada.objects.get(pk=instance.pk)
+        # Verifica se altera o estoque
+        if entrada.alterar_estoque:
             if entrada.unidades and material.estoque >= entrada.unidades:
                 material.estoque -= entrada.unidades
             if entrada.peso and material.peso >= entrada.peso:
                 material.peso -= entrada.peso
-
-        if instance.despesa.valor != instance.valor:
+        #  Verifica se altera a despesa
+        if entrada.despesa.valor != instance.valor:
             instance.despesa.valor = instance.valor
             instance.despesa.save()
-        if instance.despesa.data != instance.data:
+        if entrada.despesa.data != instance.data:
             instance.despesa.data = instance.data
             instance.despesa.save()
-    else:
+    except Entrada.DoesNotExist:
         instance.despesa = Despesa.objects.create(
             data=instance.data,
             categoria='Entrada de material',
             valor=instance.valor
         )
 
+    # Soma estoque ao criar entrada
     if instance.alterar_estoque:
-        # Somar novo estoque
         if instance.unidades:
             material.estoque += instance.unidades
             material.save()
