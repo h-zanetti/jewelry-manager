@@ -97,14 +97,6 @@ LOGIN_REDIRECT_URL = '/produtos/estoque_produtos'
 LOGOUT_REDIRECT_URL = '/users/login'
 LOGIN_URL = '/users/login'
 
-# Email backend
-#EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-#EMAIL_HOST = 'mail.agahsolutions.com'
-#EMAIL_PORT = 465
-#EMAIL_USE_SSL = True
-#EMAIL_HOST_USER = os.environ.get('EMAIL_USER')
-#EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_PASSWORD')
-#DEFAULT_FROM_EMAIL = os.environ.get('EMAIL_USER')
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
