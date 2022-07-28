@@ -195,6 +195,7 @@ def estoque(request):
         'export_url': reverse('produtos:exportar_produtos'),
         'create_url': reverse('produtos:novo_produto'),
         'actions_url': reverse('produtos:product_actions'),
+        'report_url': reverse('produtos:product_report'),
         'produtos': produtos,
         'sort_form': sort_form,
         'sorting': True if 'sort-order' in request.GET else False
@@ -336,3 +337,15 @@ def importar_produtos(request):
         
     return render(request, 'base_form_file.html', {'title': "Importação de produtos"})
 
+
+@login_required
+def product_report(request):
+    products = Produto.objects.all()
+    data = Dataset(headers=['product_id', 'product_name', 'production_cost', 'quantity_in_stock', 'total_stock_value'])
+    for p in products:
+        p_data = (p.id, p.nome, p.get_custo_de_producao(), p.unidades, p.unidades * p.get_custo_de_producao())
+        data.append(p_data)
+    
+    resposta = HttpResponse(data.xls, content_type='application/vnd.ms-excel')
+    resposta['Content-Disposition'] = 'attachment; filename=product_report.xls'
+    return resposta

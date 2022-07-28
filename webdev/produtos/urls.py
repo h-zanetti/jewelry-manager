@@ -24,4 +24,6 @@ urlpatterns = [
     # Importação e exportação
     path('exportar/', views.exportar_produtos, name='exportar_produtos'),
     path('importar/', views.importar_produtos, name='importar_produtos'),
+    # Reports
+    path('product_report/', views.product_report, name='product_report'),
 ]
