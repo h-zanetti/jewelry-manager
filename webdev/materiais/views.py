@@ -190,21 +190,36 @@ def importar_materiais(request):
 # Entradas
 @login_required
 def entradas_de_materiais(request):
+    entradas = Entrada.objects.all()
     if request.GET:
-        entradas = Entrada.objects.filter(
-            Q(material__nome__icontains=request.GET.get('search')) |
-            Q(fornecedor__nome__icontains=request.GET.get('search')) |
-            Q(codigo_do_fornecedor__icontains=request.GET.get('search'))
-        )
-    else:
-        entradas = Entrada.objects.all()
+        # Filter
+        if 'search' in request.GET:
+            entradas = entradas.filter(
+                Q(material__nome__icontains=request.GET.get('search')) |
+                Q(fornecedor__nome__icontains=request.GET.get('search')) |
+                Q(codigo_do_fornecedor__icontains=request.GET.get('search'))
+            )
+
+    # Pagination
+    paginator = Paginator(entradas, 10)
+    page = request.GET.get('page')
+    try:
+        page_obj = paginator.page(page)
+    except PageNotAnInteger:
+        page_obj = paginator.page(1)
+    except EmptyPage:
+        page_obj = paginator.page(paginator.num_pages)
 
     context = {
         'title': 'Entradas de matérias primas',
         'import_url': reverse('materiais:importar_entradas'),
         'export_url': reverse('materiais:exportar_entradas'),
         'create_url': reverse('materiais:entrada_de_material'),
-        'entradas': entradas,
+        'entradas': page_obj,
+        # 'sort_form': sort_form,
+        'sorting': True if 'sort-field' in request.GET else False,
+        'sort_by': f'sort-field={request.GET.get("sort-field")}&sort-order={request.GET.get("sort-order")}',
+        'search_by': f"search={request.GET.get('search')}" if 'search' in request.GET else None,
     }
     return render(request, 'materiais/entradas_de_materiais.html', context)
 
