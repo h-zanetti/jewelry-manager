@@ -58,7 +58,9 @@ def estoque(request):
         'report_url': reverse('produtos:product_report'),
         'produtos': page_obj,
         'sort_form': sort_form,
-        'sorting': True if 'sort-order' in request.GET else False
+        'sorting': True if 'sort-order' in request.GET else False,
+        'sort_by': f'sort-field={request.GET.get("sort-field")}&sort-order={request.GET.get("sort-order")}',
+        'search_by': f"search={request.GET.get('search')}" if 'search' in request.GET else None,
     }
     return render(request, 'produtos/estoque_produtos.html', context)
 
