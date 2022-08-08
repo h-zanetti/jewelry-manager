@@ -3,15 +3,64 @@ from django.db.models import Q
 from django.contrib import messages
 from django.http.response import HttpResponse
 from tablib.core import Dataset
-from webdev.produtos.admin import ProdutoResource
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.http import HttpResponseRedirect, Http404
 from django.contrib.auth.decorators import login_required
 from django.forms import modelformset_factory
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
+
+from .admin import ProdutoResource
 from .models import Produto, MaterialDoProduto, Categoria, ServicoDoProduto
-from .forms import ProdutoForm, MaterialDoProdutoForm, CategoriaForm, SortProductsForm, ProductActionForm
-from webdev.produtos.forms import ServicoDoProdutoForm
+from .forms import ProdutoForm, MaterialDoProdutoForm, CategoriaForm, SortProductsForm, ProductActionForm, ServicoDoProdutoForm
+
+@login_required
+def estoque(request):
+    if request.GET:
+        # Filters
+        if 'search' in request.GET:
+            produtos = Produto.objects.filter(
+                Q(nome__icontains=request.GET.get('search')) |
+                Q(colecao__icontains=request.GET.get('search')) |
+                Q(familia__icontains=request.GET.get('search'))
+            )
+        else:
+            produtos = Produto.objects.all()
+        # Sort
+        if 'sort-order' in request.GET:
+            sort_form = SortProductsForm(request.GET, prefix='sort')
+            if sort_form.is_valid():
+                field = sort_form.data.get(sort_form.prefix + '-field')
+                order = sort_form.data.get(sort_form.prefix + '-order')
+                produtos = produtos.order_by(order + field)
+        else:
+            sort_form = SortProductsForm(prefix='sort')
+    else:
+        sort_form = SortProductsForm(prefix='sort')
+        produtos = Produto.objects.all()
+
+    # Pagination
+    paginator = Paginator(produtos, 10)
+    page = request.GET.get('page')
+    try:
+        page_obj = paginator.page(page)
+    except PageNotAnInteger:
+        page_obj = paginator.page(1)
+    except EmptyPage:
+        page_obj = paginator.page(paginator.num_pages)
+
+    context = {
+        'title': 'Estoque de Produtos',
+        'import_url': reverse('produtos:importar_produtos'),
+        'export_url': reverse('produtos:exportar_produtos'),
+        'create_url': reverse('produtos:novo_produto'),
+        'actions_url': reverse('produtos:product_actions'),
+        'report_url': reverse('produtos:product_report'),
+        'produtos': page_obj,
+        'sort_form': sort_form,
+        'sorting': True if 'sort-order' in request.GET else False
+    }
+    return render(request, 'produtos/estoque_produtos.html', context)
 
 @login_required
 def categorias(request):
@@ -164,43 +213,7 @@ def deletar_produto(request, produto_id):
         Produto.objects.get(id=produto_id).delete()
     return HttpResponseRedirect(reverse('produtos:estoque_produtos'))
 
-@login_required
-def estoque(request):
-    if request.GET:
-        # Filters
-        if 'search' in request.GET:
-            produtos = Produto.objects.filter(
-                Q(nome__icontains=request.GET.get('search')) |
-                Q(colecao__icontains=request.GET.get('search')) |
-                Q(familia__icontains=request.GET.get('search'))
-            )
-        else:
-            produtos = Produto.objects.all()
-        # Sort
-        if 'sort-order' in request.GET:
-            sort_form = SortProductsForm(request.GET, prefix='sort')
-            if sort_form.is_valid():
-                field = sort_form.data.get(sort_form.prefix + '-field')
-                order = sort_form.data.get(sort_form.prefix + '-order')
-                produtos = produtos.order_by(order + field)
-        else:
-            sort_form = SortProductsForm(prefix='sort')
-    else:
-        sort_form = SortProductsForm(prefix='sort')
-        produtos = Produto.objects.all()
-
-    context = {
-        'title': 'Estoque de Produtos',
-        'import_url': reverse('produtos:importar_produtos'),
-        'export_url': reverse('produtos:exportar_produtos'),
-        'create_url': reverse('produtos:novo_produto'),
-        'actions_url': reverse('produtos:product_actions'),
-        'report_url': reverse('produtos:product_report'),
-        'produtos': produtos,
-        'sort_form': sort_form,
-        'sorting': True if 'sort-order' in request.GET else False
-    }
-    return render(request, 'produtos/estoque_produtos.html', context)
+# Materiais e servicos
 
 @login_required
 def adicionar_servico(request, produto_id):
