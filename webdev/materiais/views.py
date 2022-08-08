@@ -1,14 +1,16 @@
-from urllib.parse import urlencode
+from tablib import Dataset
 from django.db.models import Q
+from django.urls import reverse
 from django.contrib import messages
+from urllib.parse import urlencode
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseRedirect, Http404
-from django.urls import reverse
-from webdev.materiais.models import Entrada, Material
-from webdev.materiais.forms import EditarEntradaForm, EntradaForm, CadastrarMaterialForm, MaterialActionForm, SortMaterialsForm
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
+
+from .models import Entrada, Material
+from .forms import EditarEntradaForm, EntradaForm, CadastrarMaterialForm, MaterialActionForm, SortMaterialsForm
 from .admin import EntradaResource, MaterialResource
-from tablib import Dataset
 
 # Estoque
 @login_required
@@ -36,15 +38,27 @@ def estoque_materiais(request):
         sort_form = SortMaterialsForm(prefix='sort')
         materiais = Material.objects.all()
 
+    # Pagination
+    paginator = Paginator(materiais, 10)
+    page = request.GET.get('page')
+    try:
+        page_obj = paginator.page(page)
+    except PageNotAnInteger:
+        page_obj = paginator.page(1)
+    except EmptyPage:
+        page_obj = paginator.page(paginator.num_pages)
+
     context = {
         'title': 'Estoque de matéria prima',
         'import_url': reverse('materiais:importar_materiais'),
         'export_url': reverse('materiais:exportar_materiais'),
         'create_url': reverse('materiais:cadastrar_material'),
         'actions_url': reverse('materiais:material_actions'),
-        'materiais': materiais,
+        'materiais': page_obj,
         'sort_form': sort_form,
-        'sorting': True if 'sort-field' in request.GET else False
+        'sorting': True if 'sort-field' in request.GET else False,
+        'sort_by': f'sort-field={request.GET.get("sort-field")}&sort-order={request.GET.get("sort-order")}',
+        'search_by': f"search={request.GET.get('search')}" if 'search' in request.GET else None,
     }
     return render(request, 'materiais/estoque_materiais.html', context)
 
@@ -171,6 +185,7 @@ def importar_materiais(request):
         return redirect('materiais:estoque_materiais')
         
     return render(request, 'base_form_file.html', {'title': "Importação de matérias primas"})
+
 
 # Entradas
 @login_required
