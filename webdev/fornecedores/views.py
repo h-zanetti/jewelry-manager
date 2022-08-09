@@ -1,5 +1,5 @@
-from tablib.core import Dataset
 import openpyxl
+from tablib.core import Dataset
 from openpyxl.writer.excel import save_virtual_workbook
 from django.db.models import Q
 from django.shortcuts import render, redirect
@@ -7,28 +7,45 @@ from django.http import Http404, HttpResponseRedirect
 from django.http.response import HttpResponse
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
-from .models import Documento, Fornecedor, Fornecimento, Email, Telefone, Local, DadosBancarios, Servico
-from .forms import FornecedorForm, FornecimentoForm, EmailForm, TelefoneForm, LocalForm, DadosBancariosForm, ServicoForm
-from . import admin
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.forms import inlineformset_factory, modelformset_factory
 from django.contrib import messages
 
+from . import admin
+from .models import Documento, Fornecedor, Fornecimento, Email, Telefone, Local, DadosBancarios, Servico
+from .forms import FornecedorForm, FornecimentoForm, EmailForm, TelefoneForm, LocalForm, DadosBancariosForm, ServicoForm
+
 @login_required
 def meus_fornecedores(request):
+    fornecedores = Fornecedor.objects.all()
     if request.GET:
-        fornecedores = Fornecedor.objects.filter(
-            Q(nome__icontains=request.GET.get('search')) |
-            Q(fornecimento__nome__icontains=request.GET.get('search'))
-        )
-    else:
-        fornecedores = Fornecedor.objects.all()
+        # Filter
+        if 'search' in request.GET:
+            fornecedores = fornecedores.filter(
+                Q(nome__icontains=request.GET.get('search')) |
+                Q(fornecimento__nome__icontains=request.GET.get('search'))
+            )
+
+    # Pagination
+    paginator = Paginator(fornecedores, 10)
+    page = request.GET.get('page')
+    try:
+        page_obj = paginator.page(page)
+    except PageNotAnInteger:
+        page_obj = paginator.page(1)
+    except EmptyPage:
+        page_obj = paginator.page(paginator.num_pages)
 
     context = {
         'title': 'Meus Fornecedores',
         'import_url': reverse('fornecedores:importar_fornecedores'),
         'export_url': reverse('fornecedores:exportar_fornecedores'),
         'create_url': reverse('fornecedores:novo_fornecedor'),
-        'fornecedores': fornecedores,
+        'fornecedores': page_obj,
+        # 'sort_form': sort_form,
+        'sorting': True if 'sort-field' in request.GET else False,
+        'sort_by': f'sort-field={request.GET.get("sort-field")}&sort-order={request.GET.get("sort-order")}',
+        'search_by': f"search={request.GET.get('search')}" if 'search' in request.GET else None,
     }
     return render(request, 'fornecedores/meus_fornecedores.html', context)
 

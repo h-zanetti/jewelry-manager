@@ -1,19 +1,23 @@
 from django.http.response import Http404, HttpResponseRedirect
 from django.urls.base import reverse
-from webdev.vendas.forms import BasketForm, BasketItemForm, ClienteForm, SortSalesForm, VendaForm, SortClientsForm
-from webdev.vendas.models import Basket, BasketItem, Cliente, Venda
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect, render
 from django.db.models import Q
 from django.contrib import messages
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
+
+from .forms import BasketForm, BasketItemForm, ClienteForm, SortSalesForm, VendaForm, SortClientsForm
+from .models import Basket, BasketItem, Cliente, Venda
 
 # Clientes
 @login_required
 def clientes(request):
+    clients = Cliente.objects.all()
+    sort_form = SortClientsForm(prefix='sort')
     if request.GET:
         # Filters
         if 'search' in request.GET:
-            clients = Cliente.objects.filter(
+            clients = clients.filter(
                 Q(nome__icontains=request.GET.get('search')) |
                 Q(sobrenome__icontains=request.GET.get('search')) |
                 Q(email__icontains=request.GET.get('search')) |
@@ -23,8 +27,6 @@ def clientes(request):
                 Q(birth_date__icontains=request.GET.get('search')) |
                 Q(observacao__icontains=request.GET.get('search'))
             )
-        else:
-            clients = Cliente.objects.all()
         # Sort
         if 'sort-order' in request.GET:
             sort_form = SortClientsForm(request.GET, prefix='sort')
@@ -32,12 +34,16 @@ def clientes(request):
                 field = sort_form.data.get(sort_form.prefix + '-field')
                 order = sort_form.data.get(sort_form.prefix + '-order')
                 clients = clients.order_by(order + field)
-        else:
-            sort_form = SortClientsForm(prefix='sort')
 
-    else:
-        sort_form = SortClientsForm(prefix='sort')
-        clients = Cliente.objects.all()
+    # Pagination
+    paginator = Paginator(clients, 10)
+    page = request.GET.get('page')
+    try:
+        page_obj = paginator.page(page)
+    except PageNotAnInteger:
+        page_obj = paginator.page(1)
+    except EmptyPage:
+        page_obj = paginator.page(paginator.num_pages)
 
     context = {
         # TODO: create import/export views for clients
@@ -46,9 +52,12 @@ def clientes(request):
         'create_url': reverse('vendas:novo_cliente'),
         # 'actions_url': reverse('vendas:product_actions'),
         'title': 'Meus clientes',
-        'clientes': clients,
+        'clientes': page_obj,
         'sort_form': sort_form,
-        'sorting': True if 'sort-order' in request.GET else False
+        'sorting': True if 'sort-field' in request.GET else False,
+        'sort_by': f'sort-field={request.GET.get("sort-field")}&sort-order={request.GET.get("sort-order")}',
+        'search_by': f"search={request.GET.get('search')}" if 'search' in request.GET else None,
+
     }
     return render(request, 'vendas/clientes.html', context)
 
@@ -175,10 +184,12 @@ def basket_review(request):
 # Vendas
 @login_required
 def minhas_vendas(request):
+    vendas = Venda.objects.all()
+    sort_form = SortSalesForm(prefix='sort')
     if request.GET:
         # Filters
         if 'search' in request.GET:
-            vendas = Venda.objects.filter(
+            vendas = vendas.filter(
                 Q(data=request.GET.get('search')) |
                 # Q(cliente__icontains=request.GET.get('search')) |
                 # Q(produtos__icontains=request.GET.get('search')) |
@@ -186,8 +197,6 @@ def minhas_vendas(request):
                 Q(valor__icontains=request.GET.get('search')) |
                 Q(parcelas__icontains=request.GET.get('search'))
             )
-        else:
-            vendas = Venda.objects.all()
         # Sort
         if 'sort-order' in request.GET:
             sort_form = SortSalesForm(request.GET, prefix='sort')
@@ -195,12 +204,16 @@ def minhas_vendas(request):
                 field = sort_form.data.get(sort_form.prefix + '-field')
                 order = sort_form.data.get(sort_form.prefix + '-order')
                 vendas = vendas.order_by(order + field)
-        else:
-            sort_form = SortSalesForm(prefix='sort')
 
-    else:
-        sort_form = SortSalesForm(prefix='sort')
-        vendas = Venda.objects.all()
+    # Pagination
+    paginator = Paginator(vendas, 10)
+    page = request.GET.get('page')
+    try:
+        page_obj = paginator.page(page)
+    except PageNotAnInteger:
+        page_obj = paginator.page(1)
+    except EmptyPage:
+        page_obj = paginator.page(paginator.num_pages)
 
     context = {
         # TODO: create import/export views for sales
@@ -209,9 +222,11 @@ def minhas_vendas(request):
         'create_url': reverse('vendas:basket_summary'),
         # 'actions_url': reverse('vendas:product_actions'),
         'title': 'Vendas Cadastradas',
-        'vendas': vendas,
+        'vendas': page_obj,
         'sort_form': sort_form,
-        'sorting': True if 'sort-order' in request.GET else False
+        'sorting': True if 'sort-field' in request.GET else False,
+        'sort_by': f'sort-field={request.GET.get("sort-field")}&sort-order={request.GET.get("sort-order")}',
+        'search_by': f"search={request.GET.get('search')}" if 'search' in request.GET else None,
     }
     return render(request, 'vendas/minhas_vendas.html', context)
 
