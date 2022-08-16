@@ -46,6 +46,10 @@ class ProdutoForm(forms.ModelForm):
 
 
 class MaterialDoProdutoForm(forms.ModelForm):
+    produto = forms.ModelChoiceField(
+        queryset=Produto.objects.all(),
+        disabled=True
+    )
     class Meta:
         model = MaterialDoProduto
         fields = '__all__'
