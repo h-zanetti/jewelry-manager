@@ -281,7 +281,7 @@ def adicionar_material(request, produto_id):
         raise Http404('Produto não encontrado')
 
     if request.method == 'POST':
-        form = MaterialDoProdutoForm(request.POST)
+        form = MaterialDoProdutoForm(request.POST, initial={'produto': produto_id})
         if form.is_valid():
             form.save()
             next_url = request.POST.get('next')
@@ -292,7 +292,7 @@ def adicionar_material(request, produto_id):
             else:
                 return redirect('produtos:estoque_produtos')
     else:
-        form = MaterialDoProdutoForm()
+        form = MaterialDoProdutoForm(initial={'produto': produto_id})
 
     context = {
         'title': f'Adicionar material ao produto {produto.nome} #{produto.id}',
