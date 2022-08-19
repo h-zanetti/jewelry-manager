@@ -3,7 +3,7 @@ from django.db.models import Q
 from django.contrib import messages
 from django.http.response import HttpResponse
 from tablib.core import Dataset
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.http import HttpResponseRedirect, Http404
 from django.contrib.auth.decorators import login_required
@@ -111,6 +111,17 @@ def novo_produto(request):
     }
 
     return render(request, 'produtos/novo_produto.html', context)
+
+@login_required
+def product_view(request, pk):
+    produto = get_object_or_404(Produto, pk=pk)
+    context = {
+        'title': f'Produto #{produto.id}',
+        'produto': produto,
+    }
+
+    return render(request, 'produtos/product_view.html', context)
+
 
 @login_required
 def product_barcode(request):
@@ -232,7 +243,7 @@ def adicionar_servico(request, produto_id):
                 elif next_url:
                     return redirect(f'{next_url}')
                 else:
-                    return redirect('produtos:estoque_produtos')
+                    return redirect('produtos:product_view', pk=produto_id)
         else:
             form = ServicoDoProdutoForm(initial={'produto': produto_id})
 
@@ -254,7 +265,7 @@ def editar_servico_dp(request, servico_dp_id):
             if form.is_valid():
                 form.save()
                 messages.success(request, 'Serviço editado com sucesso.')
-                return redirect('produtos:estoque_produtos')
+                return redirect('produtos:product_view', pk=servico_dp.produto.pk)
         else:
             form = ServicoDoProdutoForm(instance=servico_dp)
 
@@ -269,17 +280,15 @@ def editar_servico_dp(request, servico_dp_id):
 
 @login_required
 def remover_servico_dp(request, servico_dp_id):
+    sdp = get_object_or_404(ServicoDoProduto, pk=servico_dp_id)
+    product_pk = sdp.produto.pk
     if request.method == 'POST':
-        ServicoDoProduto.objects.get(id=servico_dp_id).delete()
-    return HttpResponseRedirect(reverse('produtos:estoque_produtos'))
+        sdp.delete()
+    return redirect('produtos:product_view', pk=product_pk)
 
 @login_required
 def adicionar_material(request, produto_id):
-    try:
-        produto = Produto.objects.get(id=produto_id)
-    except:
-        raise Http404('Produto não encontrado')
-
+    produto = get_object_or_404(Produto, pk=produto_id)
     if request.method == 'POST':
         form = MaterialDoProdutoForm(request.POST, initial={'produto': produto_id})
         if form.is_valid():
@@ -290,7 +299,7 @@ def adicionar_material(request, produto_id):
             elif next_url:
                 return redirect(f'{next_url}')
             else:
-                return redirect('produtos:estoque_produtos')
+                return redirect('produtos:product_view', pk=produto_id)
     else:
         form = MaterialDoProdutoForm(initial={'produto': produto_id})
 
@@ -313,7 +322,7 @@ def editar_material_dp(request, material_dp_id):
         form = MaterialDoProdutoForm(request.POST, instance=material_dp)
         if form.is_valid():
             material_dp = form.save()
-            return redirect('produtos:estoque_produtos')
+            return redirect('produtos:product_view', pk=material_dp.produto.pk)
     else:
         form = MaterialDoProdutoForm(instance=material_dp)
 
@@ -327,9 +336,11 @@ def editar_material_dp(request, material_dp_id):
 
 @login_required
 def remover_material_dp(request, material_dp_id):
+    mdp = get_object_or_404(MaterialDoProduto, pk=material_dp_id)
+    product_pk = mdp.produto.pk
     if request.method == 'POST':
-        MaterialDoProduto.objects.get(id=material_dp_id).delete()
-    return HttpResponseRedirect(reverse('produtos:estoque_produtos'))
+        mdp.delete()
+    return redirect('produtos:product_view', pk=product_pk)
 
 # Importação e exportação
 

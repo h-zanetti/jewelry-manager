@@ -57,10 +57,8 @@ def resposta_adicionar_material_do_produto(client, produto, material, user, entr
 #     assert not resposta_adicionar_material_do_produto.context['form'].errors
 
 def test_adicionar_material_do_produto_status_code(resposta_adicionar_material_do_produto):
-    assertRedirects(
-        resposta_adicionar_material_do_produto,
-        reverse('produtos:estoque_produtos')
-    )
+    assertRedirects(resposta_adicionar_material_do_produto,
+        reverse('produtos:product_view', kwargs={'pk': 1}))
 
 def test_material_adicionado_ao_produto(resposta_adicionar_material_do_produto):
     assert MaterialDoProduto.objects.exists()
@@ -95,7 +93,8 @@ def resposta_editar_material_do_produto(client, material_do_produto, user, produ
     return resp
 
 def test_editar_material_do_produto_status_code(resposta_editar_material_do_produto):
-    assert resposta_editar_material_do_produto.status_code == 302
+    assertRedirects(resposta_editar_material_do_produto,
+        reverse('produtos:product_view', kwargs={'pk': 1}))
 
 def test_material_do_produto_editado(resposta_editar_material_do_produto):
     assert MaterialDoProduto.objects.first().peso == 1.5
@@ -114,7 +113,8 @@ def resposta_remover_material_do_produto(client, material_do_produto, user):
     return resp
 
 def test_remover_material_do_produto_status_code(resposta_remover_material_do_produto):
-    assert resposta_remover_material_do_produto.status_code == 302
+    assertRedirects(resposta_remover_material_do_produto,
+        reverse('produtos:product_view', kwargs={'pk': 1}))
 
 def test_material_do_produto_deletado(resposta_remover_material_do_produto):
     assert not MaterialDoProduto.objects.exists()

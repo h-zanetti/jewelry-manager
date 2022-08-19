@@ -1,0 +1,229 @@
+{% extends 'base.html' %}
+{% load bootstrap5 %}
+{% load humanize %}
+
+{% block content %}
+
+<div class="container">
+  <div class="row mx-1">
+    <h1 class="modal-title display-6" id="ModelProduto{{ produto.id }}Label"><strong>{{ produto.nome }} #{{ produto.id }}</strong></h1>
+  </div>
+
+  <div class="row">
+    <!-- Informações Gerais -->
+    <div class="row mb-2 mx-0 gy-0">
+      <div class="col-md-12">
+        <div class="card" style="flex-direction: row">
+          <div class="card-img-top" style="width: 33%">
+              <img src="{{ produto.foto.url }}" class="card-img-top" alt="...">
+          </div>
+          <div class="card-body">
+            <table class="table">
+              <thead>
+                  <tr>
+                      <th class="fs-5">Informações Gerais</th>
+                      <th></th>
+                  </tr>
+              </thead>
+              <tbody>
+                  <tr>
+                      <td><strong>Coleção:</strong> {{ produto.colecao }}</td>
+                      <td><strong>Família:</strong> {{ produto.familia|default:"Nenhuma" }}</td>
+                  </tr>
+                  <tr>
+                      <td><strong>Categorias:</strong> {{ produto.categorias.all|join:", "|default:"Nenhuma" }}</td>
+                      <td><strong>Criação:</strong> {{ produto.data_criacao|date:"d-m-Y"|default:"Indisponível" }}</td>
+                  </tr>
+                  <tr>
+                      <td><strong>Unidades em Estoque:</strong> {{ produto.unidades }}</td>
+                      <td><strong>Tamanho:</strong> {{ produto.tamanho }}</td>
+                  </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Observação -->
+    {% if produto.observacao %}
+    <div class="row mb-2 mx-0 gy-0">
+      <h1 class="display-6">Observação</h1>
+      <p class="px-3">
+        {{ produto.observacao }}
+      </p>
+    </div>
+    {% endif %}
+    <!-- Materiais -->
+    <div class="row mb-2 mx-0 gy-0">
+      <div class="col-md-12">
+        <div class="row">
+          <div class="col-auto">
+            <h1 class="display-6">Materiais</h1>
+          </div>
+          <div class="col-auto align-self-center pt-1">
+              <a href="{% url 'produtos:adicionar_material' produto.id %}" class="link-dark align-top">
+                  <i class="fas fa-plus fa-lg"></i>
+              </a>    
+          </div>
+        </div>
+      </div>
+      <div class="col-md-12">
+        <table class="table">
+          <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Material</th>
+                <th scope="col">Qualidade</th>
+                <th scope="col">Unidades</th>
+                <th scope="col">Peso Unitário</th>
+                <th scope="col">Custo</th>
+                <th scope="col">Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+              {% for material_dp in produto.get_materiais %}
+              <tr>
+                  <th scope="col">{{ material_dp.material.id }}</th>
+                  <td>{{ material_dp.material.nome }}</td>
+                  <td>{{ material_dp.material.qualidade }}</td>
+                  <td>{{ material_dp.unidades }}</td>
+                  <td>{{ material_dp.peso|intcomma }} {{ material_dp.unidade_de_medida }}</td>
+                  <td>R$ {{ material_dp.get_custo|intcomma }}</td>
+                  <td>
+                      <ul class="list-inline">
+                          <li class="list-inline-item me-2">
+                              <a href="{% url 'produtos:editar_material_dp' material_dp.id %}"><i class="fas fa-wrench link-dark"></i></a>
+                          </li>
+                          <li class="list-inline-item ms-2">
+                            <form action="{% url 'produtos:remover_material_dp' material_dp.id %}" method="POST">
+                              {% csrf_token %}
+                                <button type="submit" class="btn p-0 pb-1"><i class="fas fa-trash link-dark"></i></button>
+                            </form>
+                          </li>                                            
+                      </ul>
+                  </td>
+              </tr>
+              {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <!-- Serviços -->
+    <div class="row mb-2 mx-0 gy-0">
+      <div class="col-md-12">
+        <div class="row">
+          <div class="col-auto">
+              <h1 class="display-6">Serviços</h1>
+          </div>
+          <div class="col-auto align-self-center pt-1">
+              <a href="{% url 'produtos:adicionar_servico' produto.id %}" class="link-dark align-top">
+                  <i class="fas fa-plus fa-lg"></i>
+              </a>    
+          </div>
+        </div>
+      </div>
+      <div class="col-md-12">
+        <table class="table">
+          <thead>
+            <tr>
+                <th scope="col">Serviço</th>
+                <th scope="col">Valor</th>
+                <th scope="col">Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+              {% for servico in produto.get_servicos %}
+              <tr>
+                  <td>{{ servico.nome }}</td>
+                  <td>{{ servico.valor|intcomma }}</td>
+                  <td>
+                      <ul class="list-inline">
+                          <li class="list-inline-item me-2">
+                              <a href="{% url 'produtos:editar_servico_dp' servico.id %}"><i class="fas fa-wrench link-dark"></i></a>
+                          </li>
+                          <li class="list-inline-item ms-2">
+                            <form action="{% url 'produtos:remover_servico_dp' servico.id %}" method="POST">
+                              {% csrf_token %}
+                                <button type="submit" class="btn p-0 pb-1"><i class="fas fa-trash link-dark"></i></button>
+                            </form>
+                          </li>                                            
+                      </ul>
+                  </td>
+              </tr>
+              {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <!-- Precificação -->
+    <div class="row mb-2 mx-0 gy-0">
+      <div class="col-md-12">
+        <h1 class="display-6">Precificação</h1>
+      </div>
+      <div class="col-md-12">
+        <table class="table">
+          <tbody>
+            <tr>
+                <th scope="col">Custo de Produção</th>
+                <td>R$ {{ produto.get_custo_de_producao|intcomma }}</td>
+            </tr>
+            <tr>
+              <th scope="col">Preço para Atacado</th>
+              <td>R$ {{ produto.get_preco_atacado|intcomma }}</td>
+            </tr>
+            <tr>
+              <th scope="col">Preço para Revenda</th>
+              <td>R$ {{ produto.get_preco_revenda|intcomma }}</td>
+            </tr>
+            <tr>
+              <th scope="col">Preço para Cliente Final</th>
+              <td>R$ {{ produto.get_preco_cliente_final|intcomma }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+    <!-- Footer -->
+  <div class="row mx-1">
+    <div class="row d-flex justify-content-end w-100">
+      <div class="col-auto px-0">
+          <div class="row gx-0">
+              <div class="col-6">
+                  <a href="{% url 'produtos:editar_produto' produto.id %}"  class="btn btn-primary">Editar</a>
+              </div>
+              <div class="col-6">
+                  <!-- Trigger Modal Remover Produto -->
+                  <a href="#modalDeletarProduto{{ produto.id }}" data-bs-toggle="modal" class="btn btn-danger">
+                    <span class="ms-1">Deletar</span>
+                </a>
+            </div>
+          </div>
+      </div>
+    </div>
+  </div>
+  <!-- Modal Remover Produto -->
+  <form action="{% url 'produtos:deletar_produto' produto.id %}" method="POST">
+    {% csrf_token %}
+    <div class="modal fade" id="modalDeletarProduto{{ produto.id }}" tabindex="-1" aria-labelledby="modalDeletarProduto{{ produto.id }}Label" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title display-6" id="modalDeletarProduto{{ produto.id }}Label"><strong>{{ produto.nome }} #{{ produto.id }}</strong></h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <p>Você tem certeza que deseja deletar este produto?</p>
+            <p><strong>Ele será deletado para sempre!</strong></p>
+          </div>
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-danger">Deletar</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>
+
+{% endblock content %}
