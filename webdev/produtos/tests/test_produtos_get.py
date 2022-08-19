@@ -101,3 +101,19 @@ def test_btn_submit_and_stay_present(resposta_novo_produto):
 
 def test_campo_observacao_presente(resposta_novo_produto):
     assertContains(resposta_novo_produto, '<textarea name="observacao"')
+
+
+# Visualizar produto
+@pytest.fixture
+def product_view_response(client, estoque_de_produtos):
+    usr = User.objects.create_user(username='TestUser', password='MinhaSenha123')
+    client.force_login(usr)
+    resp = client.get(reverse('produtos:product_view', kwargs={'pk': estoque_de_produtos[0].pk}))
+    return resp
+
+def test_product_view_status_code(product_view_response):
+    assert product_view_response.status_code == 200
+
+def test_product_name_present(product_view_response):
+    produto = Produto.objects.first()
+    assertContains(product_view_response, produto.nome)

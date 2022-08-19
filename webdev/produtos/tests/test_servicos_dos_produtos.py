@@ -82,7 +82,8 @@ def resposta_adicionar_servico_dp(client, user, produto2):
     return resp
 
 def test_adicionar_servico_redirect(resposta_adicionar_servico_dp):
-    assertRedirects(resposta_adicionar_servico_dp, reverse('produtos:estoque_produtos'))
+    assertRedirects(resposta_adicionar_servico_dp,
+        reverse('produtos:product_view', kwargs={'pk': 1}))
 
 def test_servico_adicionado_ao_produto(resposta_adicionar_servico_dp):
     assert ServicoDoProduto.objects.exists()
@@ -113,7 +114,8 @@ def resposta_editar_servico_dp(client, user, servico_dp):
     return response
 
 def test_editar_servico_dp_redirect(resposta_editar_servico_dp):
-    assertRedirects(resposta_editar_servico_dp, reverse('produtos:estoque_produtos'))
+    assertRedirects(resposta_editar_servico_dp,
+        reverse('produtos:product_view', kwargs={'pk': 1}))
 
 def test_servico_dp_alterado(resposta_editar_servico_dp):
     assert ServicoDoProduto.objects.first().valor == 1500
@@ -129,7 +131,8 @@ def resposta_remover_servico_dp(client, user, servico_dp):
     return resp
 
 def test_remover_servico_dp_status_code(resposta_remover_servico_dp):
-    assertRedirects(resposta_remover_servico_dp, reverse('produtos:estoque_produtos'))
+    assertRedirects(resposta_remover_servico_dp,
+        reverse('produtos:product_view', kwargs={'pk': 1}))
 
 def test_servico_dp_deletado(resposta_remover_servico_dp):
     assert not ServicoDoProduto.objects.exists()
