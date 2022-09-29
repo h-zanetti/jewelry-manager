@@ -4,6 +4,7 @@ from barcode.writer import ImageWriter
 import openpyxl as xl
 from django.db import models
 from django.core.files import File
+from django.core.validators import MinValueValidator
 from django.utils.translation import gettext_lazy as _
 from webdev.materiais.models import Material
 
@@ -21,7 +22,7 @@ class Produto(models.Model):
     observacao = models.TextField(_('Observação'), blank=True, null=True)
     categorias = models.ManyToManyField(Categoria, verbose_name=_('Categorias'), blank=True)
     data_criacao = models.DateField(_('Data de Criação'), blank=True, null=True)
-    unidades = models.IntegerField(_('unidades em estoque'), default=0)
+    unidades = models.IntegerField(_('unidades em estoque'), default=0, validators=[MinValueValidator(0)])
     tamanho = models.IntegerField(_('tamanho'), blank=True, null=True)
     barcode = models.ImageField(_('código de barras'), upload_to='produtos/barcode/', blank=True, null=True)
 
