@@ -44,15 +44,19 @@
         {% endfor %}
 
         <div class="row d-flex my-4">
+            <div class="col-sm-12 mb-3">
+                {% bootstrap_field form.update_inventory form_group_class='' show_help=False %}
+                <div class="form-text">{{ form.update_inventory.help_text }}</div>
+            </div>  
             <div class='col-12'>
                 <div class="row mb-3">
-                    <label for="id_valor" class="col-auto col-form-label">Total: R$</label>
-                    <div class="col-sm-3">
-                        {% bootstrap_field form.valor form_group_class='' form_field_class='' show_label=False %}
+                    <div class="col-sm-4">
+                        <label for="id_valor" class="col-auto col-form-label">Total: R$</label>
+                        {% bootstrap_field form.valor form_field_class='' show_label=False %}
                     </div>
-                    <label for="id_valor" class="col-auto col-form-label">Parcelas:</label>
-                    <div class="col-sm-3">
-                        {% bootstrap_field form.parcelas form_group_class='' form_field_class='' show_label=False %}
+                    <div class="col-sm-4">
+                        <label for="id_valor" class="col-auto col-form-label">Parcelas:</label>
+                        {% bootstrap_field form.parcelas form_field_class='' show_label=False %}
                     </div>
                 </div>
             </div>
