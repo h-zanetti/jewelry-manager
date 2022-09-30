@@ -44,6 +44,9 @@ class VendaForm(forms.ModelForm):
         widget=forms.HiddenInput(),
         required=False
     )
+    update_inventory = forms.BooleanField(
+        required=False, label='Alterar estoque',
+        help_text='Caso selecionado, subtrai o estoque dos produtos vendidos.')
     class Meta:
         model = Venda
         fields = '__all__'
