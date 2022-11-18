@@ -1,21 +1,47 @@
 {% extends 'base.html' %}
 {% load bootstrap5 %}
+{% load humanize %}
 
 {% block content %}
 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
-    {% if title %}
-    <h1 class="h2">{{ title }}</h1>
-    {% endif %}
-    <div class="btn-toolbar mb-2 mb-md-0">
-        <div class="btn-group me-2">
-            <button type="button" class="btn btn-sm btn-outline-secondary">Importar</button>
-            <button type="button" class="btn btn-sm btn-outline-secondary">Exportar</button>
-        </div>
-        <a href="{% url 'financeiro:nova_receita' %}" class="btn btn-sm btn-outline-secondary">
-            Nova Receita
-        </a>
-    </div>
+    <h1 class="h2">
+        {{ title }}
+        <span class="text-success">+{{ saldo|intcomma }}</span>
+    </h1>
 </div>
+
+<canvas class="my-4 w-100" id="myChart" width="900" height="380"></canvas>
+<script>
+var ctx = document.getElementById('myChart').getContext('2d');
+var myChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: {{ meses|safe }},
+        datasets: [{
+            data: {{ dados|safe }},
+            backgroundColor: [
+                '#006FE6'
+            ],
+            borderColor: [
+                '#006FE6'
+            ],
+            borderWidth: 1
+        }]
+    },
+    options: {
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        },
+        plugins: {
+            legend: {
+                display: false
+            }
+        }
+    }
+});
+</script>
 
 <div class="table-responsive">
     <table class="table">
@@ -37,11 +63,11 @@
                 <td>R$ {{ receita.valor }}</td>
                 <td>
                     <ul class="list-inline m-0">
-                        <li class="list-inline-item me-3">
+                        {% comment %} <li class="list-inline-item me-3">
                             <a href="{% url 'financeiro:editar_receita' receita.id %}">
                                 <i class="fas fa-wrench link-dark"></i>
                             </a>
-                        </li>
+                        </li> {% endcomment %}
                         <li class="list-inline-item me-3">
                             <form action="{% url 'financeiro:deletar_receita' receita.id %}" method="POST">
                                 {% csrf_token %}

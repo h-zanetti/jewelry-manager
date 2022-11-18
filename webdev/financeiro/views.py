@@ -1,26 +1,42 @@
-from django.http.response import HttpResponse
-from tablib.core import Dataset
-from .admin import DespesaResource
-from calendar import monthrange
 import datetime as dt
 from itertools import chain
-from django.db.models.aggregates import Sum
-from django.db.models.functions.datetime import TruncMonth
-from django.db.models.query_utils import Q
+from tablib.core import Dataset
+from dateutil.relativedelta import relativedelta
+
+from calendar import monthrange
 from django.urls import reverse
+from django.db.models.query_utils import Q
+from django.db.models.aggregates import Sum
 from django.shortcuts import render, redirect
-from django.contrib.auth.decorators import login_required, permission_required
+from django.http.response import HttpResponse
 from django.http import HttpResponseRedirect, Http404
-from django.utils import timezone
+from django.db.models.functions.datetime import TruncMonth
+from django.contrib.auth.decorators import permission_required
+
+from .admin import DespesaResource
 from .models import Despesa, Parcela, Receita
 from .forms import CriarDespesaForm, EditarDespesaForm, ReceitaForm
+
 
 # Receitas
 @permission_required('financeiro.view_receita', raise_exception=True)
 def receitas(request):
+    start_dt = dt.date.today().replace(day=1) - relativedelta(months=6)
+    dt_range = [start_dt + relativedelta(months=n) for n in range(12)]
+    dados = [
+        Parcela.objects.filter(data__year=date.year, data__month=date.month).aggregate(Sum('valor'))['valor__sum'] \
+        for date in dt_range
+    ]
+    dados = [float(d) if d != None else 0 for d in dados]
+    receitas = Parcela.objects.filter(data__year=dt.date.today().year, data__month=dt.date.today().month)
+    saldo = receitas.aggregate(Sum('valor'))['valor__sum']
+
     context = {
         'title': 'Minhas receitas',
-        'receitas': Receita.objects.all()
+        'receitas': receitas,
+        'meses': [date.strftime('%b, %Y') for date in dt_range],
+        'dados': dados,
+        'saldo': round(saldo, 2)
     }
     return render(request, 'financeiro/receitas.html', context)
 
