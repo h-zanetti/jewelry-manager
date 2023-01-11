@@ -1,21 +1,60 @@
 {% extends 'base.html' %}
 {% load bootstrap5 %}
+{% load humanize %}
 
 {% block content %}
 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
-    {% if title %}
-    <h1 class="h2">{{ title }}</h1>
-    {% endif %}
-    <div class="btn-toolbar mb-2 mb-md-0">
-        <div class="btn-group me-2">
-            <button type="button" class="btn btn-sm btn-outline-secondary">Importar</button>
-            <button type="button" class="btn btn-sm btn-outline-secondary">Exportar</button>
-        </div>
-        <a href="{% url 'financeiro:nova_receita' %}" class="btn btn-sm btn-outline-secondary">
-            Nova Receita
-        </a>
+    <h1 class="h2">
+        {{ title }}
+        <span class="text-success">+{{ saldo|intcomma }}</span>
+    </h1>
+
+    <div class="btn-group">
+        <button type="button" class="btn btn-sm btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+          Ações
+        </button>
+        <ul class="dropdown-menu">
+          <li><a class="dropdown-item" href="{% url 'vendas:basket_summary' %}"><i class="fas fa-plus me-2"></i>Novo</a></li>
+          <li><hr class="dropdown-divider"></li>
+          <li><a class="dropdown-item disabled" href="#"><i class="fas fa-download me-2"></i>Importar</a></li>
+          <li><a class="dropdown-item disabled" href="#"><i class="fas fa-upload me-2"></i>Exportar</a></li>
+          <li><a class="dropdown-item disabled" href="#"><i class="fa-solid fa-chart-column me-2"></i>Relatório</a></li>
+        </ul>
     </div>
 </div>
+
+<canvas class="my-4 w-100" id="myChart" width="900" height="380"></canvas>
+<script>
+var ctx = document.getElementById('myChart').getContext('2d');
+var myChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: {{ meses|safe }},
+        datasets: [{
+            data: {{ dados|safe }},
+            backgroundColor: [
+                '#006FE6'
+            ],
+            borderColor: [
+                '#006FE6'
+            ],
+            borderWidth: 1
+        }]
+    },
+    options: {
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        },
+        plugins: {
+            legend: {
+                display: false
+            }
+        }
+    }
+});
+</script>
 
 <div class="table-responsive">
     <table class="table">
@@ -25,53 +64,15 @@
                 <th scope="col">Data</th>
                 <th scope="col">Categoria</th>
                 <th scope="col">Valor</th>
-                <th scope="col">Ações</th>
             </tr>
         </thead>
         <tbody>
             {% for receita in receitas %}
             <tr>
-                <th scope="col">{{ receita.id }}</th>
+                <th scope="col">{{ receita.receita.id }}</th>
                 <td>{{ receita.data }}</td>
                 <td>{{ receita.categoria }}</td>
                 <td>R$ {{ receita.valor }}</td>
-                <td>
-                    <ul class="list-inline m-0">
-                        <li class="list-inline-item me-3">
-                            <a href="{% url 'financeiro:editar_receita' receita.id %}">
-                                <i class="fas fa-wrench link-dark"></i>
-                            </a>
-                        </li>
-                        <li class="list-inline-item me-3">
-                            <form action="{% url 'financeiro:deletar_receita' receita.id %}" method="POST">
-                                {% csrf_token %}
-                                <!-- Delete Modal Trigger -->
-                                <a href="#ModelDeletarReceita{{ receita.id }}" data-bs-toggle="modal"><i class="fas fa-trash link-dark"></i></a>
-                                <!-- Delete Modal -->
-                                <div class="modal fade" id="ModelDeletarReceita{{ receita.id }}" tabindex="-1" aria-labelledby="ModelDeletarReceita{{ receita.id }}Label" aria-hidden="true">
-                                    <div class="modal-dialog">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h1 class="modal-title display-6" id="ModelDeletarReceita{{ receita.id }}Label">
-                                                    <strong>Deletar {{ receita.categoria }} #{{ receita.id }}</strong>
-                                                </h1>
-                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                            </div>
-                                            <div class="modal-body">
-                                                <p>Você tem certeza que deseja deletar esta receita?</p>
-                                                <p><strong>Ela será deletada para sempre!</strong></p>
-                                            </div>
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
-                                                <button type="submit" class="btn btn-danger">Deletar</button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </form>
-                        </li>
-                    </ul>
-                </td>
             </tr>
             {% endfor %}
         </tbody>

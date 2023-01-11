@@ -44,11 +44,11 @@ def test_receita_status_code(resposta_receita):
 def test_receita_presente(resposta_receita, receita):
     assertContains(resposta_receita, receita.categoria)
 
-def test_btn_editar_receita_presente(resposta_receita, receita):
-    assertContains(resposta_receita, f'<a href="{reverse("financeiro:editar_receita", kwargs={"receita_id": receita.id})}')
+# def test_btn_editar_receita_presente(resposta_receita, receita):
+#     assertContains(resposta_receita, f'<a href="{reverse("financeiro:editar_receita", kwargs={"receita_id": receita.id})}')
 
-def test_btn_deletar_receita_presente(resposta_receita, receita):
-    assertContains(resposta_receita, f'<form action="{reverse("financeiro:deletar_receita", kwargs={"receita_id": receita.id})}')
+# def test_btn_deletar_receita_presente(resposta_receita, receita):
+#     assertContains(resposta_receita, f'<form action="{reverse("financeiro:deletar_receita", kwargs={"receita_id": receita.id})}')
 
 # Novas receita
 @pytest.fixture
