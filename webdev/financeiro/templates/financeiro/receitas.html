@@ -64,53 +64,15 @@ var myChart = new Chart(ctx, {
                 <th scope="col">Data</th>
                 <th scope="col">Categoria</th>
                 <th scope="col">Valor</th>
-                <th scope="col">Ações</th>
             </tr>
         </thead>
         <tbody>
             {% for receita in receitas %}
             <tr>
-                <th scope="col">{{ receita.id }}</th>
+                <th scope="col">{{ receita.receita.id }}</th>
                 <td>{{ receita.data }}</td>
                 <td>{{ receita.categoria }}</td>
                 <td>R$ {{ receita.valor }}</td>
-                <td>
-                    <ul class="list-inline m-0">
-                        {% comment %} <li class="list-inline-item me-3">
-                            <a href="{% url 'financeiro:editar_receita' receita.id %}">
-                                <i class="fas fa-wrench link-dark"></i>
-                            </a>
-                        </li> {% endcomment %}
-                        <li class="list-inline-item me-3">
-                            <form action="{% url 'financeiro:deletar_receita' receita.id %}" method="POST">
-                                {% csrf_token %}
-                                <!-- Delete Modal Trigger -->
-                                <a href="#ModelDeletarReceita{{ receita.id }}" data-bs-toggle="modal"><i class="fas fa-trash link-dark"></i></a>
-                                <!-- Delete Modal -->
-                                <div class="modal fade" id="ModelDeletarReceita{{ receita.id }}" tabindex="-1" aria-labelledby="ModelDeletarReceita{{ receita.id }}Label" aria-hidden="true">
-                                    <div class="modal-dialog">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h1 class="modal-title display-6" id="ModelDeletarReceita{{ receita.id }}Label">
-                                                    <strong>Deletar {{ receita.categoria }} #{{ receita.id }}</strong>
-                                                </h1>
-                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                            </div>
-                                            <div class="modal-body">
-                                                <p>Você tem certeza que deseja deletar esta receita?</p>
-                                                <p><strong>Ela será deletada para sempre!</strong></p>
-                                            </div>
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
-                                                <button type="submit" class="btn btn-danger">Deletar</button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </form>
-                        </li>
-                    </ul>
-                </td>
             </tr>
             {% endfor %}
         </tbody>
