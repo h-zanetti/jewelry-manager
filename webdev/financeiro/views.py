@@ -28,8 +28,12 @@ def receitas(request):
         for date in dt_range
     ]
     dados = [float(d) if d != None else 0 for d in dados]
+    
     receitas = Parcela.objects.filter(data__year=dt.date.today().year, data__month=dt.date.today().month)
-    saldo = receitas.aggregate(Sum('valor'))['valor__sum']
+    if receitas:
+        saldo = receitas.aggregate(Sum('valor'))['valor__sum']
+    else:
+        saldo = 0
 
     context = {
         'title': 'Minhas receitas',
