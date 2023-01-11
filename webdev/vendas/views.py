@@ -1,9 +1,9 @@
-from django.http.response import Http404, HttpResponseRedirect
-from django.urls.base import reverse
-from django.contrib.auth.decorators import login_required
-from django.shortcuts import get_object_or_404, redirect, render
 from django.db.models import Q
 from django.contrib import messages
+from django.urls.base import reverse
+from django.contrib.auth.decorators import login_required
+from django.http.response import Http404, HttpResponseRedirect
+from django.shortcuts import get_object_or_404, redirect, render
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 
 from .forms import BasketForm, BasketItemForm, ClienteForm, SortSalesForm, VendaForm, SortClientsForm
@@ -165,9 +165,23 @@ def basket_review(request):
     if request.method == 'POST':
         form = VendaForm(request.POST, initial={'basket': basket})
         if form.is_valid():
-            sale = form.save()
-            sale.basket.is_active = False
-            sale.basket.save()
+            sale = form.save(commit=False)
+            basket = sale.basket
+            if form.cleaned_data.get('update_inventory'):
+                # inventory_check to prevent updating invalid and/or duplicated quantities
+                for item in basket.get_items():
+                    prod = item.product
+                    if item.quantity > prod.unidades:
+                        messages.error(request, f'Estoque insuficiente para realizar operação de {prod} (Estoque: {prod.unidades})')
+                        return redirect('vendas:basket_summary')
+                # Update inventory
+                for item in basket.get_items():
+                    prod = item.product
+                    prod.unidades -= item.quantity
+                    prod.save()
+            basket.is_active = False
+            basket.save()
+            form.save()
             messages.success(request, 'Venda criada com sucesso.')
             return redirect('vendas:minhas_vendas')
     else:
