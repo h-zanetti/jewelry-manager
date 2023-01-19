@@ -16,6 +16,7 @@ from django.contrib.auth.decorators import permission_required
 from .admin import DespesaResource
 from .models import Despesa, Parcela, Receita
 from .forms import CriarDespesaForm, EditarDespesaForm, ReceitaForm
+from .scripts.despesas_recorrentes import get_expenses
 
 
 # Receitas
@@ -96,14 +97,21 @@ def deletar_receita(request, receita_id):
         Receita.objects.get(id=receita_id).delete()
     return HttpResponseRedirect(reverse('financeiro:receitas'))
 
+
 # Despesas
+
 @permission_required('financeiro.view_despesa', raise_exception=True)
 def despesas(request):
+    plot_df, despesas, dt_range = get_expenses()
     context = {
-        'title': 'Minhas despesas',
-        'despesas': Despesa.objects.all()
+        'title': 'Minhas Despesas',
+        'meses': [date.strftime('%b, %Y') for date in dt_range],
+        'dados': [float(i) for i in list(plot_df['valor'])],
+        'despesas': despesas,
+        'saldo': sum(i.valor for i in despesas)
     }
     return render(request, 'financeiro/despesas.html', context)
+
 
 @permission_required('financeiro.add_despesa', raise_exception=True)
 def nova_despesa(request):

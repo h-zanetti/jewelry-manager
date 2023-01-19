@@ -12,6 +12,7 @@ python-dateutil = "*"
 django-import-export = "*"
 openpyxl = "*"
 python-barcode = "*"
+pandas = "*"
 
 [dev-packages]
 pytest-django = "*"

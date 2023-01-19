@@ -1,28 +1,60 @@
 {% extends 'base.html' %}
 {% load bootstrap5 %}
+{% load humanize %}
 
 {% block content %}
 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
-    {% if title %}
-    <h1 class="h2">{{ title }}</h1>
-    {% endif %}
-    <div class="btn-toolbar mb-2 mb-md-0">
-        <div class="btn-group me-2">
-            <a href="{% url 'financeiro:importar_despesas' %}" class="btn btn-sm btn-outline-secondary">Importar</a>
-            <a href="{% url 'financeiro:exportar_despesas' %}" class="btn btn-sm btn-outline-secondary">Exportar</a>
-        </div>
-        <div class="dropdown me-2">
-            <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-                Nova Despesa
-            </button>
-            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-                <li><a href="{% url 'financeiro:nova_despesa' %}?next={{ request.path|urlencode }}" class="dropdown-item">Despesas simples</a></li>
-                <li><a href="{% url 'materiais:entrada_de_material' %}" class="dropdown-item">Entrada de material</a></li>
-                <li><a href="{% url 'fornecedores:novo_servico' %}" class="dropdown-item">Serviços contratados</a></li>
-            </ul>
-        </div>
+    <h1 class="h2">
+        {{ title }}
+        <span class="text-danger">-{{ saldo|intcomma }}</span>
+    </h1>
+
+    <div class="btn-group">
+        <button type="button" class="btn btn-sm btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+          Ações
+        </button>
+        <ul class="dropdown-menu">
+          <li><a class="dropdown-item" href="{% url 'financeiro:nova_despesa' %}"><i class="fas fa-plus me-2"></i>Novo</a></li>
+          <li><hr class="dropdown-divider"></li>
+          <li><a class="dropdown-item disabled" href="#"><i class="fas fa-download me-2"></i>Importar</a></li>
+          <li><a class="dropdown-item disabled" href="#"><i class="fas fa-upload me-2"></i>Exportar</a></li>
+          <li><a class="dropdown-item disabled" href="#"><i class="fa-solid fa-chart-column me-2"></i>Relatório</a></li>
+        </ul>
     </div>
 </div>
+
+<canvas class="my-4 w-100" id="myChart" width="900" height="380"></canvas>
+<script>
+var ctx = document.getElementById('myChart').getContext('2d');
+var myChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: {{ meses|safe }},
+        datasets: [{
+            data: {{ dados|safe }},
+            backgroundColor: [
+                '#006FE6'
+            ],
+            borderColor: [
+                '#006FE6'
+            ],
+            borderWidth: 1
+        }]
+    },
+    options: {
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        },
+        plugins: {
+            legend: {
+                display: false
+            }
+        }
+    }
+});
+</script>
 
 <div class="table-responsive">
     <table class="table">
@@ -32,55 +64,15 @@
                 <th scope="col">Data</th>
                 <th scope="col">Categoria</th>
                 <th scope="col">Valor</th>
-                <th scope="col">Repetir</th>
-                <th scope="col">Ações</th>
             </tr>
         </thead>
         <tbody>
             {% for despesa in despesas %}
             <tr>
-                <th scope="col">{{ despesa.id }}</th>
+                <th scope="col">{{ despesa.despesa.id }}</th>
                 <td>{{ despesa.data }}</td>
                 <td>{{ despesa.categoria }}</td>
-                <td>R$ {{ despesa.valor }}</td>
-                <td>{{ despesa.get_repetir_display }}</td>
-                <td>
-                    <ul class="list-inline m-0">
-                        <li class="list-inline-item me-3">
-                            <a href="{% url 'financeiro:editar_despesa' despesa.id %}">
-                                <i class="fas fa-wrench link-dark"></i>
-                            </a>
-                        </li>
-                        <li class="list-inline-item me-3">
-                            <form action="{% url 'financeiro:deletar_despesa' despesa.id %}" method="POST">
-                                {% csrf_token %}
-                                <!-- Delete Modal Trigger -->
-                                <a href="#ModalDeletarDespesa{{ despesa.id }}" data-bs-toggle="modal"><i class="fas fa-trash link-dark"></i></a>
-                                <!-- Delete Modal -->
-                                <div class="modal fade" id="ModalDeletarDespesa{{ despesa.id }}" tabindex="-1" aria-labelledby="ModalDeletarDespesa{{ despesa.id }}Label" aria-hidden="true">
-                                    <div class="modal-dialog">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h1 class="modal-title display-6" id="ModalDeletarDespesa{{ despesa.id }}Label">
-                                                    <strong>Deletar {{ despesa.categoria }} #{{ despesa.id }}</strong>
-                                                </h1>
-                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                            </div>
-                                            <div class="modal-body">
-                                                <p>Você tem certeza que deseja deletar esta despesa?</p>
-                                                <p><strong>Ela será deletada para sempre!</strong></p>
-                                            </div>
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
-                                                <button type="submit" class="btn btn-danger">Deletar</button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </form>
-                        </li>
-                    </ul>
-                </td>
+                <td>R$ {{ despesa.valor|intcomma }}</td>
             </tr>
             {% endfor %}
         </tbody>

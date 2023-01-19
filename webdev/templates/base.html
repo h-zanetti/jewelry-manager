@@ -54,12 +54,12 @@
                             <span class="ms-1 d-none d-sm-inline">Financeiro</span>
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                            <li>
-                                <a class="nav-link link-dark" href="{% url 'financeiro:receitas'%}">
+                            <li><a class="nav-link link-dark" href="{% url 'financeiro:receitas'%}">
                                     <i class="fas fa-sack-dollar me-2"></i> Receitas
-                                </a>
-                            </li>
-                            {% comment %} <li><a class="nav-link link-dark" href="{% url 'financeiro:despesas'%}">Despesas</a></li> {% endcomment %}
+                            </a></li>
+                            <li><a class="nav-link link-dark" href="{% url 'financeiro:despesas'%}">
+                                <i class="fas fa-sack-dollar me-2"></i> Despesas
+                        </a></li>
                         </ul>
                     </div>
 
