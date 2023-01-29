@@ -7,23 +7,31 @@ from dateutil.relativedelta import relativedelta
 from webdev.financeiro.models import Despesa
 
 
-def get_expenses():
+def get_expenses(date=None):
 
     # Date range
 
-    today = dt.date.today()
-    start_dt = today.replace(day=1) - relativedelta(months=6)
-    end_dt = today.replace(day=1) + relativedelta(months=6)
-    dt_range = [start_dt + relativedelta(months=n) for n in range(12)]
+    if date:
+        today = date
+        start_dt = dt.date(date.year, 1, 1)
+        dt_range = [start_dt + relativedelta(months=n) for n in range(12)]
+        end_dt = dt_range[-1]
+    else:
+        today = dt.date.today()
+        start_dt = today.replace(day=1) - relativedelta(months=6)
+        end_dt = today.replace(day=1) + relativedelta(months=6)
+        dt_range = [start_dt + relativedelta(months=n) for n in range(12)]
 
 
     # Despesas variaveis
 
     desp_var = Despesa.objects.filter(repetir='', data__gte=start_dt, data__lt=end_dt)
     du_df = pd.DataFrame(desp_var.values())
-    du_df['data'] = du_df['data'].apply(lambda x: x.replace(day=1))
-    du_df = du_df.groupby('data')[['valor']].sum()
+    if not du_df.empty:
+        du_df['data'] = du_df['data'].apply(lambda x: x.replace(day=1))
+        du_df = du_df.groupby('data')[['valor']].sum()
     df = du_df.reindex(dt_range, fill_value=0).reset_index()
+    df.rename({'index': 'data'}, axis=1, inplace=True)
     df['data'] = pd.to_datetime(df['data'])
     df['month'] = df['data'].dt.month
     df['end_month'] = df['data'].dt.strftime('%Y-%m')

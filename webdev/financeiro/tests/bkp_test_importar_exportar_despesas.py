@@ -11,7 +11,7 @@ def despesa(db):
         data=timezone.now(),
         categoria='Motoboy',
         valor=150,
-        repetir='n'
+        repetir=''
     )
 
 @pytest.fixture

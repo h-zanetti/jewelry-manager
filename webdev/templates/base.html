@@ -46,9 +46,7 @@
                         <span class="ms-1 d-none d-sm-inline">Fornecedores</span>
                     </a>
 
-                    {% comment %} {% now "n" as mes_atual %}{% now "Y" as ano_atual %}
-                    <a class="nav-link link-dark" href="{% url 'financeiro:fluxo_de_caixa' ano_atual mes_atual%}"> {% endcomment %}
-                    <div class="btn-group dropend">
+                    <div class="btn-group dropend {% if not perms.financeiro.view_receita %}d-none{% endif %}">
                         <a class="nav-link link-dark" href="#" role="button" id="dropdownFinanceiro" data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="fas fa-hand-holding-usd"></i>
                             <span class="ms-1 d-none d-sm-inline">Financeiro</span>
@@ -58,8 +56,15 @@
                                     <i class="fas fa-sack-dollar me-2"></i> Receitas
                             </a></li>
                             <li><a class="nav-link link-dark" href="{% url 'financeiro:despesas'%}">
-                                <i class="fas fa-sack-dollar me-2"></i> Despesas
-                        </a></li>
+                                <i class="fas fa-money-bill-transfer me-2"></i> Despesas
+                            </a></li>
+                            {% comment %} <li>
+                                {% now "n" as mes_atual %}{% now "Y" as ano_atual %}
+                                <a class="nav-link link-dark" href="{% url 'financeiro:fluxo_de_caixa' ano_atual mes_atual%}">
+                                    <i class="fas fa-cash-register"></i>
+                                    <span class="ms-1 d-none d-sm-inline">Fluxo de Caixa</span>
+                                </a>
+                            </li> {% endcomment %}
                         </ul>
                     </div>
 
