@@ -31,13 +31,16 @@ def get_expenses():
 
     # Despesas fixas - anuais
 
-    desp_a = Despesa.objects.filter(repetir='a', data_de_encerramento__gte=start_dt)
+    desp_a = Despesa.objects.filter(
+        Q(data_de_encerramento=None) | Q(data_de_encerramento__gte=start_dt), repetir='a'
+    )
     da_df = pd.DataFrame(desp_a.values())
-    da_df['data'] = da_df['data'].apply(lambda x: x.replace(day=1))
-    da_df['data'] = pd.to_datetime(da_df['data'])
-    da_df['month'] = da_df['data'].dt.month
-    da_df['data_de_encerramento'] = pd.to_datetime(da_df['data_de_encerramento'])
-    da_df['end_month'] = da_df['data_de_encerramento'].dt.strftime('%Y-%m')
+    if not da_df.empty:
+        da_df['data'] = da_df['data'].apply(lambda x: x.replace(day=1))
+        da_df['data'] = pd.to_datetime(da_df['data'])
+        da_df['month'] = da_df['data'].dt.month
+        da_df['data_de_encerramento'] = pd.to_datetime(da_df['data_de_encerramento'])
+        da_df['end_month'] = da_df['data_de_encerramento'].dt.strftime('%Y-%m')
 
 
     # Despesas fixas - mensais
@@ -46,28 +49,34 @@ def get_expenses():
         Q(data_de_encerramento=None) | Q(data_de_encerramento__gte=start_dt), repetir='m'
     )
     dm_df = pd.DataFrame(desp_m.values())
-    dm_df['data'] = dm_df['data'].apply(lambda x: x.replace(day=1))
-    dm_df['data'] = pd.to_datetime(dm_df['data'])
-    dm_df['month'] = dm_df['data'].dt.month
-    dm_df['data_de_encerramento'] = dm_df['data_de_encerramento'].fillna(end_dt)
-    dm_df['data_de_encerramento'] = pd.to_datetime(dm_df['data_de_encerramento'])
-    dm_df['end_month'] = dm_df['data_de_encerramento'].dt.strftime('%Y-%m')
+    if not dm_df.empty:
+        dm_df['data'] = dm_df['data'].apply(lambda x: x.replace(day=1))
+        dm_df['data'] = pd.to_datetime(dm_df['data'])
+        dm_df['month'] = dm_df['data'].dt.month
+        dm_df['data_de_encerramento'] = dm_df['data_de_encerramento'].fillna(end_dt)
+        dm_df['data_de_encerramento'] = pd.to_datetime(dm_df['data_de_encerramento'])
+        dm_df['end_month'] = dm_df['data_de_encerramento'].dt.strftime('%Y-%m')
 
 
     # Merge tables
 
     data = df.to_dict()
     for i, r in df.iterrows():
-        fixed_a = da_df.loc[
-            (da_df['data']<=r.data)& \
-            (da_df['month']==r.month)& \
-            (da_df['end_month']>=r.end_month),
-            'valor'].sum()
-
-        fixed_m = dm_df.loc[
-            (dm_df['data']<=r.data)& \
-            (dm_df['end_month']>=r.end_month),
-            'valor'].sum()
+        if da_df.empty:
+            fixed_a = 0
+        else:
+            fixed_a = da_df.loc[
+                (da_df['data']<=r.data)& \
+                (da_df['month']==r.month)& \
+                ((da_df['end_month']>=r.end_month)|(da_df['end_month'].isna())),
+                'valor'].sum()
+        if dm_df.empty:
+            fixed_m = 0
+        else:
+            fixed_m = dm_df.loc[
+                (dm_df['data']<=r.data)& \
+                ((dm_df['end_month']>=r.end_month)|(dm_df['end_month'].isna())),
+                'valor'].sum()
 
         data['valor'][i] += fixed_a + fixed_m
 

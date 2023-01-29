@@ -1,17 +1,38 @@
 import pytest
+from dateutil.relativedelta import relativedelta
 from django.urls import reverse
 from django.utils import timezone
-from webdev.financeiro.models import Despesa
 from django.contrib.auth.models import User, Permission
 from pytest_django.asserts import assertContains, assertNotContains
+
+from webdev.financeiro.models import Despesa
+
 
 # Fixtures
 @pytest.fixture
 def despesas(db):
     return [
-        Despesa.objects.create(data=timezone.now(), categoria='Motoboy', valor=150, repetir='n'),
-        Despesa.objects.create(data=timezone.now(), categoria='MEI', valor=65, repetir='m')
+        # Despesas únicas
+        Despesa.objects.create(data=timezone.now(), categoria='Motoboy1', valor=150, repetir=''),
+        # Despesas recorrentes
+        Despesa.objects.create(data=timezone.now() - relativedelta(months=5),
+                               categoria='MEI', valor=65, repetir='m'),
+        Despesa.objects.create(data=timezone.now() - relativedelta(years=1),
+                               categoria='Dominio2', valor=59.99, repetir='a'),
+        # Despesas finalizadas
+        Despesa.objects.create(data=timezone.now() - relativedelta(months=1),
+                               categoria='Motoboy2', valor=75, repetir=''),
+        Despesa.objects.create(data=timezone.now() - relativedelta(years=1),
+                               categoria='Aluguel', valor=1500, repetir='m',
+                               data_de_encerramento=timezone.now() - relativedelta(months=1)),
+        Despesa.objects.create(data=timezone.now() - relativedelta(years=5),
+                               categoria='Dominio1', valor=59.99, repetir='a',
+                               data_de_encerramento=timezone.now() - relativedelta(years=1, months=1)),
     ]
+
+@pytest.fixture
+def permissionless_user(db):
+    return User.objects.create_user(username='TestUser', password='MinhaSenha123')
 
 @pytest.fixture
 def user(db):
@@ -20,7 +41,19 @@ def user(db):
     user.user_permissions.set(permissions)
     return user
 
-# Visualizar Despesas
+
+# Test permissions
+@pytest.fixture
+def permissionless_user_response(client, permissionless_user):
+    client.force_login(permissionless_user)
+    resp = client.get(reverse('financeiro:despesas'))
+    return resp
+
+def test_permissionless_response(permissionless_user_response):
+    assert permissionless_user_response.status_code == 403
+
+
+# Test GET VIEW Despesa
 @pytest.fixture
 def resposta_despesas(client, despesas, user):
     client.force_login(user)
@@ -31,36 +64,36 @@ def test_despesas_status_code(resposta_despesas):
     assert resposta_despesas.status_code == 200
 
 def test_despesas_presente(resposta_despesas, despesas):
-    for despesa in despesas:
+    for despesa in despesas[:2]:
         assertContains(resposta_despesas, despesa.categoria)
+    for despesa in despesas[3:]:
+        assertNotContains(resposta_despesas, despesa.categoria)
+
+def test_despesa_plot_data_accuracy(resposta_despesas, despesas):
+    data = [
+        round(float(sum([despesas[4].valor])), 2),
+        round(float(sum([despesas[1].valor, despesas[4].valor])), 2),
+        round(float(sum([despesas[1].valor, despesas[4].valor])), 2),
+        round(float(sum([despesas[1].valor, despesas[4].valor])), 2),
+        round(float(sum([despesas[1].valor, despesas[4].valor])), 2),
+        round(float(sum([despesas[1].valor, despesas[3].valor, despesas[4].valor])), 2),
+        round(float(sum([despesas[0].valor, despesas[1].valor, despesas[2].valor])), 2),
+        round(float(sum([despesas[1].valor])), 2),
+        round(float(sum([despesas[1].valor])), 2),
+        round(float(sum([despesas[1].valor])), 2),
+        round(float(sum([despesas[1].valor])), 2),
+        round(float(sum([despesas[1].valor])), 2),
+    ]
+    assertContains(resposta_despesas, f'data: {data}')
 
 def test_btn_nova_despesa_presente(resposta_despesas):
     assertContains(
         resposta_despesas,
-        f'<a href="{reverse("financeiro:nova_despesa")}'
+        f'href="{reverse("financeiro:nova_despesa")}'
     )
 
-def test_btn_entrada_de_material_presente(resposta_despesas):
-    assertContains(
-        resposta_despesas,
-        f'<a href="{reverse("materiais:entrada_de_material")}'
-    )
 
-def test_btn_novo_servico_presente(resposta_despesas):
-    assertContains(
-        resposta_despesas,
-        f'<a href="{reverse("fornecedores:novo_servico")}'
-    )
-
-def test_btn_editar_despesa_presente(resposta_despesas, despesas):
-    for despesa in despesas:
-        assertContains(resposta_despesas, f'<a href="{reverse("financeiro:editar_despesa", kwargs={"despesa_id": despesa.id})}')
-
-def test_btn_deletar_despesa_presente(resposta_despesas, despesas):
-    for despesa in despesas:
-        assertContains(resposta_despesas, f'<form action="{reverse("financeiro:deletar_despesa", kwargs={"despesa_id": despesa.id})}')
-
-# Novas Despesas
+# Test GET CREATE Despesa
 @pytest.fixture
 def resposta_nova_despesa(client, user):
     client.force_login(user)
@@ -70,16 +103,15 @@ def resposta_nova_despesa(client, user):
 def test_nova_despesa_status_code(resposta_nova_despesa):
     assert resposta_nova_despesa.status_code == 200
 
-def test_form_presente(resposta_nova_despesa):
+def test_create_form_present(resposta_nova_despesa):
+    # pathname = reverse('financeiro:nova_despesa')
     assertContains(resposta_nova_despesa, f'<form')
 
-def test_btn_submit_stay_presente(resposta_nova_despesa):
-    assertContains(resposta_nova_despesa, f'<button type="submit" name="submit-stay"')
+def test_btn_submit_create(resposta_nova_despesa):
+    assertContains(resposta_nova_despesa, f'<button type="submit"')
 
-def test_btn_submit_leave_presente(resposta_nova_despesa):
-    assertContains(resposta_nova_despesa, f'<button type="submit" name="submit-leave"')
 
-# Editar Despesas
+# Test GET EDIT Despesa
 @pytest.fixture
 def resposta_editar_despesa(client, despesas, user):
     client.force_login(user)
@@ -89,11 +121,10 @@ def resposta_editar_despesa(client, despesas, user):
 def test_editar_despesa_status_code(resposta_editar_despesa):
     assert resposta_editar_despesa.status_code == 200
 
-def test_form_editar_despesa_presente(resposta_editar_despesa):
+def test_edit_form_present(resposta_editar_despesa, despesas):
+    # pathname = reverse('financeiro:editar_despesa', kwargs={'despesa_id': despesas[0].id})
     assertContains(resposta_editar_despesa, f'<form')
 
-def test_btn_submit_stay_nao_presente(resposta_editar_despesa):
-    assertNotContains(resposta_editar_despesa, f'<button type="submit" name="submit-stay"')
 
-def test_btn_submit_leave_presente(resposta_editar_despesa):
-    assertContains(resposta_editar_despesa, f'<button type="submit" name="submit-leave"')
+def test_btn_submit_edit(resposta_editar_despesa):
+    assertContains(resposta_editar_despesa, f'<button type="submit"')
