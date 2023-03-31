@@ -1,10 +1,16 @@
+import os
+import openpyxl as pyxl
+from tempfile import NamedTemporaryFile
 from django.db.models import Q
 from django.contrib import messages
+from django.http import HttpResponse
 from django.urls.base import reverse
 from django.contrib.auth.decorators import login_required
 from django.http.response import Http404, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
+
+from webdev.vendas.admin import BasketItemResource, VendaResource
 
 from .forms import BasketForm, BasketItemForm, ClienteForm, SortSalesForm, VendaForm, SortClientsForm
 from .models import Basket, BasketItem, Cliente, Venda
@@ -194,7 +200,6 @@ def basket_review(request):
     }
     return render(request, 'vendas/basket_review.html', context)
 
-
 # Vendas
 @login_required
 def minhas_vendas(request):
@@ -232,7 +237,7 @@ def minhas_vendas(request):
     context = {
         # TODO: create import/export views for sales
         # 'import_url': reverse('vendas:importar_produtos'),
-        # 'export_url': reverse('vendas:exportar_produtos'),
+        'export_url': reverse('vendas:exportar_vendas'),
         'create_url': reverse('vendas:basket_summary'),
         # 'actions_url': reverse('vendas:product_actions'),
         'title': 'Vendas Cadastradas',
@@ -295,3 +300,26 @@ def deletar_venda(request, venda_id):
     if request.method == 'POST':
         Venda.objects.get(id=venda_id).delete()
     return HttpResponseRedirect(reverse('vendas:minhas_vendas'))
+
+@login_required
+def exportar_vendas(request):
+    response = HttpResponse(content_type='application/ms-excel')
+    response['Content-Disposition'] = 'attachment; filename="sales_report.xlsx"'
+
+    datasets = {
+        'vendas': VendaResource().export(),
+        'basket_items': BasketItemResource().export(),
+    }
+    wb = pyxl.Workbook()
+    ws = wb.active
+    wb.remove(ws)
+    for name, data in datasets.items():
+        ws = wb.create_sheet(name)
+        ws.append(data._get_headers())
+        for row in data._data:
+            ws.append(list(row))
+    wb.save(response)
+    
+    return response
+
+    

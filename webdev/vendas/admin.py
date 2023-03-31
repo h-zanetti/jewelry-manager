@@ -1,4 +1,15 @@
 from django.contrib import admin
-from .models import MarkUp
+from import_export import resources
 
-admin.site.register(MarkUp)
+from . import models
+
+admin.site.register(models.MarkUp)
+
+
+class VendaResource(resources.ModelResource):
+    class Meta:
+        model = models.Venda
+
+class BasketItemResource(resources.ModelResource):
+    class Meta:
+        model = models.BasketItem
