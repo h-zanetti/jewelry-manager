@@ -1,6 +1,5 @@
 import openpyxl
 from tablib.core import Dataset
-from openpyxl.writer.excel import save_virtual_workbook
 from django.db.models import Q
 from django.shortcuts import render, redirect
 from django.http import Http404, HttpResponseRedirect
@@ -495,6 +494,8 @@ def deletar_servico(request, servico_id):
 # Importar e exportar fornecedores
 @login_required
 def exportar_fornecedores(request):
+    response = HttpResponse(content_type='application/vnd.ms-excel')
+    response['Content-Disposition'] = 'attachment; filename=fornecedores.xls'
     datasets = {
         'Fornecimentos': admin.FornecimentoResource().export(),
         'Fornecedores': admin.FornecedorResource().export(),
@@ -504,7 +505,6 @@ def exportar_fornecedores(request):
         'Dados_bancarios': admin.DadosBancariosResource().export(),
         'Documentos': admin.DocumentoResource().export(),
     }
-    # Create xl file
     wb = openpyxl.Workbook()
     ws = wb.active
     wb.remove(ws)
@@ -513,10 +513,8 @@ def exportar_fornecedores(request):
         ws.append(data._get_headers())
         for row in data._data:
             ws.append(list(row))
-    virtual_wb = save_virtual_workbook(wb)
-    resposta = HttpResponse(virtual_wb, content_type='application/vnd.ms-excel')
-    resposta['Content-Disposition'] = 'attachment; filename=fornecedores.xls'
-    return resposta
+    wb.save(response)
+    return response
 
 @login_required
 def importar_fornecedores(request):

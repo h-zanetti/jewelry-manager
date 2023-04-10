@@ -9,6 +9,7 @@ urlpatterns = [
     path('nova_venda/', views.nova_venda, name='nova_venda'),
     path('editar_venda/<int:venda_id>', views.editar_venda, name='editar_venda'),
     path('deletar_venda/<int:venda_id>', views.deletar_venda, name='deletar_venda'),
+    path('exportar_vendas/', views.exportar_vendas, name='exportar_vendas'),
     # Basket
     path('basket_summary/', views.basket_summary, name='basket_summary'),
     path('basket_review/', views.basket_review, name='basket_review'),
